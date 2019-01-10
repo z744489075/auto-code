@@ -114,4 +114,5 @@ springboot代码自动生成器
 				"test_etl_bank","Ty9lx_nKB4T2DO",dataNames);
 ```
 
+#### demo地址 [传送门](https://gitee.com/ztp/auto-code-demo)
 
