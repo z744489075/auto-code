@@ -2,9 +2,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.zengtengpeng.auto-code</groupId>
+	<groupId>com.zengtengpeng</groupId>
 	<artifactId>auto-code</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>auto-code</name>
@@ -86,13 +86,13 @@
 	</build>
 	<distributionManagement>
 		<repository>
-			<id>nexus</id>
-			<url>http://123.59.134.198:21107/repository/etiaolong/</url>
+			<id>ztpdev</id>
+			<url>http://nexus.zengtengpeng.com/repository/ztp/</url>
 		</repository>
 
 		<snapshotRepository>
 			<id>nexus</id>
-			<url>http://123.59.134.198:21107/repository/etiaolong/</url>
+			<url>http://nexus.zengtengpeng.com/repository/etiaolong/</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>
