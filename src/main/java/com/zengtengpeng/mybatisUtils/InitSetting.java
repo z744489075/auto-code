@@ -5,10 +5,7 @@ import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.PluginAdapter;
 import org.mybatis.generator.api.dom.java.*;
-import org.mybatis.generator.api.dom.xml.Attribute;
-import org.mybatis.generator.api.dom.xml.Document;
-import org.mybatis.generator.api.dom.xml.TextElement;
-import org.mybatis.generator.api.dom.xml.XmlElement;
+import org.mybatis.generator.api.dom.xml.*;
 import org.mybatis.generator.config.JavaClientGeneratorConfiguration;
 import org.springframework.util.StringUtils;
 
@@ -19,9 +16,9 @@ import java.util.Map;
 
 /**
  * mybatis 自动生成代码初始化设置
- * 
+ *
  * @author zengtp
- * 
+ *
  *         2015年3月24日
  */
 public class InitSetting extends PluginAdapter {
@@ -37,13 +34,14 @@ public class InitSetting extends PluginAdapter {
 	@Override
 	public boolean modelBaseRecordClassGenerated(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
 		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub
 		topLevelClass.setSuperClass(Page.class.getName());
 		topLevelClass.addImportedType(new FullyQualifiedJavaType(Page.class.getName()));
 		List<IntrospectedColumn> allColumns = introspectedTable.getAllColumns();
 		List<IntrospectedColumn> primaryKeyColumns = introspectedTable.getPrimaryKeyColumns();
 		IntrospectedColumn introspectedColumn=null;
 		if(primaryKeyColumns!=null&&primaryKeyColumns.size()>0){
-			 introspectedColumn = primaryKeyColumns.get(0);
+			introspectedColumn = primaryKeyColumns.get(0);
 		}else{
 			introspectedColumn=allColumns.get(0);
 		}
@@ -118,7 +116,7 @@ public class InitSetting extends PluginAdapter {
 	 */
 	@Override
 	public boolean clientSelectAllMethodGenerated(Method method, Interface interfaze,
-			IntrospectedTable introspectedTable) {
+												  IntrospectedTable introspectedTable) {
 		String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
 		method.addAnnotation(" /**" + "\n\t* 分页查询" + "\n\t* @param page 参数" + "\n\t* @return" + "\n\t*/");
 		method.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName), MybatisGlobalUtils
@@ -133,7 +131,7 @@ public class InitSetting extends PluginAdapter {
 		interfaze.addMethod(addMethod(method, introspectedTable, "根据条件查询", "query" + domainObjectName + "ByCondition",
 				javaType, parameters));
 
-		 super.clientSelectAllMethodGenerated(method, interfaze, introspectedTable);
+		super.clientSelectAllMethodGenerated(method, interfaze, introspectedTable);
 		// 增加dao方法
 		parameters = new ArrayList<Parameter>();
 		parameters.add(new Parameter(new FullyQualifiedJavaType(domainObjectName), MybatisGlobalUtils
@@ -169,6 +167,24 @@ public class InitSetting extends PluginAdapter {
 		XmlElement end = new XmlElement("include"); //$NON-NLS-1$
 		end.addAttribute(new Attribute("refid", "paging.tail")); //$NON-NLS-1$ //$NON-NLS-2$
 		element.addElement(end);*/
+		StringBuffer sb=new StringBuffer();
+		sb.append("  <where>\n");
+
+		for (IntrospectedColumn introspectedColumn : introspectedTable.getAllColumns()) {
+			String javaProperty = introspectedColumn.getJavaProperty();
+			String actualColumnName = introspectedColumn.getActualColumnName();
+			sb.append("\t\t<if test=\"" + javaProperty + "!=null ");
+
+			if (introspectedColumn.getFullyQualifiedJavaType().getShortName().equals("String")) {
+				sb.append("and " + javaProperty + "!=''");
+			}
+
+			sb.append("\">");
+			sb.append(" and " + actualColumnName + " = #{" + javaProperty + ",jdbcType="
+					+ introspectedColumn.getJdbcTypeName() + "}</if>\n");
+		}
+		sb.append(" \t</where> \n <if test=\"orderByString!=null and orderByString!=''\"> \n\t ${orderByString} \n </if>");
+		element.addElement(new TextElement(sb.toString()));
 		return super.sqlMapSelectAllElementGenerated(element, introspectedTable);
 	}
 
@@ -204,11 +220,11 @@ public class InitSetting extends PluginAdapter {
 			String javaProperty = introspectedColumn.getJavaProperty();
 			String actualColumnName = introspectedColumn.getActualColumnName();
 			sb.append("\t\t<if test=\"" + javaProperty + "!=null ");
-			
+
 			if (introspectedColumn.getFullyQualifiedJavaType().getShortName().equals("String")) {
 				sb.append("and " + javaProperty + "!=''");
 			}
-			
+
 			sb.append("\">");
 			sb.append(" and " + actualColumnName + " = #{" + javaProperty + ",jdbcType="
 					+ introspectedColumn.getJdbcTypeName() + "}</if>\n");
@@ -217,11 +233,11 @@ public class InitSetting extends PluginAdapter {
 		el.addElement(new TextElement(sb.toString()));
 
 		parentElement.addElement(el);
-		 super.sqlMapDocumentGenerated(document, introspectedTable);
+		super.sqlMapDocumentGenerated(document, introspectedTable);
 		// 产生分页语句前半部分
 		XmlElement update = new XmlElement("update");
 		update.addAttribute(new Attribute("id", "update" + name + "ByKeyWithNotNull"));
-		 sb = new StringBuilder();
+		sb = new StringBuilder();
 		sb.append("update ");
 		sb.append(" \t"+introspectedTable.getTableConfiguration().getTableName()+" \n\t<set>\n");
 		int i=0;
@@ -232,11 +248,11 @@ public class InitSetting extends PluginAdapter {
 			String javaProperty = introspectedColumn.getJavaProperty();
 			String actualColumnName = introspectedColumn.getActualColumnName();
 			sb.append("\t\t<if test=\"" + javaProperty + "!=null ");
-			
+
 			if (introspectedColumn.getFullyQualifiedJavaType().getShortName().equals("String")) {
 				sb.append("and " + javaProperty + "!=''");
 			}
-			
+
 			sb.append("\">");
 			sb.append(actualColumnName + " = #{" + javaProperty + ",jdbcType="
 					+ introspectedColumn.getJdbcTypeName() + "}");
@@ -247,7 +263,7 @@ public class InitSetting extends PluginAdapter {
 		}
 		sb.append(" \t</set>\n");
 		sb.append("\twhere id=#{id}");
-		
+
 		update.addElement(new TextElement(sb.toString()));
 		parentElement.addElement(update);
 		return super.sqlMapDocumentGenerated(document, introspectedTable);
@@ -255,13 +271,13 @@ public class InitSetting extends PluginAdapter {
 
 	/**
 	 * 增加dao方法
-	 * 
+	 *
 	 * @param method
 	 * @param introspectedTable
 	 * @return
 	 */
 	private Method addMethod(Method method, IntrospectedTable introspectedTable, String annotationValue,
-			String methodName, FullyQualifiedJavaType returnType, List<Parameter> parameters) {
+							 String methodName, FullyQualifiedJavaType returnType, List<Parameter> parameters) {
 
 		String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
 		Method m = new Method(methodName);
@@ -269,7 +285,7 @@ public class InitSetting extends PluginAdapter {
 		m.setVisibility(method.getVisibility());
 		m.addAnnotation("/**" + "\n\t* " + annotationValue + "\n\t*/");
 		m.setReturnType(returnType);
-		
+
 
 		for (Parameter parameter : parameters) {
 

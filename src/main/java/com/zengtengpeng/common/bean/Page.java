@@ -13,11 +13,6 @@ import java.util.List;
  */
 public class Page implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6879980366025579382L;
-
 	private Integer total;// 总条数
 
 	private List rows; // 返回页面的数据
@@ -30,6 +25,17 @@ public class Page implements Serializable {
 	private String startDate;//开始时间
 	@JsonIgnore
 	private String endDate;//结束时间
+	@JsonIgnore
+	private String orderByString;//排序
+
+
+	public String getOrderByString() {
+		return orderByString;
+	}
+
+	public void setOrderByString(String orderByString) {
+		this.orderByString = orderByString;
+	}
 
 	public Integer getTotal() {
 		return total;
