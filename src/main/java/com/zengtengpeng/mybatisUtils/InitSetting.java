@@ -5,7 +5,10 @@ import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.PluginAdapter;
 import org.mybatis.generator.api.dom.java.*;
-import org.mybatis.generator.api.dom.xml.*;
+import org.mybatis.generator.api.dom.xml.Attribute;
+import org.mybatis.generator.api.dom.xml.Document;
+import org.mybatis.generator.api.dom.xml.TextElement;
+import org.mybatis.generator.api.dom.xml.XmlElement;
 import org.mybatis.generator.config.JavaClientGeneratorConfiguration;
 import org.springframework.util.StringUtils;
 
@@ -16,9 +19,9 @@ import java.util.Map;
 
 /**
  * mybatis 自动生成代码初始化设置
- *
+ * 
  * @author zengtp
- *
+ * 
  *         2015年3月24日
  */
 public class InitSetting extends PluginAdapter {
@@ -109,14 +112,14 @@ public class InitSetting extends PluginAdapter {
 		// end 生成controller,service
 		return super.modelBaseRecordClassGenerated(topLevelClass, introspectedTable);
 	}
-
+	
 
 	/**
 	 * 修改方法参数
 	 */
 	@Override
 	public boolean clientSelectAllMethodGenerated(Method method, Interface interfaze,
-												  IntrospectedTable introspectedTable) {
+			IntrospectedTable introspectedTable) {
 		String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
 		method.addAnnotation(" /**" + "\n\t* 分页查询" + "\n\t* @param page 参数" + "\n\t* @return" + "\n\t*/");
 		method.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName), MybatisGlobalUtils
@@ -131,7 +134,7 @@ public class InitSetting extends PluginAdapter {
 		interfaze.addMethod(addMethod(method, introspectedTable, "根据条件查询", "query" + domainObjectName + "ByCondition",
 				javaType, parameters));
 
-		super.clientSelectAllMethodGenerated(method, interfaze, introspectedTable);
+		 super.clientSelectAllMethodGenerated(method, interfaze, introspectedTable);
 		// 增加dao方法
 		parameters = new ArrayList<Parameter>();
 		parameters.add(new Parameter(new FullyQualifiedJavaType(domainObjectName), MybatisGlobalUtils
@@ -169,19 +172,31 @@ public class InitSetting extends PluginAdapter {
 		element.addElement(end);*/
 		StringBuffer sb=new StringBuffer();
 		sb.append("  <where>\n");
-
+		Boolean b=true;
 		for (IntrospectedColumn introspectedColumn : introspectedTable.getAllColumns()) {
 			String javaProperty = introspectedColumn.getJavaProperty();
 			String actualColumnName = introspectedColumn.getActualColumnName();
-			sb.append("\t\t<if test=\"" + javaProperty + "!=null ");
+			if(b&&(javaProperty.equals("createDate")||javaProperty.equals("createTime")||javaProperty.equals("addtime")||javaProperty.equals("addTime"))) {
+				b=!b;
+				sb.append("\t\t<if test=\" startDate!=null and startDate!='' and endDate!=null and endDate!='' ");
 
-			if (introspectedColumn.getFullyQualifiedJavaType().getShortName().equals("String")) {
-				sb.append("and " + javaProperty + "!=''");
+				sb.append("\">");
+				if("TIMESTAMP".equals(introspectedColumn.getJdbcTypeName())){
+					sb.append(" and " + actualColumnName + " BETWEEN #{startDate} and #{endDate}</if>\n");
+				}else {
+					sb.append(" and left(" + actualColumnName + ",10) BETWEEN left(#{startDate},10) and left(#{endDate},10)</if>\n");
+				}
+			}else {
+				sb.append("\t\t<if test=\"" + javaProperty + "!=null ");
+
+				if (introspectedColumn.getFullyQualifiedJavaType().getShortName().equals("String")) {
+					sb.append("and " + javaProperty + "!=''");
+				}
+
+				sb.append("\">");
+				sb.append(" and " + actualColumnName + " = #{" + javaProperty + ",jdbcType="
+						+ introspectedColumn.getJdbcTypeName() + "}</if>\n");
 			}
-
-			sb.append("\">");
-			sb.append(" and " + actualColumnName + " = #{" + javaProperty + ",jdbcType="
-					+ introspectedColumn.getJdbcTypeName() + "}</if>\n");
 		}
 		sb.append(" \t</where> \n <if test=\"orderByString!=null and orderByString!=''\"> \n\t ${orderByString} \n </if>");
 		element.addElement(new TextElement(sb.toString()));
@@ -216,28 +231,40 @@ public class InitSetting extends PluginAdapter {
 
 		sb.append(" \tfrom  "+introspectedTable.getTableConfiguration().getTableName()+" \n\t<where>\n");
 
-		for (IntrospectedColumn introspectedColumn : allColumns) {
+		Boolean b=true;
+		for (IntrospectedColumn introspectedColumn : introspectedTable.getAllColumns()) {
 			String javaProperty = introspectedColumn.getJavaProperty();
 			String actualColumnName = introspectedColumn.getActualColumnName();
-			sb.append("\t\t<if test=\"" + javaProperty + "!=null ");
+			if(b&&(javaProperty.equals("createDate")||javaProperty.equals("createTime")||javaProperty.equals("addtime")||javaProperty.equals("addTime"))) {
+				b=!b;
+				sb.append("\t\t<if test=\" startDate!=null and startDate!='' and endDate!=null and endDate!='' ");
 
-			if (introspectedColumn.getFullyQualifiedJavaType().getShortName().equals("String")) {
-				sb.append("and " + javaProperty + "!=''");
+				sb.append("\">");
+				if("TIMESTAMP".equals(introspectedColumn.getJdbcTypeName())){
+					sb.append(" and " + actualColumnName + " BETWEEN #{startDate} and #{endDate}</if>\n");
+				}else {
+					sb.append(" and left(" + actualColumnName + ",10) BETWEEN left(#{startDate},10) and left(#{endDate},10)</if>\n");
+				}
+			}else {
+				sb.append("\t\t<if test=\"" + javaProperty + "!=null ");
+
+				if (introspectedColumn.getFullyQualifiedJavaType().getShortName().equals("String")) {
+					sb.append("and " + javaProperty + "!=''");
+				}
+				sb.append("\">");
+				sb.append(" and " + actualColumnName + " = #{" + javaProperty + ",jdbcType="
+						+ introspectedColumn.getJdbcTypeName() + "}</if>\n");
 			}
-
-			sb.append("\">");
-			sb.append(" and " + actualColumnName + " = #{" + javaProperty + ",jdbcType="
-					+ introspectedColumn.getJdbcTypeName() + "}</if>\n");
 		}
 		sb.append(" \t</where> \n <if test=\"orderByString!=null and orderByString!=''\"> \n\t ${orderByString} \n </if>");
 		el.addElement(new TextElement(sb.toString()));
 
 		parentElement.addElement(el);
-		super.sqlMapDocumentGenerated(document, introspectedTable);
+		 super.sqlMapDocumentGenerated(document, introspectedTable);
 		// 产生分页语句前半部分
 		XmlElement update = new XmlElement("update");
 		update.addAttribute(new Attribute("id", "update" + name + "ByKeyWithNotNull"));
-		sb = new StringBuilder();
+		 sb = new StringBuilder();
 		sb.append("update ");
 		sb.append(" \t"+introspectedTable.getTableConfiguration().getTableName()+" \n\t<set>\n");
 		int i=0;
@@ -248,11 +275,11 @@ public class InitSetting extends PluginAdapter {
 			String javaProperty = introspectedColumn.getJavaProperty();
 			String actualColumnName = introspectedColumn.getActualColumnName();
 			sb.append("\t\t<if test=\"" + javaProperty + "!=null ");
-
+			
 			if (introspectedColumn.getFullyQualifiedJavaType().getShortName().equals("String")) {
 				sb.append("and " + javaProperty + "!=''");
 			}
-
+			
 			sb.append("\">");
 			sb.append(actualColumnName + " = #{" + javaProperty + ",jdbcType="
 					+ introspectedColumn.getJdbcTypeName() + "}");
@@ -263,7 +290,7 @@ public class InitSetting extends PluginAdapter {
 		}
 		sb.append(" \t</set>\n");
 		sb.append("\twhere id=#{id}");
-
+		
 		update.addElement(new TextElement(sb.toString()));
 		parentElement.addElement(update);
 		return super.sqlMapDocumentGenerated(document, introspectedTable);
@@ -271,13 +298,13 @@ public class InitSetting extends PluginAdapter {
 
 	/**
 	 * 增加dao方法
-	 *
+	 * 
 	 * @param method
 	 * @param introspectedTable
 	 * @return
 	 */
 	private Method addMethod(Method method, IntrospectedTable introspectedTable, String annotationValue,
-							 String methodName, FullyQualifiedJavaType returnType, List<Parameter> parameters) {
+			String methodName, FullyQualifiedJavaType returnType, List<Parameter> parameters) {
 
 		String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
 		Method m = new Method(methodName);
@@ -285,7 +312,7 @@ public class InitSetting extends PluginAdapter {
 		m.setVisibility(method.getVisibility());
 		m.addAnnotation("/**" + "\n\t* " + annotationValue + "\n\t*/");
 		m.setReturnType(returnType);
-
+		
 
 		for (Parameter parameter : parameters) {
 
