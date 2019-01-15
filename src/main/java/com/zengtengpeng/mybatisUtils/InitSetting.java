@@ -1,5 +1,6 @@
 package com.zengtengpeng.mybatisUtils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zengtengpeng.common.bean.Page;
 import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
@@ -10,6 +11,8 @@ import org.mybatis.generator.api.dom.xml.Document;
 import org.mybatis.generator.api.dom.xml.TextElement;
 import org.mybatis.generator.api.dom.xml.XmlElement;
 import org.mybatis.generator.config.JavaClientGeneratorConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -25,6 +28,9 @@ import java.util.Map;
  *         2015年3月24日
  */
 public class InitSetting extends PluginAdapter {
+
+
+	Logger logger = LoggerFactory.getLogger(InitSetting.class);
 
 	@Override
 	public boolean modelExampleClassGenerated(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
@@ -57,8 +63,11 @@ public class InitSetting extends PluginAdapter {
 		topLevelClass.addImportedType("com.zengtengpeng.common.utils.DateUtils");
 		topLevelClass.addImportedType("com.zengtengpeng.common.bean.Page");
 		topLevelClass.addImportedType("com.fasterxml.jackson.annotation.JsonIgnore");
+		topLevelClass.addImportedType("org.springframework.util.StringUtils");
 		//循环所以字段.如果有类型为date形式的.则增加格式化化方法 TIMESTAMP DATE
 		for (IntrospectedColumn allColumn : allColumns) {
+
+			//日期转换
 			if("TIMESTAMP".equals(allColumn.getJdbcTypeName())||"DATE".equals(allColumn.getJdbcTypeName())){
 				//日期
 				Method method=new Method();
@@ -72,6 +81,29 @@ public class InitSetting extends PluginAdapter {
 				}
 				topLevelClass.addMethod(method);
 			}
+
+			//转换json
+			ObjectMapper objectMapper=new ObjectMapper();
+			String remarks1 = allColumn.getRemarks();
+			try {
+				Map<Object,Object> map = objectMapper.readValue(remarks1, Map.class);
+				Method method=new Method();
+				method.setName("get"+ MybatisGlobalUtils.firstUpperCase(allColumn.getJavaProperty())+"_");
+				method.setReturnType(new FullyQualifiedJavaType("java.lang.String"));
+				method.setVisibility(JavaVisibility.PUBLIC);
+				method.addBodyLine("if(StringUtils.isEmpty("+allColumn.getJavaProperty()+")){");
+				method.addBodyLine(" return \"\";");
+				for (Map.Entry me : map.entrySet()) {
+					method.addBodyLine("}else if("+allColumn.getJavaProperty()+".equals("+me.getKey()+")){");
+					method.addBodyLine(" return \""+me.getValue()+"\";");
+				}
+				method.addBodyLine("}");
+				method.addBodyLine("return \"\";");
+				topLevelClass.addMethod(method);
+			} catch (Exception e) {
+				logger.info("字段->{}注释->{}不是json忽略转换",allColumn.getJavaProperty(),remarks1);
+			}
+
 		}
 
 		for (Method method : topLevelClass.getMethods()) {
@@ -170,34 +202,9 @@ public class InitSetting extends PluginAdapter {
 		XmlElement end = new XmlElement("include"); //$NON-NLS-1$
 		end.addAttribute(new Attribute("refid", "paging.tail")); //$NON-NLS-1$ //$NON-NLS-2$
 		element.addElement(end);*/
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		sb.append("  <where>\n");
-		Boolean b=true;
-		for (IntrospectedColumn introspectedColumn : introspectedTable.getAllColumns()) {
-			String javaProperty = introspectedColumn.getJavaProperty();
-			String actualColumnName = introspectedColumn.getActualColumnName();
-			if(b&&(javaProperty.equals("createDate")||javaProperty.equals("createTime")||javaProperty.equals("addtime")||javaProperty.equals("addTime"))) {
-				b=!b;
-				sb.append("\t\t<if test=\" startDate!=null and startDate!='' and endDate!=null and endDate!='' ");
-
-				sb.append("\">");
-				if("TIMESTAMP".equals(introspectedColumn.getJdbcTypeName())){
-					sb.append(" and " + actualColumnName + " BETWEEN #{startDate} and #{endDate}</if>\n");
-				}else {
-					sb.append(" and left(" + actualColumnName + ",10) BETWEEN left(#{startDate},10) and left(#{endDate},10)</if>\n");
-				}
-			}else {
-				sb.append("\t\t<if test=\"" + javaProperty + "!=null ");
-
-				if (introspectedColumn.getFullyQualifiedJavaType().getShortName().equals("String")) {
-					sb.append("and " + javaProperty + "!=''");
-				}
-
-				sb.append("\">");
-				sb.append(" and " + actualColumnName + " = #{" + javaProperty + ",jdbcType="
-						+ introspectedColumn.getJdbcTypeName() + "}</if>\n");
-			}
-		}
+		condi(introspectedTable, sb);
 		sb.append(" \t</where> \n <if test=\"orderByString!=null and orderByString!=''\"> \n\t ${orderByString} \n </if>");
 		element.addElement(new TextElement(sb.toString()));
 		return super.sqlMapSelectAllElementGenerated(element, introspectedTable);
@@ -231,31 +238,7 @@ public class InitSetting extends PluginAdapter {
 
 		sb.append(" \tfrom  "+introspectedTable.getTableConfiguration().getTableName()+" \n\t<where>\n");
 
-		Boolean b=true;
-		for (IntrospectedColumn introspectedColumn : introspectedTable.getAllColumns()) {
-			String javaProperty = introspectedColumn.getJavaProperty();
-			String actualColumnName = introspectedColumn.getActualColumnName();
-			if(b&&(javaProperty.equals("createDate")||javaProperty.equals("createTime")||javaProperty.equals("addtime")||javaProperty.equals("addTime"))) {
-				b=!b;
-				sb.append("\t\t<if test=\" startDate!=null and startDate!='' and endDate!=null and endDate!='' ");
-
-				sb.append("\">");
-				if("TIMESTAMP".equals(introspectedColumn.getJdbcTypeName())){
-					sb.append(" and " + actualColumnName + " BETWEEN #{startDate} and #{endDate}</if>\n");
-				}else {
-					sb.append(" and left(" + actualColumnName + ",10) BETWEEN left(#{startDate},10) and left(#{endDate},10)</if>\n");
-				}
-			}else {
-				sb.append("\t\t<if test=\"" + javaProperty + "!=null ");
-
-				if (introspectedColumn.getFullyQualifiedJavaType().getShortName().equals("String")) {
-					sb.append("and " + javaProperty + "!=''");
-				}
-				sb.append("\">");
-				sb.append(" and " + actualColumnName + " = #{" + javaProperty + ",jdbcType="
-						+ introspectedColumn.getJdbcTypeName() + "}</if>\n");
-			}
-		}
+		condi(introspectedTable, sb);
 		sb.append(" \t</where> \n <if test=\"orderByString!=null and orderByString!=''\"> \n\t ${orderByString} \n </if>");
 		el.addElement(new TextElement(sb.toString()));
 
@@ -294,6 +277,34 @@ public class InitSetting extends PluginAdapter {
 		update.addElement(new TextElement(sb.toString()));
 		parentElement.addElement(update);
 		return super.sqlMapDocumentGenerated(document, introspectedTable);
+	}
+
+	private void condi(IntrospectedTable introspectedTable, StringBuilder sb) {
+		Boolean b=true;
+		for (IntrospectedColumn introspectedColumn : introspectedTable.getAllColumns()) {
+			String javaProperty = introspectedColumn.getJavaProperty();
+			String actualColumnName = introspectedColumn.getActualColumnName();
+			if(b&&(javaProperty.equals("createDate")||javaProperty.equals("createTime")||javaProperty.equals("addtime")||javaProperty.equals("addTime"))) {
+				b=!b;
+				sb.append("\t\t<if test=\" startDate!=null and startDate!='' and endDate!=null and endDate!='' ");
+
+				sb.append("\">");
+				if("TIMESTAMP".equals(introspectedColumn.getJdbcTypeName())){
+					sb.append(" and " + actualColumnName + " BETWEEN #{startDate} and #{endDate}</if>\n");
+				}else {
+					sb.append(" and left(" + actualColumnName + ",10) BETWEEN left(#{startDate},10) and left(#{endDate},10)</if>\n");
+				}
+			}else {
+				sb.append("\t\t<if test=\"" + javaProperty + "!=null ");
+
+				if (introspectedColumn.getFullyQualifiedJavaType().getShortName().equals("String")) {
+					sb.append("and " + javaProperty + "!=''");
+				}
+				sb.append("\">");
+				sb.append(" and " + actualColumnName + " = #{" + javaProperty + ",jdbcType="
+						+ introspectedColumn.getJdbcTypeName() + "}</if>\n");
+			}
+		}
 	}
 
 	/**
