@@ -94,6 +94,9 @@ public class InitSetting extends PluginAdapter {
 				method.addBodyLine("if(StringUtils.isEmpty("+allColumn.getJavaProperty()+")){");
 				method.addBodyLine(" return \"\";");
 				for (Map.Entry me : map.entrySet()) {
+					if("name".equals(me.getKey())){
+						continue;
+					}
 					method.addBodyLine("}else if("+allColumn.getJavaProperty()+".equals("+me.getKey()+")){");
 					method.addBodyLine(" return \""+me.getValue()+"\";");
 				}
