@@ -91,7 +91,7 @@ public class ${tableName}Controller {
 			<#if c.jdbcTypeName='TIMESTAMP' || c.jdbcTypeName='DATE'>
 		header.put("${c.javaProperty}_", "${c.remarks}");
 			<#else >
-        header.put("${c.javaProperty}", "${c.remarks}");
+        header.put("${c.javaProperty}", "${c.remarks?json_string}");
 			</#if>
 		</#list>
 		ExcelUtils.exportExcel("${tableRemarks}",header,list,response,request);
