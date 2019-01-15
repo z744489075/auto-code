@@ -44,6 +44,7 @@ public class InitSetting extends PluginAdapter {
 	public boolean modelBaseRecordClassGenerated(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
 		// TODO Auto-generated method stub
 		// TODO Auto-generated method stub
+		Map<String, Object> param=new HashMap<>();
 		topLevelClass.setSuperClass(Page.class.getName());
 		topLevelClass.addImportedType(new FullyQualifiedJavaType(Page.class.getName()));
 		List<IntrospectedColumn> allColumns = introspectedTable.getAllColumns();
@@ -65,6 +66,7 @@ public class InitSetting extends PluginAdapter {
 		topLevelClass.addImportedType("com.fasterxml.jackson.annotation.JsonIgnore");
 		topLevelClass.addImportedType("org.springframework.util.StringUtils");
 		//循环所以字段.如果有类型为date形式的.则增加格式化化方法 TIMESTAMP DATE
+		Map cons=new HashMap();
 		for (IntrospectedColumn allColumn : allColumns) {
 
 			//日期转换
@@ -103,12 +105,14 @@ public class InitSetting extends PluginAdapter {
 				method.addBodyLine("}");
 				method.addBodyLine("return \"\";");
 				topLevelClass.addMethod(method);
+				cons.put(allColumn.getJavaProperty(),map);
 			} catch (Exception e) {
 				logger.info("字段->{}注释->{}不是json忽略转换",allColumn.getJavaProperty(),remarks1);
 			}
 
 		}
 
+		param.put("cons",cons);
 		for (Method method : topLevelClass.getMethods()) {
 
 			if(method.getName().startsWith("get")&&"Date".equalsIgnoreCase(method.getReturnType().getShortName())){
@@ -121,7 +125,7 @@ public class InitSetting extends PluginAdapter {
 		//begin 生成controller,service
 		JavaClientGeneratorConfiguration javaClientGeneratorConfiguration = this.getContext().getJavaClientGeneratorConfiguration();
 		String parentJavaPath=javaClientGeneratorConfiguration.getTargetProject();
-		Map<String, Object> param=new HashMap<>();
+
 		String targetPackage = javaClientGeneratorConfiguration.getTargetPackage();
 		String tableName = introspectedTable.getTableConfiguration().getDomainObjectName();
 		String substring = targetPackage.substring(0, targetPackage.lastIndexOf("."));

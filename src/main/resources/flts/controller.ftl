@@ -88,10 +88,10 @@ public class ${tableName}Controller {
 		List<${tableName}> list= ${tableValue}Service.export(${tableValue});
 		Map<String, String> header = new LinkedHashMap<>();
 		<#list allColumns as c>
-			<#if c.jdbcTypeName='TIMESTAMP' || c.jdbcTypeName='DATE'>
-		header.put("${c.javaProperty}_", "${c.remarks}");
+			<#if c.jdbcTypeName='TIMESTAMP' || c.jdbcTypeName='DATE' || cons[c.javaProperty]??>
+				header.put("${c.javaProperty}_", "${c.remarks?json_string}");
 			<#else >
-        header.put("${c.javaProperty}", "${c.remarks?json_string}");
+				header.put("${c.javaProperty}", "${c.remarks?json_string}");
 			</#if>
 		</#list>
 		ExcelUtils.exportExcel("${tableRemarks}",header,list,response,request);
