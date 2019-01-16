@@ -267,7 +267,7 @@ public class InitSetting extends PluginAdapter {
 		insertS.append(")\n values (");
 
 		for (IntrospectedColumn introspectedColumn : collect) {
-			insertS.append( " #{" + introspectedColumn.getActualColumnName() + ",jdbcType="+ introspectedColumn.getJdbcTypeName() + "},");
+			insertS.append( " #{" + introspectedColumn.getJavaProperty() + ",jdbcType="+ introspectedColumn.getJdbcTypeName() + "},");
 		}
 
 		insertS.deleteCharAt(insertS.length() - 1);
