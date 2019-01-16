@@ -18,7 +18,7 @@ public class ${tableName}ServiceImpl implements ${tableName}Service {
 	
 	@Override
 	public int deleteByPrimaryKey(${tableName} ${tableValue}){
-		return ${tableValue}Dao.deleteByPrimaryKey(${tableValue}.get${primaryId}());
+		return ${tableValue}Dao.deleteByPrimaryKey(${tableValue}.get${primaryKey.javaProperty?cap_first}());
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class ${tableName}ServiceImpl implements ${tableName}Service {
 
 	@Override
 	public ${tableName} selectByPrimaryKey(${tableName} ${tableValue}){
-    	return ${tableValue}Dao.selectByPrimaryKey(${tableValue}.get${primaryId}());
+    	return ${tableValue}Dao.selectByPrimaryKey(${tableValue}.get${primaryKey.javaProperty?cap_first}());
     }
 
    

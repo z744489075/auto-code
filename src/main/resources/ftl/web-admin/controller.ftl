@@ -2,7 +2,6 @@ package ${parentPack}.controller;
 
 import javax.annotation.Resource;
 
-import org.springframework.web.bind.annotation.RestController;
 import com.zengtengpeng.common.utils.ExcelUtils;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,13 +14,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import ${parentPack}.bean.${tableName};
 import ${parentPack}.service.${tableName}Service;
+import org.springframework.stereotype.Controller;
 
 /**
  * 
  * @author zengtp
  *
  */
-@RestController
+@Controller
 public class ${tableName}Controller {
 	
 	@Resource
@@ -33,6 +33,7 @@ public class ${tableName}Controller {
 	 * @return
 	 */
 	@RequestMapping("/${tableValue}/deleteByPrimaryKey")
+	@ResponseBody
 	public DataRes deleteByPrimaryKey(${tableName} ${tableValue}, HttpServletRequest request, HttpServletResponse response){
 		return DataRes.success(${tableValue}Service.deleteByPrimaryKey(${tableValue}));
 	}
@@ -43,8 +44,9 @@ public class ${tableName}Controller {
 	 * @return
 	 */
 	@RequestMapping("/${tableValue}/save")
+	@ResponseBody
 	public DataRes save(${tableName} ${tableValue}, HttpServletRequest request, HttpServletResponse response){
-		if(${tableValue}.getId()==null){
+		if(${tableValue}.get${primaryKey.javaProperty?cap_first}()==null){
 			return DataRes.success(${tableValue}Service.insert(${tableValue}));
 		}
 		return DataRes.success(${tableValue}Service.updateByPrimaryKey(${tableValue}));
@@ -56,6 +58,7 @@ public class ${tableName}Controller {
      * @return
      */
 	@RequestMapping("/${tableValue}/selectByPrimaryKey")
+	@ResponseBody
 	public DataRes selectByPrimaryKey(${tableName} ${tableValue}, HttpServletRequest request, HttpServletResponse response){
     	return DataRes.success(${tableValue}Service.selectByPrimaryKey(${tableValue}));
     }
@@ -64,6 +67,7 @@ public class ${tableName}Controller {
 	* 根据条件查询
 	*/
 	@RequestMapping("/${tableValue}/query${tableName}ByCondition")
+	@ResponseBody
 	public DataRes query${tableName}ByCondition(${tableName} ${tableValue}, HttpServletRequest request, HttpServletResponse response){
     	return DataRes.success(${tableValue}Service.query${tableName}ByCondition(${tableValue}));
     }
@@ -74,6 +78,7 @@ public class ${tableName}Controller {
 	* @return
 	*/
 	@RequestMapping("/${tableValue}/selectAll")
+	@ResponseBody
 	public DataRes selectAll(${tableName} ${tableValue},HttpServletRequest request, HttpServletResponse response){
     	return DataRes.success(${tableValue}Service.selectAll(${tableValue}));
     }
@@ -89,12 +94,34 @@ public class ${tableName}Controller {
 		Map<String, String> header = new LinkedHashMap<>();
 		<#list allColumns as c>
 			<#if c.jdbcTypeName='TIMESTAMP' || c.jdbcTypeName='DATE' || cons[c.javaProperty]??>
-				header.put("${c.javaProperty}_", "${c.remarks?json_string}");
+		header.put("${c.javaProperty}_", "${c.remarks?json_string}");
 			<#else >
-				header.put("${c.javaProperty}", "${c.remarks?json_string}");
+        header.put("${c.javaProperty}", "${c.remarks?json_string}");
 			</#if>
 		</#list>
 		ExcelUtils.exportExcel("${tableRemarks}",header,list,response,request);
     }
 
+	/**
+	* 跳转到列表页面
+	* @return
+	*/
+	@RequestMapping("/${tableValue}/gotoList")
+	public String gotoList(${tableName} ${tableValue}, HttpServletRequest request, HttpServletResponse response){
+		return "${mobelName}/${dataName}_list";
+	}
+
+	/**
+	* 跳转到详情页面
+	* @return
+	*/
+	@RequestMapping("/${tableValue}/gotoDetail")
+	public String gotoDetail(${tableName} ${tableValue}, HttpServletRequest request, HttpServletResponse response){
+		if(${tableValue}.get${primaryKey.javaProperty?cap_first}()!=null){
+			request.setAttribute("${dataName}",${tableValue}Service.selectByPrimaryKey(${tableValue}));
+		}else {
+			request.setAttribute("${dataName}",${tableValue});
+		}
+		return "${mobelName}/${dataName}_detail";
+	}
 }

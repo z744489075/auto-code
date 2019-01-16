@@ -1,4 +1,4 @@
-package com.zengtengpeng.mybatisUtils;
+package com.zengtengpeng.generator.plugin;
 
 import org.mybatis.generator.api.CommentGenerator;
 import org.mybatis.generator.api.IntrospectedColumn;

@@ -1,7 +1,11 @@
-package com.zengtengpeng.mybatisUtils;
+package com.zengtengpeng.generator.plugin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zengtengpeng.common.bean.Page;
+import com.zengtengpeng.generator.utils.AutoCodeUtils;
+import com.zengtengpeng.generator.utils.MyStringUtils;
+import com.zengtengpeng.generator.bean.AutoCodeParam;
+import org.mybatis.generator.api.GeneratedXmlFile;
 import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.PluginAdapter;
@@ -11,14 +15,12 @@ import org.mybatis.generator.api.dom.xml.Document;
 import org.mybatis.generator.api.dom.xml.TextElement;
 import org.mybatis.generator.api.dom.xml.XmlElement;
 import org.mybatis.generator.config.JavaClientGeneratorConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * mybatis 自动生成代码初始化设置
@@ -30,13 +32,24 @@ import java.util.Map;
 public class InitSetting extends PluginAdapter {
 
 
-	Logger logger = LoggerFactory.getLogger(InitSetting.class);
 
+	/**
+	 * xml覆盖生成
+	 * @param sqlMap
+	 * @param introspectedTable
+	 * @return
+	 */
 	@Override
-	public boolean modelExampleClassGenerated(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
-		return super.modelExampleClassGenerated(topLevelClass, introspectedTable);
+	public boolean sqlMapGenerated(GeneratedXmlFile sqlMap, IntrospectedTable introspectedTable) {
+		try {
+			java.lang.reflect.Field field = sqlMap.getClass().getDeclaredField("isMergeable");
+			field.setAccessible(true);
+			field.setBoolean(sqlMap, false);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return true;
 	}
-
 	/**
 	 * 生成bean时调用
 	 */
@@ -44,7 +57,7 @@ public class InitSetting extends PluginAdapter {
 	public boolean modelBaseRecordClassGenerated(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
 		// TODO Auto-generated method stub
 		// TODO Auto-generated method stub
-		Map<String, Object> param=new HashMap<>();
+		AutoCodeParam autoCodeParam=new AutoCodeParam();
 		topLevelClass.setSuperClass(Page.class.getName());
 		topLevelClass.addImportedType(new FullyQualifiedJavaType(Page.class.getName()));
 		List<IntrospectedColumn> allColumns = introspectedTable.getAllColumns();
@@ -56,9 +69,11 @@ public class InitSetting extends PluginAdapter {
 			introspectedColumn=allColumns.get(0);
 		}
 		String remarks = introspectedTable.getRemarks();
-		if(StringUtils.isEmpty(remarks)){
+		if(MyStringUtils.isEmpty(remarks)){
 			remarks=introspectedColumn.getRemarks();
 		}
+		//主键
+		autoCodeParam.setPrimaryKey(introspectedColumn);
 		topLevelClass.addAnnotation("/**" + "\n* " + remarks
 				+ "\n* @author zengtp" + "\n*/");
 		topLevelClass.addImportedType("com.zengtengpeng.common.utils.DateUtils");
@@ -73,7 +88,7 @@ public class InitSetting extends PluginAdapter {
 			if("TIMESTAMP".equals(allColumn.getJdbcTypeName())||"DATE".equals(allColumn.getJdbcTypeName())){
 				//日期
 				Method method=new Method();
-				method.setName("get"+ MybatisGlobalUtils.firstUpperCase(allColumn.getJavaProperty())+"_");
+				method.setName("get"+ MyStringUtils.firstUpperCase(allColumn.getJavaProperty())+"_");
 				method.setReturnType(new FullyQualifiedJavaType("java.lang.String"));
 				method.setVisibility(JavaVisibility.PUBLIC);
 				if("TIMESTAMP".equals(allColumn.getJdbcTypeName())){
@@ -90,7 +105,7 @@ public class InitSetting extends PluginAdapter {
 			try {
 				Map<Object,Object> map = objectMapper.readValue(remarks1, Map.class);
 				Method method=new Method();
-				method.setName("get"+ MybatisGlobalUtils.firstUpperCase(allColumn.getJavaProperty())+"_");
+				method.setName("get"+ MyStringUtils.firstUpperCase(allColumn.getJavaProperty())+"_");
 				method.setReturnType(new FullyQualifiedJavaType("java.lang.String"));
 				method.setVisibility(JavaVisibility.PUBLIC);
 				method.addBodyLine("if(StringUtils.isEmpty("+allColumn.getJavaProperty()+")){");
@@ -107,12 +122,11 @@ public class InitSetting extends PluginAdapter {
 				topLevelClass.addMethod(method);
 				cons.put(allColumn.getJavaProperty(),map);
 			} catch (Exception e) {
-				logger.info("字段->{}注释->{}不是json忽略转换",allColumn.getJavaProperty(),remarks1);
+				System.out.println("字段->"+allColumn.getJavaProperty()+"注释->"+remarks1+"不是json忽略转换");
 			}
 
 		}
-
-		param.put("cons",cons);
+		autoCodeParam.setCons(cons);
 		for (Method method : topLevelClass.getMethods()) {
 
 			if(method.getName().startsWith("get")&&"Date".equalsIgnoreCase(method.getReturnType().getShortName())){
@@ -129,44 +143,39 @@ public class InitSetting extends PluginAdapter {
 		String targetPackage = javaClientGeneratorConfiguration.getTargetPackage();
 		String tableName = introspectedTable.getTableConfiguration().getDomainObjectName();
 		String substring = targetPackage.substring(0, targetPackage.lastIndexOf("."));
-
 		//表注释
-		param.put("tableRemarks", remarks);
+		autoCodeParam.setTableRemarks(remarks);
 		//表列
-		param.put("allColumns", allColumns);
+		autoCodeParam.setAllColumns(allColumns);
 		//父包路径
-		param.put("parentPack", substring);
-		//模块名称 com.etiaolong.bean  中的 etiaolong
-		param.put("mobelName", substring.substring(substring.lastIndexOf(".")+1));
+		autoCodeParam.setParentPack(substring);
 		//javaBean 名称 AdminUser
-		param.put("tableName",tableName);
+		autoCodeParam.setTableName(tableName);
 		//数据库表名称 admin_user
-		param.put("dataName",introspectedTable.getTableConfiguration().getTableName());
-		//javaBean 首字母小写 adminUser
-		param.put("tableValue", MybatisGlobalUtils.firstLowerCase(tableName));
+		autoCodeParam.setDataName(introspectedTable.getTableConfiguration().getTableName());
 		//主键
-		String parentResourcesPath = this.getContext().getSqlMapGeneratorConfiguration().getTargetProject();
-		param.put("primaryId", MybatisGlobalUtils.firstUpperCase(introspectedColumn.getJavaProperty()));
-		MreemarkerUtils.createControllerAndService(parentJavaPath, param,parentResourcesPath);
+		autoCodeParam.setParentJavaPath(parentJavaPath);
+		autoCodeParam.setParentResourcesPath(this.getContext().getSqlMapGeneratorConfiguration().getTargetProject());
+		AutoCodeUtils.createCode.startAuto(autoCodeParam);
 		// end 生成controller,service
 		return super.modelBaseRecordClassGenerated(topLevelClass, introspectedTable);
 	}
 	
 
 	/**
-	 * 修改方法参数
+	 * 增加方法参数
 	 */
 	@Override
 	public boolean clientSelectAllMethodGenerated(Method method, Interface interfaze,
 			IntrospectedTable introspectedTable) {
 		String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
 		method.addAnnotation(" /**" + "\n\t* 分页查询" + "\n\t* @param page 参数" + "\n\t* @return" + "\n\t*/");
-		method.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName), MybatisGlobalUtils
+		method.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName), MyStringUtils
 				.firstLowerCase(domainObjectName)));
 
 		// 增加dao方法
 		List<Parameter> parameters = new ArrayList<Parameter>();
-		parameters.add(new Parameter(new FullyQualifiedJavaType(domainObjectName), MybatisGlobalUtils
+		parameters.add(new Parameter(new FullyQualifiedJavaType(domainObjectName), MyStringUtils
 				.firstLowerCase(domainObjectName)));
 		FullyQualifiedJavaType javaType=new FullyQualifiedJavaType(List.class.getName());
 		javaType.addTypeArgument(new FullyQualifiedJavaType(domainObjectName));
@@ -176,7 +185,7 @@ public class InitSetting extends PluginAdapter {
 		 super.clientSelectAllMethodGenerated(method, interfaze, introspectedTable);
 		// 增加dao方法
 		parameters = new ArrayList<Parameter>();
-		parameters.add(new Parameter(new FullyQualifiedJavaType(domainObjectName), MybatisGlobalUtils
+		parameters.add(new Parameter(new FullyQualifiedJavaType(domainObjectName), MyStringUtils
 				.firstLowerCase(domainObjectName)));
 		javaType=new FullyQualifiedJavaType(Integer.class.getName());
 		interfaze.addMethod(addMethod(method, introspectedTable, "更新(忽略null)", "update" + domainObjectName + "ByKeyWithNotNull",
@@ -185,17 +194,10 @@ public class InitSetting extends PluginAdapter {
 		return super.clientSelectAllMethodGenerated(method, interfaze, introspectedTable);
 	}
 
-	/**
-	 * 此方法用于实现接口
-	 */
+
 	@Override
-	public boolean clientGenerated(Interface interfaze, TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
-		/*
-		 * FullyQualifiedJavaType superInterface=new
-		 * FullyQualifiedJavaType(PagingDao.class.getName());
-		 * interfaze.addSuperInterface(superInterface);
-		 */
-		return super.clientGenerated(interfaze, topLevelClass, introspectedTable);
+	public void initialized(IntrospectedTable introspectedTable) {
+		super.initialized(introspectedTable);
 	}
 
 	/**
@@ -203,12 +205,6 @@ public class InitSetting extends PluginAdapter {
 	 */
 	@Override
 	public boolean sqlMapSelectAllElementGenerated(XmlElement element, IntrospectedTable introspectedTable) {
-		/*XmlElement head = new XmlElement("include"); //$NON-NLS-1$
-		head.addAttribute(new Attribute("refid", "paging.head")); //$NON-NLS-1$ //$NON-NLS-2$
-		element.addElement(0, head);
-		XmlElement end = new XmlElement("include"); //$NON-NLS-1$
-		end.addAttribute(new Attribute("refid", "paging.tail")); //$NON-NLS-1$ //$NON-NLS-2$
-		element.addElement(end);*/
 		StringBuilder sb=new StringBuilder();
 		sb.append("  <where>\n");
 		condi(introspectedTable, sb);
@@ -217,9 +213,10 @@ public class InitSetting extends PluginAdapter {
 		return super.sqlMapSelectAllElementGenerated(element, introspectedTable);
 	}
 
-
-
-
+	@Override
+	public boolean sqlMapInsertElementGenerated(XmlElement element, IntrospectedTable introspectedTable) {
+		return false;
+	}
 
 	/**
 	 * 添加xml方法
@@ -227,18 +224,20 @@ public class InitSetting extends PluginAdapter {
 	@Override
 	public boolean sqlMapDocumentGenerated(Document document, IntrospectedTable introspectedTable) {
 		XmlElement parentElement = document.getRootElement();
-		String name = introspectedTable.getTableConfiguration().getDomainObjectName();
 		List<IntrospectedColumn> allColumns = introspectedTable.getAllColumns();
+		String name = introspectedTable.getTableConfiguration().getDomainObjectName();
+		List<IntrospectedColumn> primaryKeyColumns = introspectedTable.getPrimaryKeyColumns();
+		IntrospectedColumn privateKey= primaryKeyColumns.get(0);
 		introspectedTable.setSelectAllStatementId("query" + name + "ByPaging");
-		// 产生分页语句前半部分
+		// 增加方法
 		XmlElement el = new XmlElement("select");
 		el.addAttribute(new Attribute("id", "query" + name + "ByCondition"));
 		el.addAttribute(new Attribute("resultMap", "BaseResultMap"));
 		StringBuilder sb = new StringBuilder();
 		sb.append("select ");
 
-		for (IntrospectedColumn introspectedColumn : allColumns) {
-			sb.append(introspectedColumn.getActualColumnName() + ",");
+		for (IntrospectedColumn ic : allColumns) {
+			sb.append(ic.getActualColumnName() + ",");
 		}
 		sb.deleteCharAt(sb.length() - 1);
 		sb.append("\n");
@@ -250,18 +249,43 @@ public class InitSetting extends PluginAdapter {
 		el.addElement(new TextElement(sb.toString()));
 
 		parentElement.addElement(el);
-		 super.sqlMapDocumentGenerated(document, introspectedTable);
-		// 产生分页语句前半部分
+		super.sqlMapDocumentGenerated(document, introspectedTable);
+
+		//增加方法
+		XmlElement insert = new XmlElement("insert");
+		insert.addAttribute(new Attribute("id", "insert"));
+		insert.addAttribute(new Attribute("keyColumn", privateKey.getActualColumnName()));
+		insert.addAttribute(new Attribute("keyProperty", privateKey.getJavaProperty()));
+		insert.addAttribute(new Attribute("useGeneratedKeys", "true"));
+		StringBuilder insertS = new StringBuilder();
+		insertS.append("insert into "+introspectedTable.getTableConfiguration().getTableName()+" (");
+		List<IntrospectedColumn> collect = allColumns.stream().filter(t -> !primaryKeyColumns.contains(t)).collect(Collectors.toList());
+		for (IntrospectedColumn introspectedColumn : collect) {
+			insertS.append(introspectedColumn.getActualColumnName() + ",");
+		}
+		insertS.deleteCharAt(insertS.length() - 1);
+		insertS.append(")\n values (");
+
+		for (IntrospectedColumn introspectedColumn : collect) {
+			insertS.append( " #{" + introspectedColumn.getActualColumnName() + ",jdbcType="+ introspectedColumn.getJdbcTypeName() + "},");
+		}
+
+		insertS.deleteCharAt(insertS.length() - 1);
+		insertS.append(")");
+		insert.addElement(new TextElement(insertS.toString()));
+
+		parentElement.addElement(insert);
+		super.sqlMapDocumentGenerated(document, introspectedTable);
+
+		// 增加方法
 		XmlElement update = new XmlElement("update");
 		update.addAttribute(new Attribute("id", "update" + name + "ByKeyWithNotNull"));
 		 sb = new StringBuilder();
 		sb.append("update ");
 		sb.append(" \t"+introspectedTable.getTableConfiguration().getTableName()+" \n\t<set>\n");
 		int i=0;
-		for (IntrospectedColumn introspectedColumn : allColumns) {
-			if(++i==1){
-				continue;
-			}
+		for (IntrospectedColumn introspectedColumn : collect) {
+			++i;
 			String javaProperty = introspectedColumn.getJavaProperty();
 			String actualColumnName = introspectedColumn.getActualColumnName();
 			sb.append("\t\t<if test=\"" + javaProperty + "!=null ");
@@ -279,13 +303,19 @@ public class InitSetting extends PluginAdapter {
 			sb.append(" </if>\n");
 		}
 		sb.append(" \t</set>\n");
-		sb.append("\twhere id=#{id}");
+
+		sb.append("\twhere "+privateKey.getActualColumnName()+"=#{"+privateKey.getJavaProperty()+"}");
 		
 		update.addElement(new TextElement(sb.toString()));
 		parentElement.addElement(update);
 		return super.sqlMapDocumentGenerated(document, introspectedTable);
 	}
 
+	/**
+	 * 组装条件
+	 * @param introspectedTable
+	 * @param sb
+	 */
 	private void condi(IntrospectedTable introspectedTable, StringBuilder sb) {
 		Boolean b=true;
 		for (IntrospectedColumn introspectedColumn : introspectedTable.getAllColumns()) {
@@ -324,19 +354,15 @@ public class InitSetting extends PluginAdapter {
 	private Method addMethod(Method method, IntrospectedTable introspectedTable, String annotationValue,
 			String methodName, FullyQualifiedJavaType returnType, List<Parameter> parameters) {
 
-		String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
 		Method m = new Method(methodName);
 
 		m.setVisibility(method.getVisibility());
 		m.addAnnotation("/**" + "\n\t* " + annotationValue + "\n\t*/");
 		m.setReturnType(returnType);
 		
-
 		for (Parameter parameter : parameters) {
-
 			m.addParameter(parameter);
 		}
-
 		context.getCommentGenerator().addGeneralMethodComment(m, introspectedTable);
 		return m;
 	}

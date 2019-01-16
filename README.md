@@ -97,21 +97,21 @@ springboot代码自动生成器
 ```
     调用
     
-    /**
-	 * 生成代码
-	 * @param parentPath 生产代码的父路径
-	 * @param parentPack 生产代码的父包
-	 * @param jdbc jdbc连接
-	 * @param user 数据库账号
-	 * @param password 数据库密码
-	 * @param dataNames 需要创建的数据库表明
-	 * @throws IOException
-	 * @throws TemplateException
-	 */
+    public class AutoCodeTest {
+    	public static void main(String[] args) throws Exception {
     
-    List<String> dataNames= Arrays.asList("test_auto_code");
-		AutoCodeMain.create("E:\\resource\\workspaceKotlin\\testAutoCode","com.testAutoCode.newYear","jdbc:mysql://localhost:3336/test_etl_bank",
-				"test_etl_bank","Ty9lx_nKB4T2DO",dataNames);
+    		List<String> dataNames= Arrays.asList("test_auto_code2");
+    		StartCode startCode=new StartCode();
+    		startCode.setJdbc("jdbc:mysql://localhost:3306/test_etl_bank");
+    		startCode.setUser("root");
+    		startCode.setPassword("111111");
+    		startCode.setDataNames(dataNames);
+    		startCode.setParentPath("f:/core");
+    		startCode.setParentPack("com.etiaolong.newYear");
+    		AutoCodeUtils.startByBaseCode(startCode);
+    	}
+    
+    }
 ```
 
 #### demo地址 [传送门](https://gitee.com/ztp/auto-code-demo)

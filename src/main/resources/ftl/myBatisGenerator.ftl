@@ -8,12 +8,12 @@
     <context id="DB2Tables"  targetRuntime="MyBatis3Simple" defaultModelType="flat">
 
         <!-- 这里引入扩展插件 -->
-        <plugin type="com.zengtengpeng.mybatisUtils.InitSetting" />
+        <plugin type="com.zengtengpeng.generator.plugin.InitSetting" />
         <!-- 去除自动生成的注释 -->
         <!-- <commentGenerator>
             <property name="suppressAllComments" value="true" />
         </commentGenerator> -->
-        <commentGenerator type="com.zengtengpeng.mybatisUtils.MyCommentGenerator" >
+        <commentGenerator type="com.zengtengpeng.generator.plugin.MyCommentGenerator" >
             <property name="suppressAllComments" value="true"/>
         </commentGenerator>
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
@@ -41,9 +41,7 @@
         <!-- tableName:用于自动生成代码的数据库表；domainObjectName:对应于数据库表的javaBean类名 -->
         <#list tables as t>
 
-        <table tableName="${t.tableName}" domainObjectName="${t.beanName}" mapperName="${t.beanName}Dao"   >
-            <generatedKey column="id" sqlStatement="JDBC" identity="true"/>
-        </table>
+        <table tableName="${t.tableName}" domainObjectName="${t.beanName}" mapperName="${t.beanName}Dao"   />
         </#list>
     </context>
 </generatorConfiguration>
