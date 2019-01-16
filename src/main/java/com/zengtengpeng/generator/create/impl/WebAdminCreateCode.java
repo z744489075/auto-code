@@ -17,6 +17,7 @@ public class WebAdminCreateCode implements CreateCode {
         cfg.setClassLoaderForTemplateLoading(this.getClass().getClassLoader(),basePackagePath);
     }
 
+
     @Override
     public void startAuto(AutoCodeParam param) {
         createJavaFile("controller",  param);
