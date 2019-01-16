@@ -51,6 +51,15 @@
                                   th:text="${r'${'}${dataName}.${c.javaProperty}${r'}'}" name="${c.javaProperty}" id="${c.javaProperty}"></textarea>
                     </div>
                 </div>
+            <#elseif c.jdbcTypeName='INTEGER' || c.jdbcTypeName='DECIMAL' || c.jdbcTypeName='NUMERIC'|| c.jdbcTypeName='TINYINT'
+            || c.jdbcTypeName='SMALLINT'|| c.jdbcTypeName='BIGINT'|| c.jdbcTypeName='FLOAT'|| c.jdbcTypeName='DOUBLE'>
+            <div class="layui-form-item">
+                <label class="layui-form-label">${c.remarks}</label>
+                <div class="layui-input-block">
+                    <input type="number" name="${c.javaProperty}" id="${c.javaProperty}" maxlength="${c.length}" lay-verify="number" autocomplete="off"
+                           placeholder="请输入${c.remarks}" class="layui-input" th:value="${r'${'}${dataName}.${c.javaProperty}${r'}'}" >
+                </div>
+            </div>
             <#else >
                 <div class="layui-form-item">
                     <label class="layui-form-label">${c.remarks}</label>
@@ -106,7 +115,7 @@
                         myback();
                     },2000)
                 }else{
-                    myAlert("保存失败->"+data.msg)
+                    myAlert("保存失败->"+data.message)
                 }
             });
             return false
