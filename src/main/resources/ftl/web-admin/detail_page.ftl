@@ -72,7 +72,7 @@
         </#if>
     </#list>
         <div class="layui-form-item" style="text-align: center">
-            <span th:if="${r'${/'}session.userAuth==null || #maps.containsValue(session.userAuth,'${tableValue}/save')${r'}'}">
+            <span th:if="${r'${'}session.userAuth==null || #maps.containsValue(session.userAuth,'${tableValue}/save')${r'}'}">
             <button class="layui-btn" lay-submit="" lay-filter="save-data">提交</button>
             </span>
             <input type="button" class="layui-btn"  onclick="myback()" value="返回" />

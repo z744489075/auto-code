@@ -65,21 +65,21 @@ ${tableRemarks}
 </div>
 <script type="text/html" id="barDemo">
 
-    <span th:if="${r'${/'}session.userAuth==null || #maps.containsValue(session.userAuth,'${tableValue}/save')${r'}'}">
+    <span th:if="${r'${'}session.userAuth==null || #maps.containsValue(session.userAuth,'${tableValue}/save')${r'}'}">
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     </span>
 
-    <span th:if="${r'${/'}session.userAuth==null || #maps.containsValue(session.userAuth,'${tableValue}/deleteByPrimaryKey')${r'}'}">
+    <span th:if="${r'${'}session.userAuth==null || #maps.containsValue(session.userAuth,'${tableValue}/deleteByPrimaryKey')${r'}'}">
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
     </span>
 </script>
 <script type="text/html" id="toolbar-data">
     <!-- http://www.h-ui.net/Hui-3.7-Hui-iconfont.shtml 图标库-->
-    <span th:if="${r'${/'}session.userAuth==null || #maps.containsValue(session.userAuth,'${tableValue}/save')${r'}'}">
+    <span th:if="${r'${'}session.userAuth==null || #maps.containsValue(session.userAuth,'${tableValue}/save')${r'}'}">
     <a class="btn btn-primary radius" th:href="${r'@{/'}${tableValue}/gotoDetail ${r'}'}"><i class="Hui-iconfont">&#xe600;</i> 新增</a>
     </span>
 
-    <span th:if="${r'${/'}session.userAuth==null || #maps.containsValue(session.userAuth,'${tableValue}/export')${r'}'}">
+    <span th:if="${r'${'}session.userAuth==null || #maps.containsValue(session.userAuth,'${tableValue}/export')${r'}'}">
     <a href="javascript:void(0)" onclick="exports()" class="btn btn-secondary radius"><i
             class="Hui-iconfont">&#xe640;</i> 导出</a>
     </span>
