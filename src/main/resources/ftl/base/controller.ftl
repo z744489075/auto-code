@@ -47,7 +47,7 @@ public class ${tableName}Controller {
 		if(${tableValue}.get${primaryKey.javaProperty?cap_first}()==null){
 			return DataRes.success(${tableValue}Service.insert(${tableValue}));
 		}
-		return DataRes.success(${tableValue}Service.updateByPrimaryKey(${tableValue}));
+		return DataRes.success(${tableValue}Service.update(${tableValue}));
 	}
 
     /**
@@ -64,8 +64,8 @@ public class ${tableName}Controller {
 	* 根据条件查询
 	*/
 	@RequestMapping("/${tableValue}/query${tableName}ByCondition")
-	public DataRes query${tableName}ByCondition(${tableName} ${tableValue}, HttpServletRequest request, HttpServletResponse response){
-    	return DataRes.success(${tableValue}Service.query${tableName}ByCondition(${tableValue}));
+	public DataRes queryByCondition(${tableName} ${tableValue}, HttpServletRequest request, HttpServletResponse response){
+    	return DataRes.success(${tableValue}Service.queryByCondition(${tableValue}));
     }
 
    /**
@@ -75,7 +75,7 @@ public class ${tableName}Controller {
 	*/
 	@RequestMapping("/${tableValue}/selectAll")
 	public DataRes selectAll(${tableName} ${tableValue},HttpServletRequest request, HttpServletResponse response){
-    	return DataRes.success(${tableValue}Service.selectAll(${tableValue}));
+    	return DataRes.success(${tableValue}Service.selectAllByPaging(${tableValue}));
     }
 
 	/**
@@ -85,7 +85,7 @@ public class ${tableName}Controller {
 	*/
 	@RequestMapping("/${tableValue}/export")
 	public void export(${tableName} ${tableValue},HttpServletRequest request, HttpServletResponse response) throws Exception {
-		List<${tableName}> list= ${tableValue}Service.export(${tableValue});
+		List<${tableName}> list= ${tableValue}Service.selectAll(${tableValue});
 		Map<String, String> header = new LinkedHashMap<>();
 		<#list allColumns as c>
 			<#if c.jdbcTypeName='TIMESTAMP' || c.jdbcTypeName='DATE' || cons[c.javaProperty]??>

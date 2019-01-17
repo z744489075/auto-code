@@ -15,6 +15,8 @@ import org.mybatis.generator.api.dom.xml.Document;
 import org.mybatis.generator.api.dom.xml.TextElement;
 import org.mybatis.generator.api.dom.xml.XmlElement;
 import org.mybatis.generator.config.JavaClientGeneratorConfiguration;
+import org.mybatis.generator.config.JavaModelGeneratorConfiguration;
+import org.mybatis.generator.config.TableConfiguration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -168,34 +170,85 @@ public class InitSetting extends PluginAdapter {
 	@Override
 	public boolean clientSelectAllMethodGenerated(Method method, Interface interfaze,
 			IntrospectedTable introspectedTable) {
-		String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
-		method.addAnnotation(" /**" + "\n\t* 分页查询" + "\n\t* @param page 参数" + "\n\t* @return" + "\n\t*/");
-		method.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName), MyStringUtils
-				.firstLowerCase(domainObjectName)));
-
-		// 增加dao方法
-		List<Parameter> parameters = new ArrayList<Parameter>();
-		parameters.add(new Parameter(new FullyQualifiedJavaType(domainObjectName), MyStringUtils
-				.firstLowerCase(domainObjectName)));
-		FullyQualifiedJavaType javaType=new FullyQualifiedJavaType(List.class.getName());
-		javaType.addTypeArgument(new FullyQualifiedJavaType(domainObjectName));
-		interfaze.addMethod(addMethod(method, introspectedTable, "根据条件查询", "query" + domainObjectName + "ByCondition",
-				javaType, parameters));
-
-		 super.clientSelectAllMethodGenerated(method, interfaze, introspectedTable);
-		// 增加dao方法
-		parameters = new ArrayList<Parameter>();
-		parameters.add(new Parameter(new FullyQualifiedJavaType(domainObjectName), MyStringUtils
-				.firstLowerCase(domainObjectName)));
-		javaType=new FullyQualifiedJavaType(Integer.class.getName());
-		interfaze.addMethod(addMethod(method, introspectedTable, "更新(忽略null)", "update" + domainObjectName + "ByKeyWithNotNull",
-				javaType, parameters));
-
-		return super.clientSelectAllMethodGenerated(method, interfaze, introspectedTable);
+		return false;
 	}
 
+    @Override
+    public boolean clientGenerated(Interface interfaze, TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+        JavaModelGeneratorConfiguration javaModelGeneratorConfiguration = this.getContext().getJavaModelGeneratorConfiguration();
+        String targetPackage = javaModelGeneratorConfiguration.getTargetPackage();
+        String tableName = introspectedTable.getTableConfiguration().getDomainObjectName();
 
-	@Override
+        FullyQualifiedJavaType f=new FullyQualifiedJavaType("com.zengtengpeng.common.dao.BaseDao");
+        FullyQualifiedJavaType f1=new FullyQualifiedJavaType(targetPackage+"."+tableName);
+        FullyQualifiedJavaType f2=new FullyQualifiedJavaType("BaseDao<"+tableName+">");
+        interfaze.addImportedType(f);
+        interfaze.addImportedType(f1);
+        interfaze.addSuperInterface(f2);
+        return super.clientGenerated(interfaze, topLevelClass, introspectedTable);
+    }
+
+    @Override
+    public boolean clientDeleteByPrimaryKeyMethodGenerated(Method method, Interface interfaze, IntrospectedTable introspectedTable) {
+        return false;
+    }
+
+    @Override
+    public boolean clientDeleteByPrimaryKeyMethodGenerated(Method method, TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+        return false;
+    }
+
+    @Override
+    public boolean clientInsertMethodGenerated(Method method, Interface interfaze, IntrospectedTable introspectedTable) {
+        return false;
+    }
+
+    @Override
+    public boolean clientInsertMethodGenerated(Method method, TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+        return false;
+    }
+
+    @Override
+    public boolean clientSelectByPrimaryKeyMethodGenerated(Method method, Interface interfaze, IntrospectedTable introspectedTable) {
+        return false;
+    }
+
+    @Override
+    public boolean clientSelectByPrimaryKeyMethodGenerated(Method method, TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+        return false;
+    }
+
+    @Override
+    public boolean clientUpdateByPrimaryKeySelectiveMethodGenerated(Method method, Interface interfaze, IntrospectedTable introspectedTable) {
+        return false;
+    }
+
+    @Override
+    public boolean clientUpdateByPrimaryKeySelectiveMethodGenerated(Method method, TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+        return false;
+    }
+
+    @Override
+    public boolean clientUpdateByPrimaryKeyWithBLOBsMethodGenerated(Method method, Interface interfaze, IntrospectedTable introspectedTable) {
+        return false;
+    }
+
+    @Override
+    public boolean clientUpdateByPrimaryKeyWithBLOBsMethodGenerated(Method method, TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+        return false;
+    }
+
+    @Override
+    public boolean clientUpdateByPrimaryKeyWithoutBLOBsMethodGenerated(Method method, Interface interfaze, IntrospectedTable introspectedTable) {
+        return false;
+    }
+
+    @Override
+    public boolean clientUpdateByPrimaryKeyWithoutBLOBsMethodGenerated(Method method, TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+        return false;
+    }
+
+    @Override
 	public void initialized(IntrospectedTable introspectedTable) {
 		super.initialized(introspectedTable);
 	}
@@ -218,7 +271,22 @@ public class InitSetting extends PluginAdapter {
 		return false;
 	}
 
-	/**
+    @Override
+    public boolean sqlMapUpdateByPrimaryKeySelectiveElementGenerated(XmlElement element, IntrospectedTable introspectedTable) {
+        return false;
+    }
+
+    @Override
+    public boolean sqlMapUpdateByPrimaryKeyWithBLOBsElementGenerated(XmlElement element, IntrospectedTable introspectedTable) {
+        return false;
+    }
+
+    @Override
+    public boolean sqlMapUpdateByPrimaryKeyWithoutBLOBsElementGenerated(XmlElement element, IntrospectedTable introspectedTable) {
+        return false;
+    }
+
+    /**
 	 * 添加xml方法
 	 */
 	@Override
@@ -228,10 +296,10 @@ public class InitSetting extends PluginAdapter {
 		String name = introspectedTable.getTableConfiguration().getDomainObjectName();
 		List<IntrospectedColumn> primaryKeyColumns = introspectedTable.getPrimaryKeyColumns();
 		IntrospectedColumn privateKey= primaryKeyColumns.get(0);
-		introspectedTable.setSelectAllStatementId("query" + name + "ByPaging");
+		introspectedTable.setSelectAllStatementId("queryByPaging");
 		// 增加方法
 		XmlElement el = new XmlElement("select");
-		el.addAttribute(new Attribute("id", "query" + name + "ByCondition"));
+		el.addAttribute(new Attribute("id", "queryByCondition"));
 		el.addAttribute(new Attribute("resultMap", "BaseResultMap"));
 		StringBuilder sb = new StringBuilder();
 		sb.append("select ");
@@ -279,7 +347,7 @@ public class InitSetting extends PluginAdapter {
 
 		// 增加方法
 		XmlElement update = new XmlElement("update");
-		update.addAttribute(new Attribute("id", "update" + name + "ByKeyWithNotNull"));
+		update.addAttribute(new Attribute("id", "update"));
 		 sb = new StringBuilder();
 		sb.append("update ");
 		sb.append(" \t"+introspectedTable.getTableConfiguration().getTableName()+" \n\t<set>\n");
