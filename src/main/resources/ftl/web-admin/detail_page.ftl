@@ -114,7 +114,7 @@
                 if(data.code==0){
                     myAlert("保存成功");
                     setTimeout(function () {
-                        myback();
+                        myback("${tableValue}/gotoList");
                     },2000)
                 }else{
                     myAlert("保存失败->"+data.message)
