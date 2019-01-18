@@ -28,7 +28,7 @@
                     </div>
                 </div>
             <#elseif cons[c.javaProperty]?? >
-                <div class="layui-form-item">
+                <div class="layui-form-item" pane="">
                     <label class="layui-form-label">${cons[c.javaProperty]['name']!}</label>
                     <div class="layui-input-block">
 
