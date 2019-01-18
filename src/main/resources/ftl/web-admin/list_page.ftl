@@ -111,7 +111,7 @@ ${tableRemarks}
                 ,{field: '${c.javaProperty}', title: '${c.remarks?json_string}'}
                 </#if>
             </#list>
-                , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 150}
+                , {fixed: 'right', title: '操作', toolbar: '#barDemo'}
             ]],
             parseData: function (res) { //res 即为原始返回的数据
                 return {

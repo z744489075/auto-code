@@ -114,7 +114,7 @@
                     myAlert("保存成功");
                     setTimeout(function () {
                         myback("${tableValue}/gotoList");
-                    },2000)
+                    },alertTime)
                 }else{
                     myAlert("保存失败->"+data.message)
                 }
