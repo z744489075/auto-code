@@ -40,7 +40,6 @@
                                         </#if>
                                     </#list>
                             </select>
-                        </select>
                     </div>
                 </div>
             <#elseif c.jdbcTypeName='LONGVARCHAR'>
