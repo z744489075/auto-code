@@ -15,7 +15,7 @@ import java.util.Map;
 import ${parentPack}.bean.${tableName};
 import ${parentPack}.service.${tableName}Service;
 import org.springframework.stereotype.Controller;
-
+import com.zengtengpeng.common.annotation.Auth;
 /**
  * 
  * @author zengtp
@@ -116,6 +116,7 @@ public class ${tableName}Controller {
 	* @return
 	*/
 	@RequestMapping("/${tableValue}/gotoDetail")
+	@Auth("${tableValue}/save")
 	public String gotoDetail(${tableName} ${tableValue}, HttpServletRequest request, HttpServletResponse response){
 		if(${tableValue}.get${primaryKey.javaProperty?cap_first}()!=null){
 			request.setAttribute("${dataName}",${tableValue}Service.selectByPrimaryKey(${tableValue}));
