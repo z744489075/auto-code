@@ -107,6 +107,7 @@ public class ${tableName}Controller {
 	* @return
 	*/
 	@RequestMapping("/${tableValue}/gotoList")
+	@Auth("${tableValue}/selectAll")
 	public String gotoList(${tableName} ${tableValue}, HttpServletRequest request, HttpServletResponse response){
 		return "${mobelName}/${dataName}_list";
 	}
