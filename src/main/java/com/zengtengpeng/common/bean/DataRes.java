@@ -63,6 +63,12 @@ public class DataRes<T> {
 		platformRes.setMessage(codeMsgType.desc());
 		return platformRes;
 	}
+	public static <T> DataRes error(String code,String desc) {
+		DataRes platformRes=new DataRes();
+		platformRes.setCode(code);
+		platformRes.setMessage(desc);
+		return platformRes;
+	}
 
 	public static <T> DataRes success(T t) {
 		DataRes platformRes=new DataRes();
