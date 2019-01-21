@@ -51,19 +51,19 @@ public class DataRes<T> {
 	public DataRes() {
 	}
 
-	public static <T> DataRes error() {
+	public static  DataRes error() {
 		DataRes platformRes=new DataRes();
 		platformRes.setCode(ResponseCode.FAIL.code());
 		platformRes.setMessage(ResponseCode.FAIL.desc());
 		return platformRes;
 	}
-	public static <T> DataRes error(ResponseCode codeMsgType) {
+	public static  DataRes error(ResponseCode codeMsgType) {
 		DataRes platformRes=new DataRes();
 		platformRes.setCode(codeMsgType.code());
 		platformRes.setMessage(codeMsgType.desc());
 		return platformRes;
 	}
-	public static <T> DataRes error(String code,String desc) {
+	public static DataRes error(String code,String desc) {
 		DataRes platformRes=new DataRes();
 		platformRes.setCode(code);
 		platformRes.setMessage(desc);
