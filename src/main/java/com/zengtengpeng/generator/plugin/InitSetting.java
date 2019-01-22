@@ -327,7 +327,8 @@ public class InitSetting extends PluginAdapter {
 		insert.addAttribute(new Attribute("useGeneratedKeys", "true"));
 		StringBuilder insertS = new StringBuilder();
 		insertS.append("insert into "+introspectedTable.getTableConfiguration().getTableName()+" (");
-		List<IntrospectedColumn> collect = allColumns.stream().filter(t -> !primaryKeyColumns.contains(t)).collect(Collectors.toList());
+		//CURRENT_TIMESTAMP
+		List<IntrospectedColumn> collect = allColumns.stream().filter(t -> !t.isAutoIncrement()&&!"CURRENT_TIMESTAMP".equals(t.getDefaultValue())).collect(Collectors.toList());
 		for (IntrospectedColumn introspectedColumn : collect) {
 			insertS.append(introspectedColumn.getActualColumnName() + ",");
 		}
