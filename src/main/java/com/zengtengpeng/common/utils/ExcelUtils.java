@@ -1,5 +1,6 @@
 package com.zengtengpeng.common.utils;
 
+import com.zengtengpeng.generator.utils.MyStringUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
@@ -41,7 +42,9 @@ public class ExcelUtils {
         try {
             // 声明一个工作薄
             HSSFWorkbook workbook = new HSSFWorkbook();
-
+            if(MyStringUtils.isEmpty(title)){
+                title="data";
+            }
             // 生成一个表格
             HSSFSheet sheet = workbook.createSheet(title);
 
