@@ -20,7 +20,7 @@ import java.util.*;
 public class AutoCodeTest {
 	public static void main(String[] args) {
 
-		List<String> dataNames= Arrays.asList("sys_user");
+		List<String> dataNames= Arrays.asList("test_code");
 		StartCode startCode=new StartCode();
 		startCode.setJdbc("jdbc:mysql://localhost:3306/auto_code");
 		startCode.setUser("root");
