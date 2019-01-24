@@ -32,7 +32,7 @@ public class ${tableName}Controller {
 	 * @param ${tableValue}
 	 * @return
 	 */
-	@RequestMapping("/${tableValue}/deleteByPrimaryKey")
+	@RequestMapping("${tableValue}/deleteByPrimaryKey")
 	public DataRes deleteByPrimaryKey(${tableName} ${tableValue}, HttpServletRequest request, HttpServletResponse response){
 		return DataRes.success(${tableValue}Service.deleteByPrimaryKey(${tableValue}));
 	}
@@ -42,7 +42,7 @@ public class ${tableName}Controller {
 	 * @param ${tableValue}
 	 * @return
 	 */
-	@RequestMapping("/${tableValue}/save")
+	@RequestMapping("${tableValue}/save")
 	public DataRes save(${tableName} ${tableValue}, HttpServletRequest request, HttpServletResponse response){
 		if(${tableValue}.get${primaryKey.javaProperty?cap_first}()==null){
 			return DataRes.success(${tableValue}Service.insert(${tableValue}));
@@ -55,7 +55,7 @@ public class ${tableName}Controller {
      * @param ${tableValue}
      * @return
      */
-	@RequestMapping("/${tableValue}/selectByPrimaryKey")
+	@RequestMapping("${tableValue}/selectByPrimaryKey")
 	public DataRes selectByPrimaryKey(${tableName} ${tableValue}, HttpServletRequest request, HttpServletResponse response){
     	return DataRes.success(${tableValue}Service.selectByPrimaryKey(${tableValue}));
     }
@@ -63,7 +63,7 @@ public class ${tableName}Controller {
     /**
 	* 根据条件查询
 	*/
-	@RequestMapping("/${tableValue}/query${tableName}ByCondition")
+	@RequestMapping("${tableValue}/query${tableName}ByCondition")
 	public DataRes queryByCondition(${tableName} ${tableValue}, HttpServletRequest request, HttpServletResponse response){
     	return DataRes.success(${tableValue}Service.queryByCondition(${tableValue}));
     }
@@ -73,7 +73,7 @@ public class ${tableName}Controller {
 	* @param ${tableValue} 参数
 	* @return
 	*/
-	@RequestMapping("/${tableValue}/selectAll")
+	@RequestMapping("${tableValue}/selectAll")
 	public DataRes selectAll(${tableName} ${tableValue},HttpServletRequest request, HttpServletResponse response){
     	return DataRes.success(${tableValue}Service.selectAllByPaging(${tableValue}));
     }
@@ -83,7 +83,7 @@ public class ${tableName}Controller {
 	* @param tests 参数
 	* @return
 	*/
-	@RequestMapping("/${tableValue}/export")
+	@RequestMapping("${tableValue}/export")
 	public void export(${tableName} ${tableValue},HttpServletRequest request, HttpServletResponse response) throws Exception {
 		List<${tableName}> list= ${tableValue}Service.selectAll(${tableValue});
 		Map<String, String> header = new LinkedHashMap<>();
