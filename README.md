@@ -1,33 +1,130 @@
 # auto-code
-
-#### 介绍
-springboot代码自动生成器
+    欢迎使用auto-code代码生成引擎
+### 介绍
+auto-code 可以生成controller,server,dao,xml以及view代码
 
 #### 软件架构
 
-基于mybatis-generator定制的代码生成器.使用 pagehelper进行分页
+基于mybatis-generator定制的代码生成器.使用 pagehelper进行分页.已jar包的形式引入进去
 
 
 #### 安装教程
 
 ##### 一.引用私服jar
-1.pom.xml增加私服仓库(setting.xml也行)
+
+> 1.maven setting.xml 私服配置  [下载地址](http://images.zengtengpeng.com/settings.xml)
+
 ```
-<repositories>
-		<repository>
-			<id>nexus</id>
-			<name>nexus Repository</name>
-			<url>http://nexus.zengtengpeng.com/repository/maven-public/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<!--snapshots默认是关闭的,需要开启  -->
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-	
+    <!-- 增加账号密码 -->
+    <servers>
+        <server>
+            <id>rdc-releases</id>
+            <username>NGUWi1</username>
+            <password>MTBW1BvT0v</password>
+        </server>
+        <server>
+            <id>rdc-snapshots</id>
+            <username>NGUWi1</username>
+            <password>MTBW1BvT0v</password>
+        </server>
+    </servers>
+    
+    <!-- 配置私服地址 -->
+    <profiles>
+            <profile>
+                <id>nexus</id>
+                <repositories>
+                    <repository>
+                        <id>central</id>
+                        <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+                        <releases>
+                            <enabled>true</enabled>
+                        </releases>
+                        <snapshots>
+                            <enabled>false</enabled>
+                        </snapshots>
+                    </repository>
+                    <repository>
+                        <id>snapshots</id>
+                        <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+                        <releases>
+                            <enabled>false</enabled>
+                        </releases>
+                        <snapshots>
+                            <enabled>true</enabled>
+                        </snapshots>
+                    </repository>
+                    <repository>
+                        <id>rdc-releases</id>
+                        <url>https://repo.rdc.aliyun.com/repository/50530-release-JLLiUK/</url>
+                        <releases>
+                            <enabled>true</enabled>
+                        </releases>
+                        <snapshots>
+                            <enabled>false</enabled>
+                        </snapshots>
+                    </repository>
+                    <repository>
+                        <id>rdc-snapshots</id>
+                        <url>https://repo.rdc.aliyun.com/repository/50530-snapshot-rV5sKk/</url>
+                        <releases>
+                            <enabled>false</enabled>
+                        </releases>
+                        <snapshots>
+                            <enabled>true</enabled>
+                        </snapshots>
+                    </repository>
+                </repositories>
+                <pluginRepositories>
+                    <pluginRepository>
+                        <id>central</id>
+                        <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+                        <releases>
+                            <enabled>true</enabled>
+                        </releases>
+                        <snapshots>
+                            <enabled>false</enabled>
+                        </snapshots>
+                    </pluginRepository>
+                    <pluginRepository>
+                        <id>snapshots</id>
+                        <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+                        <releases>
+                            <enabled>false</enabled>
+                        </releases>
+                        <snapshots>
+                            <enabled>true</enabled>
+                        </snapshots>
+                    </pluginRepository>
+                    <pluginRepository>
+                        <id>rdc-releases</id>
+                        <url>https://repo.rdc.aliyun.com/repository/50530-release-JLLiUK/</url>
+                        <releases>
+                            <enabled>true</enabled>
+                        </releases>
+                        <snapshots>
+                            <enabled>false</enabled>
+                        </snapshots>
+                    </pluginRepository>
+                    <pluginRepository>
+                        <id>rdc-snapshots</id>
+                        <url>https://repo.rdc.aliyun.com/repository/50530-snapshot-rV5sKk/</url>
+                        <releases>
+                            <enabled>false</enabled>
+                        </releases>
+                        <snapshots>
+                            <enabled>true</enabled>
+                        </snapshots>
+                    </pluginRepository>
+                </pluginRepositories>
+            </profile>
+        </profiles>
+        
+        <!-- 引用 -->
+        <activeProfiles>
+                <activeProfile>nexus</activeProfile>
+        </activeProfiles>
+
 ```
 
 2.引入jar
@@ -35,7 +132,7 @@ springboot代码自动生成器
         <dependency>
 			<groupId>com.zengtengpeng.auto-code</groupId>
 			<artifactId>auto-code</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.0</version>
 		</dependency>
 ```
 
@@ -110,7 +207,6 @@ springboot代码自动生成器
     		startCode.setParentPack("com.etiaolong.newYear");
     		AutoCodeUtils.startByBaseCode(startCode);
     	}
-    
     }
 ```
 

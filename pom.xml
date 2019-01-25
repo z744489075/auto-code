@@ -4,7 +4,7 @@
 
     <groupId>com.zengtengpeng</groupId>
     <artifactId>auto-code</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>auto-code</name>
@@ -94,13 +94,12 @@
     </build>
     <distributionManagement>
         <repository>
-            <id>ztpdev</id>
-            <url>http://nexus.zengtengpeng.com/repository/ztp/</url>
+            <id>center-maven</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
         </repository>
-
         <snapshotRepository>
-            <id>nexus</id>
-            <url>http://nexus.zengtengpeng.com/repository/etiaolong/</url>
+            <id>center-maven</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 </project>
