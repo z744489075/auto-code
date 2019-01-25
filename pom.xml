@@ -64,6 +64,23 @@
             <version>1.2.10</version>
         </dependency>
     </dependencies>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>zengtengpeng</name>
+            <email>744489075@qq.com</email>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git@gitee.com:ztp/auto-code.git</connection>
+        <developerConnection>scm:git@gitee.com:ztp/auto-code.git</developerConnection>
+        <url>https://gitee.com/ztp/auto-code</url>
+    </scm>
     <build>
         <plugins>
             <!-- 要将源码放上去，需要加入这个插件 -->
@@ -89,6 +106,33 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
+            </plugin>
+            <!-- Javadoc -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- GPG -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
