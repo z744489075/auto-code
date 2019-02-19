@@ -3,16 +3,7 @@
 <head>
     <div th:replace="~{common/common-head.html::common-head}"></div>
 </head>
-<body>
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页
-    <span class="c-gray en">&gt;</span>
-    ${tableRemarks}
-    <span class="c-gray en">&gt;</span>
-    编辑
-    <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px"
-       href="javascript:loads();" title="刷新">
-        <i class="Hui-iconfont">&#xe68f;</i></a>
-</nav>
+<body class="body-common">
 <div class="page-container">
     <form class="layui-form layui-form-pane" action="">
         <input type="hidden" name="${primaryKey.javaProperty}" th:value="${r'${'}${dataName}.${primaryKey.javaProperty} ${r'}'}" />

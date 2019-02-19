@@ -3,16 +3,9 @@
 <head>
     <div th:replace="~{common/common-head.html::common-head}"></div>
 </head>
-<body>
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页
-    <span class="c-gray en">&gt;</span>
-${tableRemarks}
-    <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px"
-       href="javascript:loads()" title="刷新">
-        <i class="Hui-iconfont">&#xe68f;</i></a>
-</nav>
+<body class="body-common">
 <div class="page-container">
-    <div class="text-c">
+    <blockquote class="layui-elem-quote">
         <form id="dataForm" class="layui-form">
             <div class="layui-form-item">
                 <#assign textflag = 1>
@@ -58,7 +51,7 @@ ${tableRemarks}
                 </div>
             </div>
         </form>
-    </div>
+    </blockquote>
     <div class="mt-20">
         <table id="table-data" lay-filter="table-data"></table>
     </div>
@@ -66,22 +59,22 @@ ${tableRemarks}
 <script type="text/html" id="barDemo">
 
     <span th:if="${r'${'}session.userAuth==null || #maps.containsKey(session.userAuth,'${tableValue}/save')${r'}'}">
-    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
     </span>
 
     <span th:if="${r'${'}session.userAuth==null || #maps.containsKey(session.userAuth,'${tableValue}/deleteByPrimaryKey')${r'}'}">
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
     </span>
 </script>
 <script type="text/html" id="toolbar-data">
     <!-- http://www.h-ui.net/Hui-3.7-Hui-iconfont.shtml 图标库-->
     <span th:if="${r'${'}session.userAuth==null || #maps.containsKey(session.userAuth,'${tableValue}/save')${r'}'}">
-    <a class="btn btn-primary radius" th:href="${r'@{/'}${tableValue}/gotoDetail ${r'}'}"><i class="Hui-iconfont">&#xe600;</i> 新增</a>
+    <a class="layui-btn layui-btn-normal layui-btn-sm" th:href="${r'@{/'}${tableValue}/gotoDetail ${r'}'}"><i class="layui-icon layui-icon-add-1"></i> 新增</a>
     </span>
 
     <span th:if="${r'${'}session.userAuth==null || #maps.containsKey(session.userAuth,'${tableValue}/export')${r'}'}">
-    <a href="javascript:void(0)" onclick="exports()" class="btn btn-secondary radius"><i
-            class="Hui-iconfont">&#xe640;</i> 导出</a>
+    <a href="javascript:void(0)" onclick="exports()" class="layui-btn layui-btn-warm layui-btn-sm">
+            <i  class="layui-icon layui-icon-download-circle"></i>  导出</a>
     </span>
 </script>
 <!--请在下方写此页面业务相关的脚本-->

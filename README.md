@@ -1,6 +1,7 @@
 # auto-code
     欢迎使用auto-code代码生成引擎
 ### 介绍
+此分支正在重写底层实现
 auto-code 可以生成controller,server,dao,xml以及view代码
 
 #### 软件架构
