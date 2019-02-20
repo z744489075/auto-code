@@ -16,7 +16,7 @@ auto-code 可以生成controller,server,dao,xml以及view代码
         <dependency>
 			<groupId>com.zengtengpeng.auto-code</groupId>
 			<artifactId>auto-code</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 ```
 
@@ -37,7 +37,7 @@ auto-code 可以生成controller,server,dao,xml以及view代码
     		startCode.setPassword("111111");
     		startCode.setDataNames(dataNames);
     		startCode.setParentPath("f:/core");
-    		startCode.setParentPack("com.etiaolong.newYear");
+    		startCode.setParentPack("com.zengtengpeng.newYear");
     		AutoCodeUtils.startByBaseCode(startCode);
     	}
     }
