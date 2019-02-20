@@ -14,10 +14,10 @@ auto-code 可以生成controller,server,dao,xml以及view代码
 2.引入jar
 ```
         <dependency>
-			<groupId>com.zengtengpeng.auto-code</groupId>
-			<artifactId>auto-code</artifactId>
-			<version>1.0.1</version>
-		</dependency>
+            <groupId>com.zengtengpeng</groupId>
+            <artifactId>auto-code</artifactId>
+            <version>1.0.1</version>
+        </dependency>
 ```
 
 
