@@ -23,6 +23,29 @@ public class MyStringUtils {
     }
 
     /**
+     * 拼接字符串
+     * @param stringBuffer
+     * @param text
+     * @param param
+     */
+    public static void append(StringBuffer stringBuffer,String text,String... param){
+        stringBuffer.append(String.format(text+"\n",param));
+    }
+    /**
+     * 拼接字符串
+     * @param stringBuffer
+     * @param text
+     * @param param
+     * @param tab 制表的数量
+     */
+    public static void append(StringBuffer stringBuffer,String text,int tab,String... param){
+        for (int i = 0; i < tab; i++) {
+            stringBuffer.append("\t");
+        }
+        append(stringBuffer,text,param);
+    }
+
+    /**
      * 首字母大写
      *
      * @param name
@@ -37,16 +60,21 @@ public class MyStringUtils {
      * 将下划线转化为大写
      *
      * @param name
+     * @param firstCase 首字母是否大写 true:大写 false;小写
      * @return
      */
-    public static String firstUpperCase_(String name) {
+    public static String firstUpperCase_(String name,boolean firstCase) {
         String[] s = name.split("_");
         StringBuffer stringBuffer = new StringBuffer();
         for (String s1 : s) {
             stringBuffer.append(s1.substring(0, 1).toUpperCase() + s1.substring(1));
         }
+        if(!firstCase){
+            return firstLowerCase(stringBuffer.toString());
+        }
         return stringBuffer.toString();
     }
+
 
     /**
      * 已大写字母为分界点切割字符串

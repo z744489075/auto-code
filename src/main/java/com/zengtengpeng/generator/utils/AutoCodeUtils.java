@@ -65,7 +65,7 @@ public class AutoCodeUtils {
         startCode.getDataNames().forEach((s) -> {
             Map<String, String> map = new HashMap<>();
             map.put("tableName", s);
-            map.put("beanName", MyStringUtils.firstUpperCase_(s));
+            map.put("beanName", MyStringUtils.firstUpperCase_(s,true));
             tables.add(map);
         });
         param.put("tables", tables);

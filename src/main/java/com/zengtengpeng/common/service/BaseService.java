@@ -57,7 +57,7 @@ public interface BaseService<T extends Page,D extends BaseDao<T>> {
 	 */
 	default List<T> queryByCondition(T t){
 		D baseDao = initDao();
-		return baseDao.queryByCondition(t);
+		return baseDao.selectByCondition(t);
 	}
 
 
