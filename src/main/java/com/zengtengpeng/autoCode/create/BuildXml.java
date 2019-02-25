@@ -281,12 +281,12 @@ public interface BuildXml {
      * @param
      * @return
      */
-     List<BuildXmlBean> custom(AutoCodeConfig autoCodeConfig);
+     List<BuildXmlBean> buildXml(AutoCodeConfig autoCodeConfig);
 
     default String buildSql(AutoCodeConfig autoCodeConfig) {
         BuildXml buildXml = before(autoCodeConfig).insert(autoCodeConfig).deleteByPrimaryKey(autoCodeConfig).
                 update(autoCodeConfig).selectByPrimaryKey(autoCodeConfig).selectAll(autoCodeConfig).selectByCondition(autoCodeConfig);
-        List<BuildXmlBean> custom = buildXml.custom(autoCodeConfig);
+        List<BuildXmlBean> custom = buildXml.buildXml(autoCodeConfig);
         if(custom!=null){
             custom.forEach(t-> stringBuffer.append(t).append("\n"));
         }

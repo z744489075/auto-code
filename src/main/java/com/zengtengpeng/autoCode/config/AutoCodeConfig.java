@@ -18,8 +18,6 @@ public class AutoCodeConfig {
 
     private Bean bean;
 
-    private BuildJavaConfig buildJavaConfig;
-
 
     private BuildDao buildDao=t->null;
     private BuildService buildService=t->null;
@@ -74,11 +72,5 @@ public class AutoCodeConfig {
         this.datasourceConfig = datasourceConfig;
     }
 
-    public BuildJavaConfig getBuildJavaConfig() {
-        return buildJavaConfig;
-    }
 
-    public void setBuildJavaConfig(BuildJavaConfig buildJavaConfig) {
-        this.buildJavaConfig = buildJavaConfig;
-    }
 }

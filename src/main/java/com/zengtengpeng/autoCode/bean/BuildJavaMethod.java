@@ -1,8 +1,9 @@
 package com.zengtengpeng.autoCode.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class BuildJavaBean {
+public class BuildJavaMethod {
     /**
      * 注解
      */
@@ -12,6 +13,11 @@ public class BuildJavaBean {
      * 返回值类型
      */
     private String returnType;
+
+    /**
+     * 方法类型  如: public List<SysAuth> queryByRole(SysRole sysRole) 中的 public
+     */
+    private String methodType="public";
 
     /**
      * 参数,已文本串的形式书写.一个参数就是一个String List<String> auths, @Param("roleId") Integer roleId
@@ -28,6 +34,14 @@ public class BuildJavaBean {
      */
     private String content;
 
+
+    public String getMethodType() {
+        return methodType;
+    }
+
+    public void setMethodType(String methodType) {
+        this.methodType = methodType;
+    }
 
     public String getContent() {
         return content;

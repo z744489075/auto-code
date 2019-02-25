@@ -1,17 +1,20 @@
 package com.zengtengpeng.autoCode;
 
-import com.zengtengpeng.autoCode.bean.BuildXmlBean;
+import com.zengtengpeng.autoCode.bean.BuildJavaField;
+import com.zengtengpeng.autoCode.bean.BuildJavaMethod;
 import com.zengtengpeng.autoCode.config.AutoCodeConfig;
 import com.zengtengpeng.autoCode.config.BuildJavaConfig;
 import com.zengtengpeng.autoCode.config.GlobalConfig;
 import com.zengtengpeng.autoCode.config.TableConfig;
-import com.zengtengpeng.autoCode.create.BuildXml;
+import com.zengtengpeng.autoCode.create.BuildDao;
 import com.zengtengpeng.jdbc.bean.Bean;
 import com.zengtengpeng.jdbc.utils.JDBCUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import java.sql.Connection;
 import java.sql.JDBCType;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -35,16 +38,58 @@ public class InitTable {
             if(JDBCUtils.getTable(connection,bean)!=null){
                 //构建xml
                 autoCodeConfig.setBean(bean);
-                StartBuild startBuild=new StartBuild() {
-                };
                 //xml
-                BuildJavaConfig buildJavaConfig = autoCodeConfig.getBuildJavaConfig();
-                startBuild.buildXml(autoCodeConfig);
-
+                System.out.println(autoCodeConfig.getBuildXml().buildSql(autoCodeConfig));
                 //构建dao
-                System.out.println(startBuild.buildDao(autoCodeConfig));
+                System.out.println(autoCodeConfig.getBuildDao().buildDao(autoCodeConfig));
 
-                System.out.println(startBuild.buildService(autoCodeConfig));
+                //国际server
+                autoCodeConfig.setBuildService(tt->{
+                    BuildJavaConfig buildJavaBean=new BuildJavaConfig();
+                    List<BuildJavaField> bf=new ArrayList<>();
+                    BuildJavaField buildJavaField=new BuildJavaField();
+                    buildJavaField.setAnnotation(Arrays.asList("@Deser","@desc"));
+                    buildJavaField.setFiledName("test");
+                    buildJavaField.setReturnType("String");
+                    buildJavaField.setInit("null");
+                    bf.add(buildJavaField);
+                    BuildJavaField buildJavaField1=new BuildJavaField();
+                    buildJavaField1.setAnnotation(Arrays.asList("@Deser","@desc"));
+                    buildJavaField1.setFiledName("test");
+                    buildJavaField1.setReturnType("String");
+                    buildJavaField1.setInit("null");
+                    bf.add(buildJavaField1);
+                    buildJavaBean.setBuildJavaFields(bf);
+                    List<String> list=new ArrayList<>();
+                    list.add("dddddddd.ddddddd");
+                    list.add("zzzzzzz.zzzzzzzzz");
+                    buildJavaBean.setImports(list);
+
+                    List<BuildJavaMethod> des=new ArrayList<>();
+                    BuildJavaMethod dess=new BuildJavaMethod();
+                    dess.setContent("fwfafeafewaf");
+                    dess.setMethodName("test");
+                    dess.setMethodType("public");
+                    dess.setReturnType("String");
+                    des.add(dess);
+                    BuildJavaMethod dess1=new BuildJavaMethod();
+                    dess1.setContent("fwfafeafewaf");
+                    dess1.setMethodName("test");
+                    dess1.setMethodType("public");
+                    dess1.setReturnType("String");
+                    List<String> an=new ArrayList<>();
+                    an.add("@A");
+                    an.add("@B");
+                    an.add("@C");
+                    dess1.setAnnotation(an);
+                    List<String> pa=new ArrayList<>();
+                    pa.add("String a");
+                    dess1.setParams(pa);
+                    des.add(dess1);
+                    buildJavaBean.setBuildJavaMethods(des);
+                    return buildJavaBean;
+                });
+                System.out.println(autoCodeConfig.getBuildService().buildService(autoCodeConfig));
 
             }
         });

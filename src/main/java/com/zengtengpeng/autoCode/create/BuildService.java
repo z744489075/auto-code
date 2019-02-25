@@ -1,12 +1,13 @@
 package com.zengtengpeng.autoCode.create;
 
-import com.zengtengpeng.autoCode.bean.BuildJavaBean;
 import com.zengtengpeng.autoCode.config.AutoCodeConfig;
 import com.zengtengpeng.autoCode.config.BuildJavaConfig;
 import com.zengtengpeng.autoCode.config.GlobalConfig;
+import com.zengtengpeng.autoCode.utils.BuildUtils;
 import com.zengtengpeng.generator.utils.MyStringUtils;
 import com.zengtengpeng.jdbc.bean.Bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,25 +18,71 @@ public interface BuildService {
 
     StringBuffer stringBuffer = new StringBuffer();
 
-    default BuildService before(AutoCodeConfig autoCodeConfig){
+    default BuildService before(AutoCodeConfig autoCodeConfig,BuildJavaConfig buildJavaConfig){
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+        MyStringUtils.append(stringBuffer,"package %s.%s;",globalConfig.getParentPack(),globalConfig.getPackageService());
+        return this;
+    }
+
+    /**
+     * 构建导入包
+     * @param autoCodeConfig
+     * @return
+     */
+    default BuildService buildImports(AutoCodeConfig autoCodeConfig,BuildJavaConfig buildJavaConfig){
+        if(buildJavaConfig==null){
+            buildJavaConfig=new BuildJavaConfig();
+        }
+        Bean bean = autoCodeConfig.getBean();
+        List<String> imports = buildJavaConfig.getImports();
+        if(imports==null){
+            imports=new ArrayList<>();
+        }
+        if(buildJavaConfig.getDefaultRealize()) {
+            imports.add("com.zengtengpeng.common.dao.BaseService");
+            String parentPack = autoCodeConfig.getGlobalConfig().getParentPack();
+            imports.add(parentPack + ".bean." + bean.getTableName());
+            String daoName = bean.getTableName() + MyStringUtils.firstUpperCase(autoCodeConfig.getGlobalConfig().getPackageDao());
+            imports.add(parentPack + ".dao." + daoName);
+        }
+        imports.forEach(t->stringBuffer.append("import "+t+";\n"));
+
+        stringBuffer.append("\n\n");
+        return this;
+    }
+
+    /**
+     * 构建class
+     * @param autoCodeConfig
+     * @return
+     */
+    default BuildService buildClass(AutoCodeConfig autoCodeConfig,BuildJavaConfig buildJavaConfig) {
+        if(buildJavaConfig==null){
+            buildJavaConfig=new BuildJavaConfig();
+        }
         Bean bean = autoCodeConfig.getBean();
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
-        BuildJavaConfig buildJavaConfig = autoCodeConfig.getBuildJavaConfig();
-        MyStringUtils.append(stringBuffer,"package %s.%s;",globalConfig.getParentPack(),globalConfig.getPackageService());
-        buildJavaConfig.getImports().forEach(t->stringBuffer.append("import "+t+";\n"));
-        /*public interface TestCodeDao extends BaseDao<TestCode> {
-        }*/
-        stringBuffer.append("\n\n");
         StringBuffer s=new StringBuffer();
-        buildJavaConfig.getExtend().forEach(t-> s.append(t+","));
+        List<String> extend = buildJavaConfig.getExtend();
+        if(extend==null){
+            extend=new ArrayList<>();
+        }
+        if(buildJavaConfig.getDefaultRealize()) {
+            String daoName = bean.getTableName() + MyStringUtils.firstUpperCase(autoCodeConfig.getGlobalConfig().getPackageDao());
+            extend.add("BaseService<" + bean.getTableName() + "," + daoName + ">");
+        }
+        extend.forEach(t-> s.append(t+","));
         List<String> annotations = buildJavaConfig.getAnnotations();
 
+        String s1="";
+        if(s.length()>0){
+            s1="extends "+s.substring(0,s.length()-1);
+        }
         if(annotations!=null){
             annotations.forEach(t->stringBuffer.append(t+"\n"));
         }
-        //public interface SysLoginLogService extends  BaseService<SysLoginLog, SysLoginLogDao>
-        MyStringUtils.append(stringBuffer,"public interface %s%s extends %s {",
-                bean.getTableName(),MyStringUtils.firstUpperCase(globalConfig.getPackageService()),s.substring(0,s.length()-1));
+        MyStringUtils.append(stringBuffer,"public interface %s%s  %s {\n\n",
+                bean.getTableName(),MyStringUtils.firstUpperCase(globalConfig.getPackageService()),s1);
         return this;
     }
 
@@ -45,7 +92,7 @@ public interface BuildService {
      * @param autoCodeConfig
      * @return
      */
-    default BuildService end(AutoCodeConfig autoCodeConfig){
+    default BuildService end(AutoCodeConfig autoCodeConfig,BuildJavaConfig buildJavaConfig){
         stringBuffer.append("}\n");
         return this;
     }
@@ -55,41 +102,19 @@ public interface BuildService {
      * @param
      * @return
      */
-    List<BuildJavaBean> custom(AutoCodeConfig autoCodeConfig);
+    BuildJavaConfig custom(AutoCodeConfig autoCodeConfig);
 
     /**
-     * 构建dao
+     * 构建service
      * @param autoCodeConfig
      * @return
      */
     default String buildService(AutoCodeConfig autoCodeConfig){
-        BuildService before = before(autoCodeConfig);
-        List<BuildJavaBean> custom = before.custom(autoCodeConfig);
-        if(custom!=null){
-            custom.forEach(t->{
-                List<String> annotation = t.getAnnotation();
-                if(annotation!=null){
-                    annotation.forEach(ttt-> MyStringUtils.append(stringBuffer,"%s",1,ttt));
-                }
-                StringBuffer params=new StringBuffer();
-                List<String> params1 = t.getParams();
-                if(params1!=null){
-                    params1.forEach(tt-> params.append(tt+","));
-                }
+        BuildJavaConfig buildJavaConfig = custom(autoCodeConfig);
+        BuildService before = before(autoCodeConfig,buildJavaConfig).buildImports(autoCodeConfig,buildJavaConfig).buildClass(autoCodeConfig,buildJavaConfig);
+        BuildUtils.buildCustom(buildJavaConfig,stringBuffer);
 
-                stringBuffer.append(String.format("\t %s %s(%s)",t.getReturnType(),t.getMethodName(),params.substring(0,params.length()-1)));
-
-                if(MyStringUtils.isEmpty(t.getContent())){
-                    stringBuffer.append(";\n");
-                }else {
-                    stringBuffer.append("{");
-                    MyStringUtils.append(stringBuffer,"%s",2,t.getContent());
-                    MyStringUtils.append(stringBuffer,"}",1);
-
-                }});
-        }
-
-        before.end(autoCodeConfig);
+        before.end(autoCodeConfig,buildJavaConfig);
         return stringBuffer.toString();
     }
 

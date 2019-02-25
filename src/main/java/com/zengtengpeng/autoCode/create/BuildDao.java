@@ -1,12 +1,13 @@
 package com.zengtengpeng.autoCode.create;
 
-import com.zengtengpeng.autoCode.bean.BuildJavaBean;
 import com.zengtengpeng.autoCode.config.AutoCodeConfig;
 import com.zengtengpeng.autoCode.config.BuildJavaConfig;
 import com.zengtengpeng.autoCode.config.GlobalConfig;
+import com.zengtengpeng.autoCode.utils.BuildUtils;
 import com.zengtengpeng.generator.utils.MyStringUtils;
 import com.zengtengpeng.jdbc.bean.Bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,25 +17,68 @@ import java.util.List;
 public interface BuildDao {
 
     StringBuffer stringBuffer = new StringBuffer();
+    default BuildDao before(AutoCodeConfig autoCodeConfig,BuildJavaConfig buildJavaConfig){
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+        MyStringUtils.append(stringBuffer,"package %s.%s;",globalConfig.getParentPack(),globalConfig.getPackageDao());
+        return this;
+    }
 
-    default BuildDao before(AutoCodeConfig autoCodeConfig){
+    /**
+     * 构建导入包
+     * @param autoCodeConfig
+     * @return
+     */
+    default BuildDao buildImports(AutoCodeConfig autoCodeConfig,BuildJavaConfig buildJavaConfig){
+        if(buildJavaConfig==null){
+            buildJavaConfig=new BuildJavaConfig();
+        }
+        Bean bean = autoCodeConfig.getBean();
+        List<String> imports = buildJavaConfig.getImports();
+        if(imports==null){
+            imports=new ArrayList<>();
+        }
+        if(buildJavaConfig.getDefaultRealize()){
+            imports.add("com.zengtengpeng.common.dao.BaseDao");
+            imports.add(autoCodeConfig.getGlobalConfig().getParentPack()+".bean."+bean.getTableName());
+        }
+        imports.forEach(t->stringBuffer.append("import "+t+";\n"));
+
+        stringBuffer.append("\n\n");
+        return this;
+    }
+
+    /**
+     * 构建class
+     * @param autoCodeConfig
+     * @return
+     */
+    default BuildDao buildClass(AutoCodeConfig autoCodeConfig,BuildJavaConfig buildJavaConfig) {
+        if(buildJavaConfig==null){
+            buildJavaConfig=new BuildJavaConfig();
+        }
         Bean bean = autoCodeConfig.getBean();
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
-        BuildJavaConfig buildJavaConfig = autoCodeConfig.getBuildJavaConfig();
-        MyStringUtils.append(stringBuffer,"package %s.%s;",globalConfig.getParentPack(),globalConfig.getPackageDao());
-        buildJavaConfig.getImports().forEach(t->stringBuffer.append("import "+t+";\n"));
-        /*public interface TestCodeDao extends BaseDao<TestCode> {
-        }*/
-        stringBuffer.append("\n\n");
         StringBuffer s=new StringBuffer();
-        buildJavaConfig.getExtend().forEach(t-> s.append(t+","));
+        List<String> extend = buildJavaConfig.getExtend();
+        if(extend==null){
+            extend=new ArrayList<>();
+        }
+        if(buildJavaConfig.getDefaultRealize()) {
+            extend.add("BaseDao<" + bean.getTableName() + ">");
+        }
+        extend.forEach(t-> s.append(t+","));
         List<String> annotations = buildJavaConfig.getAnnotations();
 
         if(annotations!=null){
             annotations.forEach(t->stringBuffer.append(t+"\n"));
         }
-        MyStringUtils.append(stringBuffer,"public interface %s%s extends %s {",
-                bean.getTableName(),MyStringUtils.firstUpperCase(globalConfig.getPackageDao()),s.substring(0,s.length()-1));
+        String s1="";
+        if(s.length()>0){
+            s1="extends "+s.substring(0,s.length()-1);
+        }
+
+        MyStringUtils.append(stringBuffer,"public interface %s%s  %s {\n\n",
+                bean.getTableName(),MyStringUtils.firstUpperCase(globalConfig.getPackageDao()),s1);
         return this;
     }
 
@@ -44,7 +88,7 @@ public interface BuildDao {
      * @param autoCodeConfig
      * @return
      */
-    default BuildDao end(AutoCodeConfig autoCodeConfig){
+    default BuildDao end(AutoCodeConfig autoCodeConfig,BuildJavaConfig buildJavaConfig){
         stringBuffer.append("}\n");
         return this;
     }
@@ -54,7 +98,7 @@ public interface BuildDao {
      * @param
      * @return
      */
-    List<BuildJavaBean> custom(AutoCodeConfig autoCodeConfig);
+    BuildJavaConfig custom(AutoCodeConfig autoCodeConfig);
 
     /**
      * 构建dao
@@ -62,34 +106,11 @@ public interface BuildDao {
      * @return
      */
     default String buildDao(AutoCodeConfig autoCodeConfig){
-        BuildDao before = before(autoCodeConfig);
-        List<BuildJavaBean> custom = before.custom(autoCodeConfig);
-        if(custom!=null){
-            custom.forEach(t->{
-                List<String> annotation = t.getAnnotation();
-                if(annotation!=null){
-                    annotation.forEach(ttt-> MyStringUtils.append(stringBuffer,"%s",1,ttt));
-                }
-                StringBuffer params=new StringBuffer();
-                List<String> params1 = t.getParams();
-                if(params1!=null){
-                    params1.forEach(tt-> params.append(tt+","));
-                }
+        BuildJavaConfig buildJavaConfig = custom(autoCodeConfig);
+        BuildDao before = before(autoCodeConfig,buildJavaConfig).buildImports(autoCodeConfig,buildJavaConfig).buildClass(autoCodeConfig,buildJavaConfig);
+        BuildUtils.buildCustom(buildJavaConfig,stringBuffer);
 
-                stringBuffer.append(String.format("\t %s %s(%s)",t.getReturnType(),t.getMethodName(),params.substring(0,params.length()-1)));
-
-                if(MyStringUtils.isEmpty(t.getContent())){
-                    stringBuffer.append(";\n");
-                }else {
-                    stringBuffer.append("{");
-                    MyStringUtils.append(stringBuffer,"%s",2,t.getContent());
-                    MyStringUtils.append(stringBuffer,"}",1);
-
-                }
-            });
-        }
-
-        before.end(autoCodeConfig);
+        before.end(autoCodeConfig,buildJavaConfig);
         return stringBuffer.toString();
     }
 
