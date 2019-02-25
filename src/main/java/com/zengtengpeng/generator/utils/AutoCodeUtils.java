@@ -10,6 +10,7 @@ import org.mybatis.generator.internal.DefaultShellCallback;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,10 +72,12 @@ public class AutoCodeUtils {
         param.put("tables", tables);
         freemarker.template.Configuration cfg = new freemarker.template.Configuration(freemarker.template.Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
         cfg.setClassLoaderForTemplateLoading(AutoCodeUtils.class.getClassLoader(),"ftl");
+        File file =null;
+        Writer out=null;
         try {
             Template template = cfg.getTemplate("myBatisGenerator.ftl");
-            File file = new File("f:/mg.xml");
-            Writer out = new FileWriter(file);
+             file = new File("mg.xml");
+            out = new FileWriter(file);
             template.process(param, out);
             List<String> warnings = new ArrayList<>();
             boolean overwrite = true;
@@ -88,6 +91,18 @@ public class AutoCodeUtils {
             myBatisGenerator.generate(null);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }finally {
+            try {
+                if(out!=null){
+
+                    out.close();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            if(file!=null){
+                System.out.println(file.delete());
+            }
         }
     }
 }
