@@ -1,6 +1,6 @@
 package com.zengtengpeng.common.utils;
 
-import com.zengtengpeng.generator.utils.MyStringUtils;
+import com.zengtengpeng.autoCode.utils.MyStringUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;

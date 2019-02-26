@@ -32,6 +32,11 @@ public class BuildJavaConfig {
     private List<String> annotations;
 
     /**
+     * 注释
+     */
+    private String remark;
+
+    /**
      * 是否使用默认的一些导入类,以及继承,实现
      */
     private Boolean defaultRealize=true;
@@ -45,6 +50,14 @@ public class BuildJavaConfig {
      * 字段
      */
     private List<BuildJavaField> buildJavaFields;
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
 
     public Boolean getDefaultRealize() {
         return defaultRealize;

@@ -1,6 +1,6 @@
 package com.zengtengpeng.jdbc.utils;
 
-import com.zengtengpeng.generator.utils.MyStringUtils;
+import com.zengtengpeng.autoCode.utils.MyStringUtils;
 import com.zengtengpeng.jdbc.bean.Bean;
 import com.zengtengpeng.jdbc.bean.BeanColumn;
 import com.zengtengpeng.autoCode.config.DatasourceConfig;
@@ -39,16 +39,17 @@ public class JDBCUtils {
      * @return
      */
     public static Bean getTable(Connection connection, Bean bean){
+        Statement statement =null;
+        ResultSet rs = null;
         try {
-
             DatabaseMetaData metaData = connection.getMetaData();
             String tableName = bean.getDataName();
             ResultSet tables = metaData.getTables(null, "%", tableName, new String[]{"TABLE"});
             if(tables.next()){
 
                 //获取表名
-                Statement statement = connection.createStatement();
-                ResultSet rs = statement.executeQuery("SHOW CREATE TABLE " + tableName);
+                statement = connection.createStatement();
+                rs = statement.executeQuery("SHOW CREATE TABLE " + tableName);
                 if (rs != null && rs.next()) {
                     String createDDL = rs.getString(2);
                     String comment = parse(createDDL);
@@ -68,30 +69,21 @@ public class JDBCUtils {
                 //获取列名
                 List<BeanColumn> beans=new ArrayList<>();
                 List<BeanColumn> keys=new ArrayList<>();
-               /*ResultSet resultSet = statement.executeQuery("show full columns from " + tableName);
-                while (rs.next()) {
-//			    System.out.println("字段名称：" + rs.getString("Field") + "\t"+ "字段注释：" + rs.getString("Comment") );
-                    BeanColumn beanColumn=new BeanColumn();
-                    beanColumn.setDefaultValue(resultSet.getString("Default"));
-                    beanColumn.setJdbcName(resultSet.getString("Field"));
-                    beanColumn.setJdbcType(resultSet.getString("Type").split("\\(")[0]);
 
-                    System.out.println(resultSet.getString("Field") + "\t:\t" + resultSet.getString("Comment"));
-                }*/
-                ResultSet colRet = metaData.getColumns(null,"%", tableName,"%");
-                while(colRet.next()) {
+                rs = metaData.getColumns(null,"%", tableName,"%");
+                while(rs.next()) {
                     BeanColumn beanColumn=new BeanColumn();
-                    beanColumn.setJdbcName(colRet.getString("COLUMN_NAME"));
-                    beanColumn.setJdbcType(colRet.getString("DATA_TYPE"));
-                    if(!MyStringUtils.isEmpty(colRet.getString("IS_NULLABLE")) && colRet.getString("IS_NULLABLE").equalsIgnoreCase("yes")){
+                    beanColumn.setJdbcName(rs.getString("COLUMN_NAME"));
+                    beanColumn.setJdbcType(rs.getString("DATA_TYPE"));
+                    if(!MyStringUtils.isEmpty(rs.getString("IS_NULLABLE")) && rs.getString("IS_NULLABLE").equalsIgnoreCase("yes")){
                         beanColumn.setNullable(true);
                     }
-                    beanColumn.setLength(colRet.getString("COLUMN_SIZE"));
-                    if(!MyStringUtils.isEmpty(colRet.getString("IS_AUTOINCREMENT")) && colRet.getString("IS_AUTOINCREMENT").equalsIgnoreCase("yes")){
+                    beanColumn.setLength(rs.getString("COLUMN_SIZE"));
+                    if(!MyStringUtils.isEmpty(rs.getString("IS_AUTOINCREMENT")) && rs.getString("IS_AUTOINCREMENT").equalsIgnoreCase("yes")){
                         beanColumn.setIdentity(true);
                     }
-                    beanColumn.setRemarks(colRet.getString("REMARKS"));
-                    beanColumn.setDefaultValue(colRet.getString("COLUMN_DEF"));
+                    beanColumn.setRemarks(rs.getString("REMARKS"));
+                    beanColumn.setDefaultValue(rs.getString("COLUMN_DEF"));
 
                     if(pk.get(beanColumn.getJdbcName())!=null){
                         beanColumn.setKey(true);
@@ -108,6 +100,23 @@ public class JDBCUtils {
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }finally {
+            if(statement!=null){
+                try {
+                    statement.close();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            if(rs!=null){
+                try {
+                    rs.close();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
         }
 
     }

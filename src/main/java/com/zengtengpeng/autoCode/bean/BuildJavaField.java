@@ -19,7 +19,7 @@ public class BuildJavaField {
     /**
      * 字段类型类型  如 private String fileType; 中的 private
      */
-    private String fileType;
+    private String filedType;
 
     /**
      * 字段名
@@ -30,6 +30,16 @@ public class BuildJavaField {
      * 初始化字段  private List<String> annotation=new ArrayList<>(); 中的 new ArrayList<>()
      */
     private String init;
+
+    private String remark;
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
 
     public List<String> getAnnotation() {
         return annotation;
@@ -47,12 +57,12 @@ public class BuildJavaField {
         this.returnType = returnType;
     }
 
-    public String getFileType() {
-        return fileType;
+    public String getFiledType() {
+        return filedType;
     }
 
-    public void setFileType(String fileType) {
-        this.fileType = fileType;
+    public void setFiledType(String filedType) {
+        this.filedType = filedType;
     }
 
     public String getFiledName() {

@@ -1,6 +1,6 @@
 package com.zengtengpeng.autoCode.config;
 
-import com.zengtengpeng.generator.utils.MyStringUtils;
+import com.zengtengpeng.autoCode.utils.MyStringUtils;
 
 public class TableConfig {
     //表名称

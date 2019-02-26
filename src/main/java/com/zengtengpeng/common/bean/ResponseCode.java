@@ -7,7 +7,7 @@ public enum ResponseCode {
 
     private String code;
 	private String desc;
-	private ResponseCode(String code, String desc){
+	ResponseCode(String code, String desc){
 		this.code=code;
 		this.desc=desc;
 	}

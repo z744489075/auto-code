@@ -1,12 +1,8 @@
 package com.zengtengpeng.jdbc.bean;
 
-import com.zengtengpeng.generator.utils.MyStringUtils;
+import com.zengtengpeng.autoCode.utils.MyStringUtils;
 
-import java.math.BigDecimal;
 import java.sql.JDBCType;
-import java.util.Date;
-
-import static java.sql.JDBCType.BIGINT;
 
 /**
  * 实体列
@@ -25,12 +21,12 @@ public class BeanColumn {
     private String beanType;
 
     //是否为空
-    private Boolean nullable=false;
+    private Boolean nullable = false;
 
     //数据库长度
     private String length;
     //是否自增
-    private Boolean identity=false;
+    private Boolean identity = false;
 
     //注释
     private String remarks;
@@ -39,7 +35,7 @@ public class BeanColumn {
     private String defaultValue;
 
     //是否是主键
-    private Boolean key=false;
+    private Boolean key = false;
 
 
     public String getJdbcName() {
@@ -51,8 +47,15 @@ public class BeanColumn {
     }
 
     public String getBeanName() {
-        if(!MyStringUtils.isEmpty(jdbcName)){
-            return MyStringUtils.firstUpperCase_(jdbcName,false);
+        if (!MyStringUtils.isEmpty(jdbcName)) {
+            return MyStringUtils.firstUpperCase_(jdbcName, false);
+        }
+        return beanName;
+    }
+
+    public String getBeanName_() {
+        if (!MyStringUtils.isEmpty(jdbcName)) {
+            return MyStringUtils.firstUpperCase_(jdbcName, true);
         }
         return beanName;
     }
@@ -61,8 +64,9 @@ public class BeanColumn {
     public String getJdbcType() {
         return jdbcType;
     }
+
     public String getJdbcType_() {
-        return  JDBCType.valueOf(Integer.valueOf(jdbcType)).name();
+        return JDBCType.valueOf(Integer.valueOf(jdbcType)).name();
     }
 
     public void setJdbcType(String jdbcType) {
@@ -79,8 +83,8 @@ public class BeanColumn {
 
     public String getBeanType() {
 
-        if(!MyStringUtils.isEmpty(jdbcType)){
-            switch (JDBCType.valueOf(Integer.valueOf(jdbcType))){
+        if (!MyStringUtils.isEmpty(jdbcType)) {
+            switch (JDBCType.valueOf(Integer.valueOf(jdbcType))) {
                 case BIT:
                     return "java.lang.Byte";
                 case TINYINT:
@@ -112,6 +116,15 @@ public class BeanColumn {
 
         }
         return beanType;
+    }
+
+    public String getBeanType_() {
+        String beanType = getBeanType();
+        if (!MyStringUtils.isEmpty(beanType)) {
+            String[] split = beanType.split("\\.");
+            return split[split.length-1];
+        }
+        return "";
     }
 
 

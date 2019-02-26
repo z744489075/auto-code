@@ -1,6 +1,6 @@
 package com.zengtengpeng.jdbc.bean;
 
-import com.zengtengpeng.generator.utils.MyStringUtils;
+import com.zengtengpeng.autoCode.utils.MyStringUtils;
 
 import java.util.List;
 import java.util.Map;

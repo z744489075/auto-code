@@ -60,7 +60,11 @@ public interface BaseService<T extends Page,D extends BaseDao<T>> {
 		return baseDao.selectByCondition(t);
 	}
 
-
+	/**
+	 * 分页查询
+	 * @param t
+	 * @return
+	 */
 	default T selectAllByPaging(T t){
 		D baseDao = initDao();
 		PageHelper.startPage(t.getPage(), t.getPageSize());
@@ -71,12 +75,21 @@ public interface BaseService<T extends Page,D extends BaseDao<T>> {
 		return t;
 	}
 
-
+	/**
+	 * 更新
+	 * @param t
+	 * @return
+	 */
 	default int update(T t){
 		BaseDao<T> baseDao = initDao();
 		return baseDao.update(t);
 	}
 
+	/**
+	 * 查询所有,不分页
+	 * @param t
+	 * @return
+	 */
 	default List<T> selectAll(T t) {
 		BaseDao<T> baseDao = initDao();
 		return baseDao.selectAll(t);

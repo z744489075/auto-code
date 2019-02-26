@@ -4,7 +4,7 @@ import com.zengtengpeng.autoCode.enums.XmlElementType;
 import com.zengtengpeng.autoCode.bean.BuildXmlBean;
 import com.zengtengpeng.autoCode.config.AutoCodeConfig;
 import com.zengtengpeng.autoCode.config.GlobalConfig;
-import com.zengtengpeng.generator.utils.MyStringUtils;
+import com.zengtengpeng.autoCode.utils.MyStringUtils;
 import com.zengtengpeng.jdbc.bean.Bean;
 import com.zengtengpeng.jdbc.bean.BeanColumn;
 
@@ -281,12 +281,12 @@ public interface BuildXml {
      * @param
      * @return
      */
-     List<BuildXmlBean> buildXml(AutoCodeConfig autoCodeConfig);
+     List<BuildXmlBean> custom(AutoCodeConfig autoCodeConfig);
 
-    default String buildSql(AutoCodeConfig autoCodeConfig) {
+    default String build(AutoCodeConfig autoCodeConfig) {
         BuildXml buildXml = before(autoCodeConfig).insert(autoCodeConfig).deleteByPrimaryKey(autoCodeConfig).
                 update(autoCodeConfig).selectByPrimaryKey(autoCodeConfig).selectAll(autoCodeConfig).selectByCondition(autoCodeConfig);
-        List<BuildXmlBean> custom = buildXml.buildXml(autoCodeConfig);
+        List<BuildXmlBean> custom = buildXml.custom(autoCodeConfig);
         if(custom!=null){
             custom.forEach(t-> stringBuffer.append(t).append("\n"));
         }

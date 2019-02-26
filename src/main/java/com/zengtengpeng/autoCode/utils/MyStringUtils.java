@@ -1,4 +1,4 @@
-package com.zengtengpeng.generator.utils;
+package com.zengtengpeng.autoCode.utils;
 
 import java.util.ArrayList;
 

@@ -1,9 +1,7 @@
 package com.zengtengpeng.autoCode.config;
 
 
-import com.zengtengpeng.autoCode.create.BuildDao;
-import com.zengtengpeng.autoCode.create.BuildService;
-import com.zengtengpeng.autoCode.create.BuildXml;
+import com.zengtengpeng.autoCode.create.*;
 import com.zengtengpeng.jdbc.bean.Bean;
 
 /**
@@ -21,11 +19,38 @@ public class AutoCodeConfig {
 
     private BuildDao buildDao=t->null;
     private BuildService buildService=t->null;
+    private BuildServiceImpl buildServiceImpl= t->null;
+    private BuildController buildController= t->null;
+    private BuildBean buildBean= t->null;
 
     private BuildXml buildXml=t->null;
 
     public BuildService getBuildService() {
         return buildService;
+    }
+
+    public BuildServiceImpl getBuildServiceImpl() {
+        return buildServiceImpl;
+    }
+
+    public BuildController getBuildController() {
+        return buildController;
+    }
+
+    public BuildBean getBuildBean() {
+        return buildBean;
+    }
+
+    public void setBuildBean(BuildBean buildBean) {
+        this.buildBean = buildBean;
+    }
+
+    public void setBuildController(BuildController buildController) {
+        this.buildController = buildController;
+    }
+
+    public void setBuildServiceImpl(BuildServiceImpl buildServiceImpl) {
+        this.buildServiceImpl = buildServiceImpl;
     }
 
     public void setBuildService(BuildService buildService) {
