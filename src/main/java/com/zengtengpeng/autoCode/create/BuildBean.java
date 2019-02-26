@@ -36,7 +36,6 @@ public interface BuildBean {
      * 构建导入包
      *
      * @param autoCodeConfig
-     * @return
      */
     default BuildBean buildImports(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
         if (buildJavaConfig == null) {
@@ -50,7 +49,7 @@ public interface BuildBean {
         }
         if (buildJavaConfig.getDefaultRealize()) {
             imports.add("com.fasterxml.jackson.annotation.JsonIgnore");
-            imports.add("com.zengtengpeng.common.bean.Pag");
+            imports.add("com.zengtengpeng.common.bean.Page");
             imports.add("com.zengtengpeng.common.utils.DateUtils");
             imports.add("java.util.Date");
             imports.add("java.math.BigDecimal");
@@ -66,7 +65,6 @@ public interface BuildBean {
      * 构建class
      *
      * @param autoCodeConfig
-     * @return
      */
     default BuildBean buildClass(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
         if (buildJavaConfig == null) {
@@ -183,13 +181,13 @@ public interface BuildBean {
                     get.setAnnotation(an);
 
                     BuildJavaMethod get1 = new BuildJavaMethod();
-                    get1.setReturnType(t.getBeanType_());
+                    get1.setReturnType("String");
                     get1.setMethodType("public");
                     get1.setMethodName("get"+t.getBeanName_()+"_");
                     if("DATE".equals(t.getJdbcType_())){
-                        get1.setContent("return DateUtils.formatDate(" +t.getBeanName()+")");
+                        get1.setContent("return DateUtils.formatDate(" +t.getBeanName()+");");
                     }else {
-                        get1.setContent("return DateUtils.formatDateTime(" +t.getBeanName()+")");
+                        get1.setContent("return DateUtils.formatDateTime(" +t.getBeanName()+");");
                     }
                     finalBuildJavaMethods.add(get1);
                 }
@@ -205,7 +203,7 @@ public interface BuildBean {
                     get.setAnnotation(an);
 
                     BuildJavaMethod get1 = new BuildJavaMethod();
-                    get1.setReturnType(t.getBeanType_());
+                    get1.setReturnType("String");
                     get1.setMethodType("public");
                     get1.setMethodName("get"+t.getBeanName_()+"_");
                     StringBuffer json=new StringBuffer();
@@ -217,7 +215,7 @@ public interface BuildBean {
                             continue;
                         }
                         MyStringUtils.append(json,"}else if(%s.equals(\"%s\")){",2,t.getBeanName(),me.getKey().toString());
-                        MyStringUtils.append(json,"\"%s\";",3,me.getValue().toString());
+                        MyStringUtils.append(json,"return \"%s\";",3,me.getValue().toString());
                     }
                     MyStringUtils.append(json,"}",2);
                     MyStringUtils.append(json,"return \"\";",2);

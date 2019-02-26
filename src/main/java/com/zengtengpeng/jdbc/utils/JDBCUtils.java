@@ -1,5 +1,6 @@
 package com.zengtengpeng.jdbc.utils;
 
+import com.zengtengpeng.autoCode.config.AutoCodeConfig;
 import com.zengtengpeng.autoCode.utils.MyStringUtils;
 import com.zengtengpeng.jdbc.bean.Bean;
 import com.zengtengpeng.jdbc.bean.BeanColumn;
@@ -38,13 +39,15 @@ public class JDBCUtils {
      * 获取table相关数据
      * @return
      */
-    public static Bean getTable(Connection connection, Bean bean){
+    public static Bean getTable(Connection connection, AutoCodeConfig autoCodeConfig){
         Statement statement =null;
         ResultSet rs = null;
+        Bean bean = autoCodeConfig.getBean();
+        DatasourceConfig datasourceConfig = autoCodeConfig.getDatasourceConfig();
         try {
             DatabaseMetaData metaData = connection.getMetaData();
             String tableName = bean.getDataName();
-            ResultSet tables = metaData.getTables(null, "%", tableName, new String[]{"TABLE"});
+            ResultSet tables = metaData.getTables(datasourceConfig.getName(), "%", tableName, new String[]{"TABLE"});
             if(tables.next()){
 
                 //获取表名
@@ -59,7 +62,7 @@ public class JDBCUtils {
 
                 //获取主键
 
-                ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, tableName);
+                ResultSet primaryKeys = metaData.getPrimaryKeys(datasourceConfig.getName(), "%", tableName);
                 Map<String,String> pk=new HashMap<>();
                 if(primaryKeys.next()){
                     String column_name = primaryKeys.getString("COLUMN_NAME");
@@ -70,7 +73,7 @@ public class JDBCUtils {
                 List<BeanColumn> beans=new ArrayList<>();
                 List<BeanColumn> keys=new ArrayList<>();
 
-                rs = metaData.getColumns(null,"%", tableName,"%");
+                rs = metaData.getColumns(datasourceConfig.getName(),"%", tableName,"%");
                 while(rs.next()) {
                     BeanColumn beanColumn=new BeanColumn();
                     beanColumn.setJdbcName(rs.getString("COLUMN_NAME"));
@@ -93,6 +96,7 @@ public class JDBCUtils {
                 }
                 bean.setPrimaryKey(keys);
                 bean.setAllColumns(beans);
+                bean.setParentPack(autoCodeConfig.getGlobalConfig().getParentPack());
                 return  bean;
             }else {
                 logger.info("数据库表不存在->{}", tableName);

@@ -134,7 +134,11 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
+                        <configuration>
+                            <additionalOptions>-Xdoclint:none</additionalOptions>
+                        </configuration>
                     </execution>
+
                 </executions>
             </plugin>
             <!-- GPG -->

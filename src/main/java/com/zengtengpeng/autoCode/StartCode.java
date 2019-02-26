@@ -43,8 +43,9 @@ public interface StartCode {
         Connection connection =null;
         try {
             connection = JDBCUtils.getConnection(autoCodeConfig.getDatasourceConfig());
-            Bean bean = autoCodeConfig.getBean();
-            if(JDBCUtils.getTable(connection, bean)!=null){
+
+            if(JDBCUtils.getTable(connection, autoCodeConfig)!=null){
+                Bean bean = autoCodeConfig.getBean();
                 //构建xml
                 GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
                 //xml

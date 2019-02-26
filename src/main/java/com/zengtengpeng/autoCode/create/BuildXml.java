@@ -185,6 +185,7 @@ public interface BuildXml {
         sql.deleteCharAt(sql.length() - 2);
 
         MyStringUtils.append(sql, "from %s",2, bean.getDataName());
+        MyStringUtils.append(sql, "<where>",2);
         BeanColumn beanColumn = bean.getPrimaryKey().get(0);
         bean.getAllColumns().forEach(t -> {
                 String javaProperty = t.getBeanName();
@@ -203,7 +204,7 @@ public interface BuildXml {
                             t.getJdbcName());
                 }
         });
-
+        MyStringUtils.append(sql, "</where>",2);
         MyStringUtils.append(sql, "<choose>\n" +
                 "          <when test=\"orderByString!=null and orderByString!=''\">\n" +
                 "              ${orderByString}\n" +
@@ -227,7 +228,7 @@ public interface BuildXml {
         Bean bean = init.getBean();
         MyStringUtils.append(stringBuffer, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\" \"http://mybatis.org/dtd/mybatis-3-mapper.dtd\">\n" +
-                "<mapper namespace=\"%s.%s.%s%s\">\n", globalConfig.getParentPack(), globalConfig.getPackageDao(), bean.getTableName(), globalConfig.getPackageDao());
+                "<mapper namespace=\"%s.%s.%s%s\">\n", globalConfig.getParentPack(), globalConfig.getPackageDao(), bean.getTableName(), globalConfig.getPackageDao_());
 
         MyStringUtils.append(stringBuffer, "<resultMap id=\"BaseResultMap\" type=\"%s.%s.%s\">\n",1, globalConfig.getParentPack(), globalConfig.getPackageBean(),
                 bean.getTableName());
@@ -278,8 +279,6 @@ public interface BuildXml {
 
     /**
      * 自定义sql
-     * @param
-     * @return
      */
      List<BuildXmlBean> custom(AutoCodeConfig autoCodeConfig);
 

@@ -15,10 +15,17 @@ public class MyStringUtils {
 
     }
 
-    public static Boolean isEmpty(String str) {
-        if(str==null || str.length()<1){
-            return true;
+    public static Boolean isEmpty(Object str) {
+        if(str instanceof String){
+            if(str.toString().length() < 1){
+                return true;
+            }
+        }else {
+            if(str==null){
+                return true;
+            }
         }
+
         return false;
     }
 

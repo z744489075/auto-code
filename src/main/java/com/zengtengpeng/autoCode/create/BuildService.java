@@ -40,11 +40,11 @@ public interface BuildService {
             imports = new ArrayList<>();
         }
         if (buildJavaConfig.getDefaultRealize()) {
-            imports.add("com.zengtengpeng.common.dao.BaseService");
+            imports.add("com.zengtengpeng.common.service.BaseService");
             GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
             String parentPack = globalConfig.getParentPack();
             imports.add(parentPack + "." + globalConfig.getPackageBean() + "." + bean.getTableName());
-            String daoName = bean.getTableName() + MyStringUtils.firstUpperCase(globalConfig.getPackageDao());
+            String daoName = bean.getTableName() + globalConfig.getPackageDao_();
             imports.add(parentPack + "." + globalConfig.getPackageDao() + "." + daoName);
         }
         imports.forEach(t -> stringBuffer.append("import " + t + ";\n"));

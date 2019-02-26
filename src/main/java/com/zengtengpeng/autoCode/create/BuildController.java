@@ -1,5 +1,6 @@
 package com.zengtengpeng.autoCode.create;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zengtengpeng.autoCode.bean.BuildJavaField;
 import com.zengtengpeng.autoCode.bean.BuildJavaMethod;
 import com.zengtengpeng.autoCode.config.AutoCodeConfig;
@@ -10,8 +11,10 @@ import com.zengtengpeng.autoCode.utils.MyStringUtils;
 import com.zengtengpeng.jdbc.bean.Bean;
 import com.zengtengpeng.jdbc.bean.BeanColumn;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 生成controller
@@ -293,10 +296,24 @@ public interface BuildController {
             params.add("HttpServletResponse response");
             export.setParams(params);
             content=new StringBuffer();
-            MyStringUtils.append(content,"List<%s> list= %s%s.selectAll(%s)",bean.getTableName(),bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue());
+            MyStringUtils.append(content,"List<%s> list= %s%s.selectAll(%s);",bean.getTableName(),bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue());
             MyStringUtils.append(content,"Map<String, String> header = new LinkedHashMap<>();",2);
             StringBuffer finalContent = content;
-            bean.getAllColumns().forEach(t-> MyStringUtils.append(finalContent,"header.put(\"%s\", \"%s\");",2,t.getBeanName(),t.getRemarks()));
+            bean.getAllColumns().forEach(t->{
+                if("Date".equals(t.getBeanType_())){
+                    MyStringUtils.append(finalContent,"header.put(\"%s_\", \"%s\");",2,t.getBeanName(),t.getRemarks());
+                }else {
+
+                    ObjectMapper objectMapper=new ObjectMapper();
+                    try {
+                        Map map = objectMapper.readValue(t.getRemarks(), Map.class);
+                        MyStringUtils.append(finalContent,"header.put(\"%s_\", \"%s\");",2,t.getBeanName(),t.getRemarks().replace("\"","\\\""));
+                    } catch (Exception e) {
+                        MyStringUtils.append(finalContent,"header.put(\"%s\", \"%s\");",2,t.getBeanName(),t.getRemarks());
+                    }
+                }
+
+            });
             MyStringUtils.append(finalContent,"ExcelUtils.exportExcel(\"%s\",header,list,response,request);",2,bean.getTableRemarks());
             export.setContent(finalContent.toString());
             export.setRemark("导出报表->"+buildJavaConfig.getRemark());
