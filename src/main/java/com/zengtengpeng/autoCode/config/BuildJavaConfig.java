@@ -51,6 +51,20 @@ public class BuildJavaConfig {
      */
     private List<BuildJavaField> buildJavaFields;
 
+    /**
+     * 拼装好之后的内容
+     */
+    private StringBuffer content=new StringBuffer();
+
+
+    public StringBuffer getContent() {
+        return content;
+    }
+
+    public void setContent(StringBuffer content) {
+        this.content = content;
+    }
+
     public String getRemark() {
         return remark;
     }

@@ -16,69 +16,12 @@ public class AutoCodeConfig {
 
     private Bean bean;
 
-
-    private BuildDao buildDao=t->null;
-    private BuildService buildService=t->null;
-    private BuildServiceImpl buildServiceImpl= t->null;
-    private BuildController buildController= t->null;
-    private BuildBean buildBean= t->null;
-
-    private BuildXml buildXml=t->null;
-
-    public BuildService getBuildService() {
-        return buildService;
+    public DatasourceConfig getDatasourceConfig() {
+        return datasourceConfig;
     }
 
-    public BuildServiceImpl getBuildServiceImpl() {
-        return buildServiceImpl;
-    }
-
-    public BuildController getBuildController() {
-        return buildController;
-    }
-
-    public BuildBean getBuildBean() {
-        return buildBean;
-    }
-
-    public void setBuildBean(BuildBean buildBean) {
-        this.buildBean = buildBean;
-    }
-
-    public void setBuildController(BuildController buildController) {
-        this.buildController = buildController;
-    }
-
-    public void setBuildServiceImpl(BuildServiceImpl buildServiceImpl) {
-        this.buildServiceImpl = buildServiceImpl;
-    }
-
-    public void setBuildService(BuildService buildService) {
-        this.buildService = buildService;
-    }
-
-    public BuildDao getBuildDao() {
-        return buildDao;
-    }
-
-    public void setBuildDao(BuildDao buildDao) {
-        this.buildDao = buildDao;
-    }
-
-    public BuildXml getBuildXml() {
-        return buildXml;
-    }
-
-    public void setBuildXml(BuildXml buildXml) {
-        this.buildXml = buildXml;
-    }
-
-    public Bean getBean() {
-        return bean;
-    }
-
-    public void setBean(Bean bean) {
-        this.bean = bean;
+    public void setDatasourceConfig(DatasourceConfig datasourceConfig) {
+        this.datasourceConfig = datasourceConfig;
     }
 
     public GlobalConfig getGlobalConfig() {
@@ -89,13 +32,11 @@ public class AutoCodeConfig {
         this.globalConfig = globalConfig;
     }
 
-    public DatasourceConfig getDatasourceConfig() {
-        return datasourceConfig;
+    public Bean getBean() {
+        return bean;
     }
 
-    public void setDatasourceConfig(DatasourceConfig datasourceConfig) {
-        this.datasourceConfig = datasourceConfig;
+    public void setBean(Bean bean) {
+        this.bean = bean;
     }
-
-
 }

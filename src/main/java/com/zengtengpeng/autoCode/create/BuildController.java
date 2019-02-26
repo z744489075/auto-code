@@ -22,11 +22,10 @@ import java.util.Map;
 @FunctionalInterface
 public interface BuildController {
 
-    StringBuffer stringBuffer = new StringBuffer();
 
     default BuildController before(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
-        MyStringUtils.append(stringBuffer, "package %s.%s;", globalConfig.getParentPack(), globalConfig.getPackageController());
+        MyStringUtils.append(buildJavaConfig.getContent(), "package %s.%s;", globalConfig.getParentPack(), globalConfig.getPackageController());
         return this;
     }
 
@@ -37,9 +36,8 @@ public interface BuildController {
      * @return
      */
     default BuildController buildImports(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
-        if (buildJavaConfig == null) {
-            buildJavaConfig = new BuildJavaConfig();
-        }
+
+        StringBuffer content = buildJavaConfig.getContent();
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         Bean bean = autoCodeConfig.getBean();
         List<String> imports = buildJavaConfig.getImports();
@@ -61,9 +59,9 @@ public interface BuildController {
             imports.add(bean.getParentPack()+"."+globalConfig.getPackageBean()+"."+bean.getTableName());
             imports.add(bean.getParentPack()+"."+globalConfig.getPackageService()+"."+bean.getTableName()+globalConfig.getPackageService_());
         }
-        imports.forEach(t -> stringBuffer.append("import " + t + ";\n"));
+        imports.forEach(t -> content.append("import " + t + ";\n"));
 
-        stringBuffer.append("\n\n");
+        content.append("\n\n");
         return this;
     }
 
@@ -74,9 +72,8 @@ public interface BuildController {
      * @return
      */
     default BuildController buildClass(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
-        if (buildJavaConfig == null) {
-            buildJavaConfig = new BuildJavaConfig();
-        }
+
+        StringBuffer content = buildJavaConfig.getContent();
         Bean bean = autoCodeConfig.getBean();
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         StringBuffer extendsb = new StringBuffer();
@@ -89,7 +86,7 @@ public interface BuildController {
         if(MyStringUtils.isEmpty(buildJavaConfig.getRemark())){
             buildJavaConfig.setRemark(bean.getTableRemarks());
         }
-        stringBuffer.append("/**\n" +
+        content.append("/**\n" +
                 " *" +buildJavaConfig.getRemark()+" controller"+
                 "\n */\n");
 
@@ -123,8 +120,8 @@ public interface BuildController {
             s2 = " implements " + isb.substring(0, isb.length() - 1);
         }
 
-        annotations.forEach(t -> stringBuffer.append(t + "\n"));
-        MyStringUtils.append(stringBuffer, "public class %s%s %s %s{\n\n",
+        annotations.forEach(t -> content.append(t + "\n"));
+        MyStringUtils.append(content, "public class %s%s %s %s{\n\n",
                 bean.getTableName(),globalConfig.getPackageController_(), s1, s2);
         return this;
     }
@@ -136,9 +133,7 @@ public interface BuildController {
      * @return
      */
     default BuildController buildField(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
-        if (buildJavaConfig == null) {
-            buildJavaConfig = new BuildJavaConfig();
-        }
+
         List<BuildJavaField> buildJavaFields = buildJavaConfig.getBuildJavaFields();
         if (buildJavaFields == null) {
             buildJavaFields = new ArrayList<>();
@@ -157,10 +152,199 @@ public interface BuildController {
             buildJavaFields.add(buildJavaField);
             buildJavaConfig.setBuildJavaFields(buildJavaFields);
         }
-        BuildUtils.buildField(buildJavaConfig, stringBuffer);
+        StringBuffer content = buildJavaConfig.getContent();
+        BuildUtils.buildField(buildJavaConfig, content);
         return this;
     }
 
+    /**
+     * 构建删除方法
+     * @param autoCodeConfig
+     * @param buildJavaConfig
+     * @return
+     */
+    default BuildJavaMethod buildDelete(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig){
+        Bean bean = autoCodeConfig.getBean();
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+
+        BuildJavaMethod delete = new BuildJavaMethod();
+        List<String> an = new ArrayList<>();
+        an.add("@ResponseBody");
+        an.add(String.format("@RequestMapping(\"%s/deleteByPrimaryKey\")",bean.getTableValue()));
+        delete.setAnnotation(an);
+        delete.setReturnType("DataRes");
+        delete.setMethodType("public");
+        delete.setMethodName("deleteByPrimaryKey");
+        List<String> params=new ArrayList<>();
+        params.add(bean.getTableName()+" "+bean.getTableValue());
+        params.add("HttpServletRequest request");
+        params.add("HttpServletResponse response");
+        delete.setParams(params);
+        delete.setContent(String.format("return DataRes.success(%s%s.deleteByPrimaryKey(%s));",bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue()));
+        delete.setRemark("删除-"+buildJavaConfig.getRemark());
+        return delete;
+    }
+
+    /**
+     * 构建保存
+     * @param autoCodeConfig
+     * @param buildJavaConfig
+     * @return
+     */
+    default BuildJavaMethod buildSave(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
+        Bean bean = autoCodeConfig.getBean();
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+
+        BuildJavaMethod save = new BuildJavaMethod();
+        List<String> an = new ArrayList<>();
+        an.add("@ResponseBody");
+        an.add(String.format("@RequestMapping(\"%s/save\")",bean.getTableValue()));
+        save.setAnnotation(an);
+        save.setReturnType("DataRes");
+        save.setMethodType("public");
+        save.setMethodName("save");
+        List<String> params=new ArrayList<>();
+        params.add(bean.getTableName()+" "+bean.getTableValue());
+        params.add("HttpServletRequest request");
+        params.add("HttpServletResponse response");
+        save.setParams(params);
+        StringBuffer content=new StringBuffer();
+        BeanColumn beanColumn = bean.getPrimaryKey().get(0);
+        MyStringUtils.append(content,"if(%s.get%s()==null){",bean.getTableValue(),beanColumn.getBeanName_());
+        MyStringUtils.append(content,"return DataRes.success(%s%s.insert(%s));",3,bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue());
+        MyStringUtils.append(content,"}",2);
+        MyStringUtils.append(content,"return DataRes.success(%s%s.update(%s));",2,bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue());
+        save.setContent(content.toString());
+        save.setRemark("保存->"+buildJavaConfig.getRemark());
+        return save;
+    }
+    /**
+     * 构建 根据主键查询
+     * @param autoCodeConfig
+     * @param buildJavaConfig
+     * @return
+     */
+    default BuildJavaMethod buildSelectByPrimaryKey(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
+        Bean bean = autoCodeConfig.getBean();
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+
+        BuildJavaMethod selectByPrimaryKey = new BuildJavaMethod();
+        List<String> an = new ArrayList<>();
+        an.add("@ResponseBody");
+        an.add(String.format("@RequestMapping(\"%s/selectByPrimaryKey\")",bean.getTableValue()));
+        selectByPrimaryKey.setAnnotation(an);
+        selectByPrimaryKey.setReturnType("DataRes");
+        selectByPrimaryKey.setMethodType("public");
+        selectByPrimaryKey.setMethodName("selectByPrimaryKey");
+        List<String> params=new ArrayList<>();
+        params.add(bean.getTableName()+" "+bean.getTableValue());
+        params.add("HttpServletRequest request");
+        params.add("HttpServletResponse response");
+        selectByPrimaryKey.setParams(params);
+        selectByPrimaryKey.setRemark("根据主键查询->"+buildJavaConfig.getRemark());
+        selectByPrimaryKey.setContent(String.format("return DataRes.success(%s%s.selectByPrimaryKey(%s));",bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue()));
+        return selectByPrimaryKey;
+    }
+    /**
+     * 构建 根据条件查询
+     * @param autoCodeConfig
+     * @param buildJavaConfig
+     * @return
+     */
+    default BuildJavaMethod buildSelectByCondition(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
+        Bean bean = autoCodeConfig.getBean();
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+
+        BuildJavaMethod selectByCondition = new BuildJavaMethod();
+        List<String> an = new ArrayList<>();
+        an.add("@ResponseBody");
+        an.add(String.format("@RequestMapping(\"%s/selectByCondition\")",bean.getTableValue()));
+        selectByCondition.setAnnotation(an);
+        selectByCondition.setReturnType("DataRes");
+        selectByCondition.setMethodType("public");
+        selectByCondition.setMethodName("selectByCondition");
+        List<String> params=new ArrayList<>();
+        params.add(bean.getTableName()+" "+bean.getTableValue());
+        params.add("HttpServletRequest request");
+        params.add("HttpServletResponse response");
+        selectByCondition.setParams(params);
+        selectByCondition.setRemark("根据条件查询->"+buildJavaConfig.getRemark());
+        selectByCondition.setContent(String.format("return DataRes.success(%s%s.selectByCondition(%s));",bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue()));
+        return selectByCondition;
+    }
+    /**
+     * 构建 根据分页查询
+     * @param autoCodeConfig
+     * @param buildJavaConfig
+     * @return
+     */
+    default BuildJavaMethod buildSelectAllByPaging(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
+        Bean bean = autoCodeConfig.getBean();
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+
+        BuildJavaMethod selectAllByPaging = new BuildJavaMethod();
+        List<String> an = new ArrayList<>();
+        an.add("@ResponseBody");
+        an.add(String.format("@RequestMapping(\"%s/selectAllByPaging\")",bean.getTableValue()));
+        selectAllByPaging.setAnnotation(an);
+        selectAllByPaging.setReturnType("DataRes");
+        selectAllByPaging.setMethodType("public");
+        selectAllByPaging.setMethodName("selectAllByPaging");
+        List<String> params=new ArrayList<>();
+        params.add(bean.getTableName()+" "+bean.getTableValue());
+        params.add("HttpServletRequest request");
+        params.add("HttpServletResponse response");
+        selectAllByPaging.setParams(params);
+        selectAllByPaging.setRemark("分页查询->"+buildJavaConfig.getRemark());
+        selectAllByPaging.setContent(String.format("return DataRes.success(%s%s.selectAllByPaging(%s));",bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue()));
+        return selectAllByPaging;
+    }
+    /**
+     * 构建 导出excel
+     * @param autoCodeConfig
+     * @param buildJavaConfig
+     * @return
+     */
+    default BuildJavaMethod buildExport(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
+        Bean bean = autoCodeConfig.getBean();
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+
+        BuildJavaMethod export = new BuildJavaMethod();
+        List<String> an = new ArrayList<>();
+        an.add(String.format("@RequestMapping(\"%s/export\")",bean.getTableValue()));
+        export.setAnnotation(an);
+        export.setReturnType("void");
+        export.setMethodType("public");
+        export.setMethodName("export");
+        List<String> params=new ArrayList<>();
+        params.add(bean.getTableName()+" "+bean.getTableValue());
+        params.add("HttpServletRequest request");
+        params.add("HttpServletResponse response");
+        export.setParams(params);
+        StringBuffer content=new StringBuffer();
+        MyStringUtils.append(content,"List<%s> list= %s%s.selectAll(%s);",bean.getTableName(),bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue());
+        MyStringUtils.append(content,"Map<String, String> header = new LinkedHashMap<>();",2);
+        StringBuffer finalContent = content;
+        bean.getAllColumns().forEach(t->{
+            if("Date".equals(t.getBeanType_())){
+                MyStringUtils.append(finalContent,"header.put(\"%s_\", \"%s\");",2,t.getBeanName(),t.getRemarks());
+            }else {
+
+                ObjectMapper objectMapper=new ObjectMapper();
+                try {
+                    Map map = objectMapper.readValue(t.getRemarks(), Map.class);
+                    MyStringUtils.append(finalContent,"header.put(\"%s_\", \"%s\");",2,t.getBeanName(),t.getRemarks().replace("\"","\\\""));
+                } catch (Exception e) {
+                    MyStringUtils.append(finalContent,"header.put(\"%s\", \"%s\");",2,t.getBeanName(),t.getRemarks());
+                }
+            }
+
+        });
+        MyStringUtils.append(finalContent,"ExcelUtils.exportExcel(\"%s\",header,list,response,request);",2,bean.getTableRemarks());
+        export.setContent(finalContent.toString());
+        export.setRemark("导出报表->"+buildJavaConfig.getRemark());
+        return export;
+    }
     /**
      * 构建方法
      *
@@ -168,9 +352,7 @@ public interface BuildController {
      * @return
      */
     default BuildController buildMethods(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
-        if (buildJavaConfig == null) {
-            buildJavaConfig = new BuildJavaConfig();
-        }
+
         List<BuildJavaMethod> buildJavaMethods = buildJavaConfig.getBuildJavaMethods();
         if (buildJavaMethods == null) {
             buildJavaMethods = new ArrayList<>();
@@ -181,147 +363,28 @@ public interface BuildController {
             buildJavaConfig.setRemark(bean.getTableRemarks());
         }
         if (buildJavaConfig.getDefaultRealize()) {
-            GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
-
             //删除
-            BuildJavaMethod delete = new BuildJavaMethod();
-            List<String> an = new ArrayList<>();
-            an.add("@ResponseBody");
-            an.add(String.format("@RequestMapping(\"%s/deleteByPrimaryKey\")",bean.getTableValue()));
-            delete.setAnnotation(an);
-            delete.setReturnType("DataRes");
-            delete.setMethodType("public");
-            delete.setMethodName("deleteByPrimaryKey");
-            List<String> params=new ArrayList<>();
-            params.add(bean.getTableName()+" "+bean.getTableValue());
-            params.add("HttpServletRequest request");
-            params.add("HttpServletResponse response");
-            delete.setParams(params);
-            delete.setContent(String.format("return DataRes.success(%s%s.deleteByPrimaryKey(%s));",bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue()));
-            delete.setRemark("删除-"+buildJavaConfig.getRemark());
-            buildJavaMethods.add(delete);
+            buildJavaMethods.add(buildDelete(autoCodeConfig,buildJavaConfig));
 
             //保存
-            BuildJavaMethod save = new BuildJavaMethod();
-            an = new ArrayList<>();
-            an.add("@ResponseBody");
-            an.add(String.format("@RequestMapping(\"%s/save\")",bean.getTableValue()));
-            save.setAnnotation(an);
-            save.setReturnType("DataRes");
-            save.setMethodType("public");
-            save.setMethodName("save");
-            params=new ArrayList<>();
-            params.add(bean.getTableName()+" "+bean.getTableValue());
-            params.add("HttpServletRequest request");
-            params.add("HttpServletResponse response");
-            save.setParams(params);
-            StringBuffer content=new StringBuffer();
-            BeanColumn beanColumn = bean.getPrimaryKey().get(0);
-            MyStringUtils.append(content,"if(%s.get%s()==null){",bean.getTableValue(),beanColumn.getBeanName_());
-            MyStringUtils.append(content,"return DataRes.success(%s%s.insert(%s));",3,bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue());
-            MyStringUtils.append(content,"}",2);
-            MyStringUtils.append(content,"return DataRes.success(%s%s.update(%s));",2,bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue());
-            save.setContent(content.toString());
-            save.setRemark("保存->"+buildJavaConfig.getRemark());
-            buildJavaMethods.add(save);
+            buildJavaMethods.add(buildSave(autoCodeConfig,buildJavaConfig));
 
             //根据主键查询
-            BuildJavaMethod selectByPrimaryKey = new BuildJavaMethod();
-            an = new ArrayList<>();
-            an.add("@ResponseBody");
-            an.add(String.format("@RequestMapping(\"%s/selectByPrimaryKey\")",bean.getTableValue()));
-            selectByPrimaryKey.setAnnotation(an);
-            selectByPrimaryKey.setReturnType("DataRes");
-            selectByPrimaryKey.setMethodType("public");
-            selectByPrimaryKey.setMethodName("selectByPrimaryKey");
-            params=new ArrayList<>();
-            params.add(bean.getTableName()+" "+bean.getTableValue());
-            params.add("HttpServletRequest request");
-            params.add("HttpServletResponse response");
-            selectByPrimaryKey.setParams(params);
-            selectByPrimaryKey.setRemark("根据主键查询->"+buildJavaConfig.getRemark());
-            selectByPrimaryKey.setContent(String.format("return DataRes.success(%s%s.selectByPrimaryKey(%s));",bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue()));
-            buildJavaMethods.add(selectByPrimaryKey);
-
+            buildJavaMethods.add(buildSelectByPrimaryKey(autoCodeConfig,buildJavaConfig));
 
             //根据条件查询
-            BuildJavaMethod queryByCondition = new BuildJavaMethod();
-            an = new ArrayList<>();
-            an.add("@ResponseBody");
-            an.add(String.format("@RequestMapping(\"%s/queryByCondition\")",bean.getTableValue()));
-            queryByCondition.setAnnotation(an);
-            queryByCondition.setReturnType("DataRes");
-            queryByCondition.setMethodType("public");
-            queryByCondition.setMethodName("queryByCondition");
-            params=new ArrayList<>();
-            params.add(bean.getTableName()+" "+bean.getTableValue());
-            params.add("HttpServletRequest request");
-            params.add("HttpServletResponse response");
-            queryByCondition.setParams(params);
-            queryByCondition.setRemark("根据条件查询->"+buildJavaConfig.getRemark());
-            queryByCondition.setContent(String.format("return DataRes.success(%s%s.queryByCondition(%s));",bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue()));
-            buildJavaMethods.add(queryByCondition);
+            buildJavaMethods.add(buildSelectByCondition(autoCodeConfig,buildJavaConfig));
 
             //分页查询
-            BuildJavaMethod selectAllByPaging = new BuildJavaMethod();
-            an = new ArrayList<>();
-            an.add("@ResponseBody");
-            an.add(String.format("@RequestMapping(\"%s/selectAllByPaging\")",bean.getTableValue()));
-            selectAllByPaging.setAnnotation(an);
-            selectAllByPaging.setReturnType("DataRes");
-            selectAllByPaging.setMethodType("public");
-            selectAllByPaging.setMethodName("selectAllByPaging");
-            params=new ArrayList<>();
-            params.add(bean.getTableName()+" "+bean.getTableValue());
-            params.add("HttpServletRequest request");
-            params.add("HttpServletResponse response");
-            selectAllByPaging.setParams(params);
-            selectAllByPaging.setRemark("分页查询->"+buildJavaConfig.getRemark());
-            selectAllByPaging.setContent(String.format("return DataRes.success(%s%s.selectAllByPaging(%s));",bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue()));
-            buildJavaMethods.add(selectAllByPaging);
-
-
+            buildJavaMethods.add(buildSelectAllByPaging(autoCodeConfig,buildJavaConfig));
 
             //导出报表
-            BuildJavaMethod export = new BuildJavaMethod();
-            an = new ArrayList<>();
-            an.add(String.format("@RequestMapping(\"%s/export\")",bean.getTableValue()));
-            export.setAnnotation(an);
-            export.setReturnType("void");
-            export.setMethodType("public");
-            export.setMethodName("export");
-            params=new ArrayList<>();
-            params.add(bean.getTableName()+" "+bean.getTableValue());
-            params.add("HttpServletRequest request");
-            params.add("HttpServletResponse response");
-            export.setParams(params);
-            content=new StringBuffer();
-            MyStringUtils.append(content,"List<%s> list= %s%s.selectAll(%s);",bean.getTableName(),bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue());
-            MyStringUtils.append(content,"Map<String, String> header = new LinkedHashMap<>();",2);
-            StringBuffer finalContent = content;
-            bean.getAllColumns().forEach(t->{
-                if("Date".equals(t.getBeanType_())){
-                    MyStringUtils.append(finalContent,"header.put(\"%s_\", \"%s\");",2,t.getBeanName(),t.getRemarks());
-                }else {
-
-                    ObjectMapper objectMapper=new ObjectMapper();
-                    try {
-                        Map map = objectMapper.readValue(t.getRemarks(), Map.class);
-                        MyStringUtils.append(finalContent,"header.put(\"%s_\", \"%s\");",2,t.getBeanName(),t.getRemarks().replace("\"","\\\""));
-                    } catch (Exception e) {
-                        MyStringUtils.append(finalContent,"header.put(\"%s\", \"%s\");",2,t.getBeanName(),t.getRemarks());
-                    }
-                }
-
-            });
-            MyStringUtils.append(finalContent,"ExcelUtils.exportExcel(\"%s\",header,list,response,request);",2,bean.getTableRemarks());
-            export.setContent(finalContent.toString());
-            export.setRemark("导出报表->"+buildJavaConfig.getRemark());
-            buildJavaMethods.add(export);
+            buildJavaMethods.add(buildExport(autoCodeConfig,buildJavaConfig));
 
             buildJavaConfig.setBuildJavaMethods(buildJavaMethods);
         }
-        BuildUtils.buildMethods(buildJavaConfig, stringBuffer);
+        StringBuffer content = buildJavaConfig.getContent();
+        BuildUtils.buildMethods(buildJavaConfig, content);
         return this;
     }
 
@@ -333,7 +396,8 @@ public interface BuildController {
      * @return
      */
     default BuildController end(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
-        stringBuffer.append("}\n");
+        StringBuffer content = buildJavaConfig.getContent();
+        content.append("}\n");
         return this;
     }
 
@@ -353,6 +417,9 @@ public interface BuildController {
      */
     default String build(AutoCodeConfig autoCodeConfig) {
         BuildJavaConfig buildJavaConfig = custom(autoCodeConfig);
+        if(buildJavaConfig==null){
+            buildJavaConfig=new BuildJavaConfig();
+        }
         before(autoCodeConfig, buildJavaConfig).
                 buildImports(autoCodeConfig, buildJavaConfig)
                 .buildClass(autoCodeConfig, buildJavaConfig)
@@ -360,7 +427,7 @@ public interface BuildController {
                 .buildMethods(autoCodeConfig, buildJavaConfig)
                 .end(autoCodeConfig, buildJavaConfig);
 
-        return stringBuffer.toString();
+        return buildJavaConfig.getContent().toString();
     }
 
 

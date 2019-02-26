@@ -16,10 +16,10 @@ import java.util.List;
 @FunctionalInterface
 public interface BuildDao {
 
-    StringBuffer stringBuffer = new StringBuffer();
     default BuildDao before(AutoCodeConfig autoCodeConfig,BuildJavaConfig buildJavaConfig){
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
-        MyStringUtils.append(stringBuffer,"package %s.%s;",globalConfig.getParentPack(),globalConfig.getPackageDao());
+        StringBuffer content = buildJavaConfig.getContent();
+        MyStringUtils.append(content,"package %s.%s;",globalConfig.getParentPack(),globalConfig.getPackageDao());
         return this;
     }
 
@@ -29,9 +29,7 @@ public interface BuildDao {
      * @return
      */
     default BuildDao buildImports(AutoCodeConfig autoCodeConfig,BuildJavaConfig buildJavaConfig){
-        if(buildJavaConfig==null){
-            buildJavaConfig=new BuildJavaConfig();
-        }
+
         Bean bean = autoCodeConfig.getBean();
         List<String> imports = buildJavaConfig.getImports();
         if(imports==null){
@@ -42,9 +40,10 @@ public interface BuildDao {
             GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
             imports.add(globalConfig.getParentPack()+"."+globalConfig.getPackageBean()+"."+bean.getTableName());
         }
-        imports.forEach(t->stringBuffer.append("import "+t+";\n"));
+        StringBuffer content = buildJavaConfig.getContent();
+        imports.forEach(t->content.append("import "+t+";\n"));
 
-        stringBuffer.append("\n\n");
+        content.append("\n\n");
         return this;
     }
 
@@ -54,9 +53,7 @@ public interface BuildDao {
      * @return
      */
     default BuildDao buildClass(AutoCodeConfig autoCodeConfig,BuildJavaConfig buildJavaConfig) {
-        if(buildJavaConfig==null){
-            buildJavaConfig=new BuildJavaConfig();
-        }
+
         Bean bean = autoCodeConfig.getBean();
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         StringBuffer s=new StringBuffer();
@@ -70,21 +67,22 @@ public interface BuildDao {
         if(MyStringUtils.isEmpty(buildJavaConfig.getRemark())){
             buildJavaConfig.setRemark(bean.getTableRemarks());
         }
-        stringBuffer.append("/**\n" +
+        StringBuffer content = buildJavaConfig.getContent();
+        content.append("/**\n" +
                 " *" +buildJavaConfig.getRemark()+" dao"+
                 "\n */\n");
         extend.forEach(t-> s.append(t+","));
         List<String> annotations = buildJavaConfig.getAnnotations();
 
         if(annotations!=null){
-            annotations.forEach(t->stringBuffer.append(t+"\n"));
+            annotations.forEach(t->content.append(t+"\n"));
         }
         String s1="";
         if(s.length()>0){
             s1=" extends "+s.substring(0,s.length()-1);
         }
 
-        MyStringUtils.append(stringBuffer,"public interface %s%s %s{\n\n",
+        MyStringUtils.append(content,"public interface %s%s %s{\n\n",
                 bean.getTableName(),MyStringUtils.firstUpperCase(globalConfig.getPackageDao()),s1);
         return this;
     }
@@ -95,7 +93,8 @@ public interface BuildDao {
      * @return
      */
     default BuildDao buildField(AutoCodeConfig autoCodeConfig,BuildJavaConfig buildJavaConfig) {
-        BuildUtils.buildField(buildJavaConfig,stringBuffer);
+        StringBuffer content = buildJavaConfig.getContent();
+        BuildUtils.buildField(buildJavaConfig,content);
         return this;
     }
     /**
@@ -104,7 +103,8 @@ public interface BuildDao {
      * @return
      */
     default BuildDao buildMethods(AutoCodeConfig autoCodeConfig,BuildJavaConfig buildJavaConfig) {
-        BuildUtils.buildMethods(buildJavaConfig,stringBuffer);
+        StringBuffer content = buildJavaConfig.getContent();
+        BuildUtils.buildMethods(buildJavaConfig,content);
         return this;
     }
     /**
@@ -113,7 +113,8 @@ public interface BuildDao {
      * @return
      */
     default BuildDao end(AutoCodeConfig autoCodeConfig,BuildJavaConfig buildJavaConfig){
-        stringBuffer.append("}\n");
+        StringBuffer content = buildJavaConfig.getContent();
+        content.append("}\n");
         return this;
     }
 
@@ -131,11 +132,14 @@ public interface BuildDao {
      */
     default String build(AutoCodeConfig autoCodeConfig){
         BuildJavaConfig buildJavaConfig = custom(autoCodeConfig);
+        if(buildJavaConfig==null){
+            buildJavaConfig=new BuildJavaConfig();
+        }
          before(autoCodeConfig,buildJavaConfig).buildImports(autoCodeConfig,buildJavaConfig)
                 .buildClass(autoCodeConfig,buildJavaConfig).buildField(autoCodeConfig,buildJavaConfig)
                 .buildMethods(autoCodeConfig,buildJavaConfig).end(autoCodeConfig,buildJavaConfig);
-
-        return stringBuffer.toString();
+        StringBuffer content = buildJavaConfig.getContent();
+        return content.toString();
     }
 
 

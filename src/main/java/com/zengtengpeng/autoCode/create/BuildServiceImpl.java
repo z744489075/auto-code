@@ -18,11 +18,11 @@ import java.util.List;
 @FunctionalInterface
 public interface BuildServiceImpl {
 
-    StringBuffer stringBuffer = new StringBuffer();
 
     default BuildServiceImpl before(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
+        StringBuffer content = buildJavaConfig.getContent();
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
-        MyStringUtils.append(stringBuffer, "package %s.%s.impl;", globalConfig.getParentPack(), globalConfig.getPackageService());
+        MyStringUtils.append(content, "package %s.%s.impl;", globalConfig.getParentPack(), globalConfig.getPackageService());
         return this;
     }
 
@@ -33,9 +33,7 @@ public interface BuildServiceImpl {
      * @return
      */
     default BuildServiceImpl buildImports(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
-        if (buildJavaConfig == null) {
-            buildJavaConfig = new BuildJavaConfig();
-        }
+        StringBuffer content = buildJavaConfig.getContent();
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         Bean bean = autoCodeConfig.getBean();
         List<String> imports = buildJavaConfig.getImports();
@@ -49,9 +47,9 @@ public interface BuildServiceImpl {
             imports.add("org.springframework.transaction.annotation.Transactional");
             imports.add("javax.annotation.Resource");
         }
-        imports.forEach(t -> stringBuffer.append("import " + t + ";\n"));
+        imports.forEach(t -> content.append("import " + t + ";\n"));
 
-        stringBuffer.append("\n\n");
+        content.append("\n\n");
         return this;
     }
 
@@ -62,9 +60,7 @@ public interface BuildServiceImpl {
      * @return
      */
     default BuildServiceImpl buildClass(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
-        if (buildJavaConfig == null) {
-            buildJavaConfig = new BuildJavaConfig();
-        }
+        StringBuffer content = buildJavaConfig.getContent();
         Bean bean = autoCodeConfig.getBean();
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         StringBuffer extendsb = new StringBuffer();
@@ -76,7 +72,7 @@ public interface BuildServiceImpl {
         if(MyStringUtils.isEmpty(buildJavaConfig.getRemark())){
             buildJavaConfig.setRemark(bean.getTableRemarks());
         }
-        stringBuffer.append("/**\n" +
+        content.append("/**\n" +
                 " *" +buildJavaConfig.getRemark()+" serverImpl"+
                 "\n */\n");
 
@@ -116,8 +112,8 @@ public interface BuildServiceImpl {
         }
 
 
-        annotations.forEach(t -> stringBuffer.append(t + "\n"));
-        MyStringUtils.append(stringBuffer, "public class %s%sImpl  %s %s {\n\n",
+        annotations.forEach(t -> content.append(t + "\n"));
+        MyStringUtils.append(content, "public class %s%sImpl  %s %s {\n\n",
                 bean.getTableName(), MyStringUtils.firstUpperCase(globalConfig.getPackageService()), s1, s2);
         return this;
     }
@@ -129,9 +125,7 @@ public interface BuildServiceImpl {
      * @return
      */
     default BuildServiceImpl buildField(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
-        if (buildJavaConfig == null) {
-            buildJavaConfig = new BuildJavaConfig();
-        }
+        StringBuffer content = buildJavaConfig.getContent();
         List<BuildJavaField> buildJavaFields = buildJavaConfig.getBuildJavaFields();
         if (buildJavaFields == null) {
             buildJavaFields = new ArrayList<>();
@@ -151,7 +145,7 @@ public interface BuildServiceImpl {
             buildJavaFields.add(buildJavaField);
             buildJavaConfig.setBuildJavaFields(buildJavaFields);
         }
-        BuildUtils.buildField(buildJavaConfig, stringBuffer);
+        BuildUtils.buildField(buildJavaConfig, content);
         return this;
     }
 
@@ -162,9 +156,7 @@ public interface BuildServiceImpl {
      * @return
      */
     default BuildServiceImpl buildMethods(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
-        if (buildJavaConfig == null) {
-            buildJavaConfig = new BuildJavaConfig();
-        }
+        StringBuffer content = buildJavaConfig.getContent();
         List<BuildJavaMethod> buildJavaMethods = buildJavaConfig.getBuildJavaMethods();
         if (buildJavaMethods == null) {
             buildJavaMethods = new ArrayList<>();
@@ -186,7 +178,7 @@ public interface BuildServiceImpl {
             buildJavaMethods.add(buildJavaMethod);
             buildJavaConfig.setBuildJavaMethods(buildJavaMethods);
         }
-        BuildUtils.buildMethods(buildJavaConfig, stringBuffer);
+        BuildUtils.buildMethods(buildJavaConfig, content);
         return this;
     }
 
@@ -198,7 +190,8 @@ public interface BuildServiceImpl {
      * @return
      */
     default BuildServiceImpl end(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
-        stringBuffer.append("}\n");
+        StringBuffer content = buildJavaConfig.getContent();
+        content.append("}\n");
         return this;
     }
 
@@ -218,6 +211,9 @@ public interface BuildServiceImpl {
      */
     default String build(AutoCodeConfig autoCodeConfig) {
         BuildJavaConfig buildJavaConfig = custom(autoCodeConfig);
+        if(buildJavaConfig==null){
+            buildJavaConfig=new BuildJavaConfig();
+        }
         before(autoCodeConfig, buildJavaConfig).
                 buildImports(autoCodeConfig, buildJavaConfig)
                 .buildClass(autoCodeConfig, buildJavaConfig)
@@ -225,7 +221,7 @@ public interface BuildServiceImpl {
                 .buildMethods(autoCodeConfig, buildJavaConfig)
                 .end(autoCodeConfig, buildJavaConfig);
 
-        return stringBuffer.toString();
+        return buildJavaConfig.getContent().toString();
     }
 
 

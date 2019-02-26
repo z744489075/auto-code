@@ -19,14 +19,13 @@ import java.util.Map;
 @FunctionalInterface
 public interface BuildXml {
 
-    StringBuffer stringBuffer = new StringBuffer();
 
     /**
      * 创建insert
      *
      * @return
      */
-    default BuildXml insert(AutoCodeConfig init) {
+    default BuildXml insert(AutoCodeConfig init,StringBuffer content) {
         Bean bean = init.getBean();
         BeanColumn beanColumn = bean.getPrimaryKey().get(0);
         BuildXmlBean buildXmlBean=new BuildXmlBean();
@@ -56,7 +55,7 @@ public interface BuildXml {
         MyStringUtils.append(sql, ")\n", 2);
 
         buildXmlBean.setSql(sql.toString());
-        stringBuffer.append(build(buildXmlBean));
+        content.append(build(buildXmlBean));
         return this;
     }
 
@@ -65,7 +64,7 @@ public interface BuildXml {
      *
      * @return
      */
-    default BuildXml deleteByPrimaryKey(AutoCodeConfig init) {
+    default BuildXml deleteByPrimaryKey(AutoCodeConfig init,StringBuffer content) {
         Bean bean = init.getBean();
         BuildXmlBean buildXmlBean=new BuildXmlBean();
         buildXmlBean.setXmlElementType(XmlElementType.delete);
@@ -79,7 +78,7 @@ public interface BuildXml {
         MyStringUtils.append(sql, "where %s = #{%s} \n ",2, beanColumn.getJdbcName(), beanColumn.getBeanName());
 
         buildXmlBean.setSql(sql.toString());
-        stringBuffer.append(build(buildXmlBean));
+        content.append(build(buildXmlBean));
         return this;
     }
 
@@ -88,7 +87,7 @@ public interface BuildXml {
      *
      * @return
      */
-    default BuildXml update(AutoCodeConfig init) {
+    default BuildXml update(AutoCodeConfig init,StringBuffer content) {
         Bean bean = init.getBean();
 
         BuildXmlBean buildXmlBean=new BuildXmlBean();
@@ -117,7 +116,7 @@ public interface BuildXml {
 
 
         buildXmlBean.setSql(sql.toString());
-        stringBuffer.append(build(buildXmlBean));
+        content.append(build(buildXmlBean));
         return this;
     }
 
@@ -126,7 +125,7 @@ public interface BuildXml {
      *
      * @return
      */
-    default BuildXml selectByPrimaryKey(AutoCodeConfig init) {
+    default BuildXml selectByPrimaryKey(AutoCodeConfig init,StringBuffer content) {
         Bean bean = init.getBean();
         BuildXmlBean buildXmlBean=new BuildXmlBean();
         buildXmlBean.setXmlElementType(XmlElementType.select);
@@ -145,7 +144,7 @@ public interface BuildXml {
         MyStringUtils.append(sql, "where %s = #{%s,jdbcType=%s}",2, beanColumn.getJdbcName(), beanColumn.getBeanName(), beanColumn.getJdbcType_());
 
         buildXmlBean.setSql(sql.toString());
-        stringBuffer.append(build(buildXmlBean));
+        content.append(build(buildXmlBean));
         return this;
     }
 
@@ -154,8 +153,8 @@ public interface BuildXml {
      *
      * @return
      */
-    default BuildXml selectAll(AutoCodeConfig init) {
-        select("selectAll",init);
+    default BuildXml selectAll(AutoCodeConfig init,StringBuffer content) {
+        select("selectAll",init,content);
         return this;
     }
 
@@ -164,12 +163,12 @@ public interface BuildXml {
      *
      * @return
      */
-    default BuildXml selectByCondition(AutoCodeConfig init) {
-        select("selectByCondition", init);
+    default BuildXml selectByCondition(AutoCodeConfig init,StringBuffer content) {
+        select("selectByCondition", init,content);
         return this;
     }
 
-    default void select(String id, AutoCodeConfig init) {
+    default void select(String id, AutoCodeConfig init,StringBuffer content) {
         Bean bean = init.getBean();
 
         BuildXmlBean buildXmlBean=new BuildXmlBean();
@@ -215,7 +214,7 @@ public interface BuildXml {
                 "      </choose>",2, beanColumn.getJdbcName());
 
         buildXmlBean.setSql(sql.toString());
-        stringBuffer.append(build(buildXmlBean));
+        content.append(build(buildXmlBean));
     }
 
     /**
@@ -223,24 +222,24 @@ public interface BuildXml {
      *
      * @return
      */
-    default BuildXml before(AutoCodeConfig init) {
+    default BuildXml before(AutoCodeConfig init,StringBuffer content) {
         GlobalConfig globalConfig = init.getGlobalConfig();
         Bean bean = init.getBean();
-        MyStringUtils.append(stringBuffer, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+        MyStringUtils.append(content, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\" \"http://mybatis.org/dtd/mybatis-3-mapper.dtd\">\n" +
                 "<mapper namespace=\"%s.%s.%s%s\">\n", globalConfig.getParentPack(), globalConfig.getPackageDao(), bean.getTableName(), globalConfig.getPackageDao_());
 
-        MyStringUtils.append(stringBuffer, "<resultMap id=\"BaseResultMap\" type=\"%s.%s.%s\">\n",1, globalConfig.getParentPack(), globalConfig.getPackageBean(),
+        MyStringUtils.append(content, "<resultMap id=\"BaseResultMap\" type=\"%s.%s.%s\">\n",1, globalConfig.getParentPack(), globalConfig.getPackageBean(),
                 bean.getTableName());
 
         for (BeanColumn allColumn : bean.getAllColumns()) {
             if (allColumn.getKey()) {
-                MyStringUtils.append(stringBuffer, "<id column=\"%s\" jdbcType=\"%s\" property=\"%s\" />\n",2, allColumn.getJdbcName(), allColumn.getJdbcType_(), allColumn.getBeanName());
+                MyStringUtils.append(content, "<id column=\"%s\" jdbcType=\"%s\" property=\"%s\" />\n",2, allColumn.getJdbcName(), allColumn.getJdbcType_(), allColumn.getBeanName());
             } else {
-                MyStringUtils.append(stringBuffer, "<result column=\"%s\" jdbcType=\"%s\" property=\"%s\" />\n",2, allColumn.getJdbcName(), allColumn.getJdbcType_(), allColumn.getBeanName());
+                MyStringUtils.append(content, "<result column=\"%s\" jdbcType=\"%s\" property=\"%s\" />\n",2, allColumn.getJdbcName(), allColumn.getJdbcType_(), allColumn.getBeanName());
             }
         }
-        MyStringUtils.append(stringBuffer,"</resultMap>\n",1);
+        MyStringUtils.append(content,"</resultMap>\n",1);
         return this;
     }
 
@@ -249,8 +248,8 @@ public interface BuildXml {
      *
      * @return
      */
-    default BuildXml end(AutoCodeConfig init) {
-        stringBuffer.append("</mapper>");
+    default BuildXml end(AutoCodeConfig init,StringBuffer content) {
+        content.append("</mapper>");
         return this;
     }
 
@@ -283,14 +282,15 @@ public interface BuildXml {
      List<BuildXmlBean> custom(AutoCodeConfig autoCodeConfig);
 
     default String build(AutoCodeConfig autoCodeConfig) {
-        BuildXml buildXml = before(autoCodeConfig).insert(autoCodeConfig).deleteByPrimaryKey(autoCodeConfig).
-                update(autoCodeConfig).selectByPrimaryKey(autoCodeConfig).selectAll(autoCodeConfig).selectByCondition(autoCodeConfig);
+        StringBuffer content=new StringBuffer();
+        BuildXml buildXml = before(autoCodeConfig,content).insert(autoCodeConfig,content).deleteByPrimaryKey(autoCodeConfig,content).
+                update(autoCodeConfig,content).selectByPrimaryKey(autoCodeConfig,content).selectAll(autoCodeConfig,content).selectByCondition(autoCodeConfig,content);
         List<BuildXmlBean> custom = buildXml.custom(autoCodeConfig);
         if(custom!=null){
-            custom.forEach(t-> stringBuffer.append(t).append("\n"));
+            custom.forEach(t-> content.append(t).append("\n"));
         }
-        buildXml.end(autoCodeConfig);
-        return stringBuffer.toString();
+        buildXml.end(autoCodeConfig,content);
+        return content.toString();
     }
 
 

@@ -21,6 +21,7 @@ public class Page implements Serializable {
 
 	private Integer pageSize = 10;
 
+
 	@JsonIgnore
 	private String startDate;//开始时间
 	@JsonIgnore

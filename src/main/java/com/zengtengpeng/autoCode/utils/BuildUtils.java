@@ -20,23 +20,24 @@ public class BuildUtils {
             List<BuildJavaField> buildJavaFields = buildJavaConfig.getBuildJavaFields();
             if(buildJavaFields!=null) {
                 buildJavaFields.forEach(t -> {
-//                StringBuffer stringBuffer = new StringBuffer();
-                    List<String> annotation = t.getAnnotation();
-                    if (!MyStringUtils.isEmpty(t.getRemark())){
-                        stringBuffer.append("\t/**\n" +
-                                "\t * "+t.getRemark()+
-                                "\n\t */\n");
+                    if(t!=null) {
+                        List<String> annotation = t.getAnnotation();
+                        if (!MyStringUtils.isEmpty(t.getRemark())) {
+                            stringBuffer.append("\t/**\n" +
+                                    "\t * " + t.getRemark() +
+                                    "\n\t */\n");
+                        }
+                        if (annotation != null) {
+                            annotation.forEach(tt -> stringBuffer.append("\t" + tt + "\n"));
+                        }
+                        String init = t.getInit();
+                        if (!MyStringUtils.isEmpty(init)) {
+                            init = "=" + init;
+                        } else {
+                            init = "";
+                        }
+                        stringBuffer.append(String.format("\t%s %s %s;\n\n", t.getReturnType(), t.getFiledName(), init));
                     }
-                    if (annotation != null) {
-                        annotation.forEach(tt -> stringBuffer.append("\t" + tt + "\n"));
-                    }
-                    String init = t.getInit();
-                    if (!MyStringUtils.isEmpty(init)) {
-                        init = "=" + init;
-                    } else {
-                        init = "";
-                    }
-                    stringBuffer.append(String.format("\t%s %s %s;\n\n", t.getReturnType(), t.getFiledName(), init));
                 });
             }
 
@@ -54,33 +55,35 @@ public class BuildUtils {
             List<BuildJavaMethod> buildJavaMethods = buildJavaConfig.getBuildJavaMethods();
             if(buildJavaMethods!=null) {
                 buildJavaMethods.forEach(t -> {
-                    List<String> annotation = t.getAnnotation();
-                    if (!MyStringUtils.isEmpty(t.getRemark())){
-                        stringBuffer.append("\t/**\n" +
-                                "\t * "+t.getRemark()+
-                                "\n\t */\n");
-                    }
-                    if (annotation != null) {
-                        annotation.forEach(ttt -> MyStringUtils.append(stringBuffer, "%s", 1, ttt));
-                    }
-                    StringBuffer params = new StringBuffer();
-                    List<String> params1 = t.getParams();
-                    if (params1 != null) {
-                        params1.forEach(tt -> params.append(tt + ","));
-                    }
-                    String p="";
-                    if(params.length()>0){
-                        p=params.substring(0, params.length() - 1);
-                    }
-                    stringBuffer.append(String.format("\t%s %s %s(%s)", t.getMethodType(), t.getReturnType(), t.getMethodName(), p));
+                    if(t!=null) {
+                        List<String> annotation = t.getAnnotation();
+                        if (!MyStringUtils.isEmpty(t.getRemark())) {
+                            stringBuffer.append("\t/**\n" +
+                                    "\t * " + t.getRemark() +
+                                    "\n\t */\n");
+                        }
+                        if (annotation != null) {
+                            annotation.forEach(ttt -> MyStringUtils.append(stringBuffer, "%s", 1, ttt));
+                        }
+                        StringBuffer params = new StringBuffer();
+                        List<String> params1 = t.getParams();
+                        if (params1 != null) {
+                            params1.forEach(tt -> params.append(tt + ","));
+                        }
+                        String p = "";
+                        if (params.length() > 0) {
+                            p = params.substring(0, params.length() - 1);
+                        }
+                        stringBuffer.append(String.format("\t%s %s %s(%s)", t.getMethodType(), t.getReturnType(), t.getMethodName(), p));
 
-                    if (MyStringUtils.isEmpty(t.getContent())) {
-                        stringBuffer.append(";\n");
-                    } else {
-                        stringBuffer.append("{\n");
-                        MyStringUtils.append(stringBuffer, "%s", 2, t.getContent());
-                        MyStringUtils.append(stringBuffer, "}\n\n", 1);
+                        if (MyStringUtils.isEmpty(t.getContent())) {
+                            stringBuffer.append(";\n");
+                        } else {
+                            stringBuffer.append("{\n");
+                            MyStringUtils.append(stringBuffer, "%s", 2, t.getContent());
+                            MyStringUtils.append(stringBuffer, "}\n\n", 1);
 
+                        }
                     }
                 });
             }
@@ -96,11 +99,8 @@ public class BuildUtils {
      * @param context 内容
      */
     public static void createJavaFile(String parentPath,String parentPack,String pack,String beanName,String context){
-        parentPack=parentPack.replace(".","/")+"/";
-        if(!MyStringUtils.isEmpty(pack)){
-            pack=pack.replace(".","/")+"/";
-        }
-        File parentFile=new File(parentPath+"/"+parentPack+pack);
+
+        File parentFile=new File(packageJavaPath(parentPath,parentPack,pack));
         if (!parentFile.exists()){
             parentFile.mkdirs();
         }
@@ -109,7 +109,34 @@ public class BuildUtils {
         create(context, file);
     }
 
+    /**
+     * 组装路径
+     * @param parentPath
+     * @param parentPack
+     * @param pack
+     * @return
+     */
+    public static String packageJavaPath(String parentPath,String parentPack,String pack){
+        parentPack=parentPack.replace(".","/")+"/";
+        if(!MyStringUtils.isEmpty(pack)){
+            pack=pack.replace(".","/")+"/";
+        }
+        return parentPath+"/"+parentPack+pack;
+    }
 
+    /**
+     * 组装xml路径
+     * @param parentPath
+     * @param xmlPath
+     * @return
+     */
+    public static File packageXmlPath(String parentPath, String xmlPath){
+        File parentFile=new File(parentPath+"/"+xmlPath+"/");
+        if (!parentFile.exists()){
+            parentFile.mkdirs();
+        }
+        return parentFile;
+    }
     /**
      * 创建XML文件
      * @param parentPath 根路径
@@ -117,14 +144,8 @@ public class BuildUtils {
      * @param name 文件名称
      * @param context 内容
      */
-    public static void createXMLFile(String parentPath,String xmlPath,String name,String context){
-
-        File parentFile=new File(parentPath+"/"+xmlPath);
-        if (!parentFile.exists()){
-            parentFile.mkdirs();
-        }
-
-        File file=new File(parentFile,name+".xml");
+    public static void createXMLFile(String parentPath, String xmlPath,String name,String context){
+        File file=new File(packageXmlPath(parentPath,xmlPath),name+".xml");
         create(context, file);
     }
 

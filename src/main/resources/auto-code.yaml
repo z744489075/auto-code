@@ -13,7 +13,8 @@ globalConfig:
     #数据库表配置
     tableNames:
         #表名称
-        - dataName: test_code2
+        - dataName: test_class
+        - dataName: test_user
           #别名 不写默认采用驼峰命名法 test_code->TestCode
 #          aliasName: SysLoginLog
           #可以是多个
