@@ -44,12 +44,12 @@ public class BuildJavaConfig {
     /**
      * 方法
      */
-    private List<BuildJavaMethod> buildJavaMethods;
+    private List<BuildJavaMethod> buildJavaMethods=new ArrayList<>();
 
     /**
      * 字段
      */
-    private List<BuildJavaField> buildJavaFields;
+    private List<BuildJavaField> buildJavaFields=new ArrayList<>();
 
     /**
      * 拼装好之后的内容

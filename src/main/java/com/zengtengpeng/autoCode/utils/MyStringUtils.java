@@ -70,7 +70,10 @@ public class MyStringUtils {
      * @param firstCase 首字母是否大写 true:大写 false;小写
      * @return
      */
-    public static String firstUpperCase_(String name,boolean firstCase) {
+    public static String upperCase_(String name, boolean firstCase) {
+        if(isEmpty(name)){
+            return "";
+        }
         String[] s = name.split("_");
         StringBuffer stringBuffer = new StringBuffer();
         for (String s1 : s) {

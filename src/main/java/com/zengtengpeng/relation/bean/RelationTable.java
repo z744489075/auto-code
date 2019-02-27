@@ -19,6 +19,7 @@ public class RelationTable {
      */
     private String beanName;
 
+
     /**
      * 备注
      */
@@ -48,6 +49,9 @@ public class RelationTable {
     public String getPrimaryKey() {
         return primaryKey;
     }
+    public String getPrimaryKeyUp(Boolean flag) {
+        return MyStringUtils.upperCase_(primaryKey,flag);
+    }
 
     public void setPrimaryKey(String primaryKey) {
         this.primaryKey = primaryKey;
@@ -59,13 +63,19 @@ public class RelationTable {
 
     public void setDataName(String dataName) {
         if(MyStringUtils.isEmpty(beanName)){
-            this.beanName=MyStringUtils.firstUpperCase_(dataName,true);
+            this.beanName=MyStringUtils.upperCase_(dataName,true);
         }
         this.dataName = dataName;
     }
 
     public String getBeanName() {
         return beanName;
+    }
+    public String getBeanNameLower() {
+        if(!MyStringUtils.isEmpty(beanName)){
+            return MyStringUtils.firstLowerCase(beanName);
+        }
+        return "";
     }
 
     public void setBeanName(String beanName) {
@@ -98,6 +108,9 @@ public class RelationTable {
 
     public String getForeignKey() {
         return foreignKey;
+    }
+    public String getForeignKeyUp(Boolean flag) {
+        return MyStringUtils.upperCase_(foreignKey,flag);
     }
 
     public void setForeignKey(String foreignKey) {

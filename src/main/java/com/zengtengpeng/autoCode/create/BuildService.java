@@ -43,7 +43,7 @@ public interface BuildService {
             GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
             String parentPack = globalConfig.getParentPack();
             imports.add(parentPack + "." + globalConfig.getPackageBean() + "." + bean.getTableName());
-            String daoName = bean.getTableName() + globalConfig.getPackageDao_();
+            String daoName = bean.getTableName() + globalConfig.getPackageDaoUp();
             imports.add(parentPack + "." + globalConfig.getPackageDao() + "." + daoName);
         }
         imports.forEach(t -> content.append("import " + t + ";\n"));
@@ -116,7 +116,7 @@ public interface BuildService {
     default BuildService buildField(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
 
         StringBuffer content = buildJavaConfig.getContent();
-        BuildUtils.buildField(buildJavaConfig, content);
+        BuildUtils.buildField(buildJavaConfig.getBuildJavaFields(), content);
         return this;
     }
 
@@ -129,7 +129,7 @@ public interface BuildService {
     default BuildService buildMethods(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
 
         StringBuffer content = buildJavaConfig.getContent();
-        BuildUtils.buildMethods(buildJavaConfig, content);
+        BuildUtils.buildMethods(buildJavaConfig.getBuildJavaMethods(), content);
         return this;
     }
 

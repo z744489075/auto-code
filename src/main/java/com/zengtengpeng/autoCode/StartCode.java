@@ -16,6 +16,7 @@ import java.util.List;
 /**
  * 开始生成代码
  */
+@FunctionalInterface
 public interface StartCode {
 
     /**
@@ -82,6 +83,10 @@ public interface StartCode {
         return t->null;
     }
 
+    default Connection getConnection(AutoCodeConfig autoCodeConfig){
+        return JDBCUtils.getConnection(autoCodeConfig.getDatasourceConfig());
+    }
+
 
     /**
      * 解析数据库获得表
@@ -90,7 +95,7 @@ public interface StartCode {
     default void build(AutoCodeConfig autoCodeConfig){
         Connection connection =null;
         try {
-            connection = JDBCUtils.getConnection(autoCodeConfig.getDatasourceConfig());
+            connection =getConnection(autoCodeConfig);
 
             if(JDBCUtils.getTable(connection, autoCodeConfig)!=null){
                 Bean bean = autoCodeConfig.getBean();
@@ -116,23 +121,23 @@ public interface StartCode {
                 String beans=BuildBean().build(autoCodeConfig);
 
                 //开始生成文件
-                BuildUtils.createXMLFile(globalConfig.getParentPath() + "/" + globalConfig.getResources(),globalConfig.getXmlPath(),
-                        bean.getTableName()+globalConfig.getPackageDao_(),xml);
+                BuildUtils.createXMLFile(globalConfig.getParentPathResources() ,globalConfig.getXmlPath(),
+                        bean.getTableName()+globalConfig.getPackageDaoUp(),xml);
 
-                String parentPath = globalConfig.getParentPath() + "/" + globalConfig.getJavaSource();
+                String parentPath = globalConfig.getParentPathJavaSource();
 
 
                 BuildUtils.createJavaFile(parentPath,globalConfig.getParentPack(),globalConfig.getPackageController(),
-                        bean.getTableName()+globalConfig.getPackageController_(),controller);
+                        bean.getTableName()+globalConfig.getPackageControllerUp(),controller);
 
                 BuildUtils.createJavaFile(parentPath,globalConfig.getParentPack(),globalConfig.getPackageDao(),
-                        bean.getTableName()+globalConfig.getPackageDao_(),dao);
+                        bean.getTableName()+globalConfig.getPackageDaoUp(),dao);
 
                 BuildUtils.createJavaFile(parentPath,globalConfig.getParentPack(),globalConfig.getPackageService(),
-                        bean.getTableName()+globalConfig.getPackageService_(),server);
+                        bean.getTableName()+globalConfig.getPackageServiceUp(),server);
 
                 BuildUtils.createJavaFile(parentPath,globalConfig.getParentPack(),globalConfig.getPackageService()+".impl",
-                        bean.getTableName()+globalConfig.getPackageService_()+"Impl",serviceImpl);
+                        bean.getTableName()+globalConfig.getPackageServiceUp()+"Impl",serviceImpl);
 
                 BuildUtils.createJavaFile(parentPath,globalConfig.getParentPack(),globalConfig.getPackageBean(),
                         bean.getTableName(),beans);

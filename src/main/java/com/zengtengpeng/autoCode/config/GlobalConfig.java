@@ -90,7 +90,7 @@ public class GlobalConfig {
         return packageDao;
     }
 
-    public String getPackageDao_() {
+    public String getPackageDaoUp() {
         if(!MyStringUtils.isEmpty(packageDao)){
             return MyStringUtils.firstUpperCase(packageDao);
         }
@@ -104,7 +104,7 @@ public class GlobalConfig {
     public String getPackageController() {
         return packageController;
     }
-    public String getPackageController_() {
+    public String getPackageControllerUp() {
         if(!MyStringUtils.isEmpty(packageController)){
             return MyStringUtils.firstUpperCase(packageController);
         }
@@ -118,7 +118,7 @@ public class GlobalConfig {
     public String getPackageService() {
         return packageService;
     }
-    public String getPackageService_() {
+    public String getPackageServiceUp() {
         if(!MyStringUtils.isEmpty(packageService)){
             return MyStringUtils.firstUpperCase(packageService);
         }
@@ -140,6 +140,9 @@ public class GlobalConfig {
     public String getParentPath() {
         return parentPath;
     }
+    public String getParentPathResources() {
+        return parentPath+ "/" + getResources();
+    }
 
     public void setParentPath(String parentPath) {
         this.parentPath = parentPath;
@@ -147,6 +150,10 @@ public class GlobalConfig {
 
     public String getParentPack() {
         return parentPack;
+    }
+
+    public String getParentPathJavaSource() {
+        return parentPath+ "/" + getJavaSource();
     }
 
     public void setParentPack(String parentPack) {

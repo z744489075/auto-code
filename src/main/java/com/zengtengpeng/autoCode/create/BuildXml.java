@@ -4,6 +4,7 @@ import com.zengtengpeng.autoCode.enums.XmlElementType;
 import com.zengtengpeng.autoCode.bean.BuildXmlBean;
 import com.zengtengpeng.autoCode.config.AutoCodeConfig;
 import com.zengtengpeng.autoCode.config.GlobalConfig;
+import com.zengtengpeng.autoCode.utils.BuildUtils;
 import com.zengtengpeng.autoCode.utils.MyStringUtils;
 import com.zengtengpeng.jdbc.bean.Bean;
 import com.zengtengpeng.jdbc.bean.BeanColumn;
@@ -55,7 +56,7 @@ public interface BuildXml {
         MyStringUtils.append(sql, ")\n", 2);
 
         buildXmlBean.setSql(sql.toString());
-        content.append(build(buildXmlBean));
+        content.append(BuildUtils.buildXml(buildXmlBean));
         return this;
     }
 
@@ -78,7 +79,7 @@ public interface BuildXml {
         MyStringUtils.append(sql, "where %s = #{%s} \n ",2, beanColumn.getJdbcName(), beanColumn.getBeanName());
 
         buildXmlBean.setSql(sql.toString());
-        content.append(build(buildXmlBean));
+        content.append(BuildUtils.buildXml(buildXmlBean));
         return this;
     }
 
@@ -116,7 +117,7 @@ public interface BuildXml {
 
 
         buildXmlBean.setSql(sql.toString());
-        content.append(build(buildXmlBean));
+        content.append(BuildUtils.buildXml(buildXmlBean));
         return this;
     }
 
@@ -144,7 +145,7 @@ public interface BuildXml {
         MyStringUtils.append(sql, "where %s = #{%s,jdbcType=%s}",2, beanColumn.getJdbcName(), beanColumn.getBeanName(), beanColumn.getJdbcType_());
 
         buildXmlBean.setSql(sql.toString());
-        content.append(build(buildXmlBean));
+        content.append(BuildUtils.buildXml(buildXmlBean));
         return this;
     }
 
@@ -214,7 +215,7 @@ public interface BuildXml {
                 "      </choose>",2, beanColumn.getJdbcName());
 
         buildXmlBean.setSql(sql.toString());
-        content.append(build(buildXmlBean));
+        content.append(BuildUtils.buildXml(buildXmlBean));
     }
 
     /**
@@ -227,7 +228,7 @@ public interface BuildXml {
         Bean bean = init.getBean();
         MyStringUtils.append(content, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\" \"http://mybatis.org/dtd/mybatis-3-mapper.dtd\">\n" +
-                "<mapper namespace=\"%s.%s.%s%s\">\n", globalConfig.getParentPack(), globalConfig.getPackageDao(), bean.getTableName(), globalConfig.getPackageDao_());
+                "<mapper namespace=\"%s.%s.%s%s\">\n", globalConfig.getParentPack(), globalConfig.getPackageDao(), bean.getTableName(), globalConfig.getPackageDaoUp());
 
         MyStringUtils.append(content, "<resultMap id=\"BaseResultMap\" type=\"%s.%s.%s\">\n",1, globalConfig.getParentPack(), globalConfig.getPackageBean(),
                 bean.getTableName());
@@ -253,28 +254,7 @@ public interface BuildXml {
         return this;
     }
 
-    /**
-     * 组装sql
-     * @param buildXmlBean
-     * @return
-     */
-    default String build(BuildXmlBean buildXmlBean){
-        StringBuffer sql=new StringBuffer();
-        String name = buildXmlBean.getXmlElementType().name();
-        sql.append("\t<"+name+" ");
-
-        buildXmlBean.getAttributes().forEach((key, value) -> sql.append(String.format("%s=\"%s\" ", key, value)));
-
-        MyStringUtils.append(sql,">");
-
-        MyStringUtils.append(sql,buildXmlBean.getSql());
-
-        MyStringUtils.append(sql,"</%s>\n",1,name);
-
-
-        return sql.toString();
-
-    }
+    
 
     /**
      * 自定义sql

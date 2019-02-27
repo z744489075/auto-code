@@ -11,7 +11,6 @@ import com.zengtengpeng.autoCode.utils.MyStringUtils;
 import com.zengtengpeng.jdbc.bean.Bean;
 import com.zengtengpeng.jdbc.bean.BeanColumn;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +56,7 @@ public interface BuildController {
             imports.add("java.util.Map");
             imports.add("org.springframework.stereotype.Controller");
             imports.add(bean.getParentPack()+"."+globalConfig.getPackageBean()+"."+bean.getTableName());
-            imports.add(bean.getParentPack()+"."+globalConfig.getPackageService()+"."+bean.getTableName()+globalConfig.getPackageService_());
+            imports.add(bean.getParentPack()+"."+globalConfig.getPackageService()+"."+bean.getTableName()+globalConfig.getPackageServiceUp());
         }
         imports.forEach(t -> content.append("import " + t + ";\n"));
 
@@ -122,7 +121,7 @@ public interface BuildController {
 
         annotations.forEach(t -> content.append(t + "\n"));
         MyStringUtils.append(content, "public class %s%s %s %s{\n\n",
-                bean.getTableName(),globalConfig.getPackageController_(), s1, s2);
+                bean.getTableName(),globalConfig.getPackageControllerUp(), s1, s2);
         return this;
     }
 
@@ -143,9 +142,9 @@ public interface BuildController {
             GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
 
             BuildJavaField buildJavaField = new BuildJavaField();
-            buildJavaField.setReturnType(bean.getTableName() + globalConfig.getPackageService_());
+            buildJavaField.setReturnType(bean.getTableName() + globalConfig.getPackageServiceUp());
             buildJavaField.setFiledType("private");
-            buildJavaField.setFiledName(bean.getTableValue() + globalConfig.getPackageService_());
+            buildJavaField.setFiledName(bean.getTableValue() + globalConfig.getPackageServiceUp());
             List<String> an = new ArrayList<>();
             an.add("@Resource");
             buildJavaField.setAnnotation(an);
@@ -153,7 +152,7 @@ public interface BuildController {
             buildJavaConfig.setBuildJavaFields(buildJavaFields);
         }
         StringBuffer content = buildJavaConfig.getContent();
-        BuildUtils.buildField(buildJavaConfig, content);
+        BuildUtils.buildField(buildJavaConfig.getBuildJavaFields(), content);
         return this;
     }
 
@@ -180,7 +179,7 @@ public interface BuildController {
         params.add("HttpServletRequest request");
         params.add("HttpServletResponse response");
         delete.setParams(params);
-        delete.setContent(String.format("return DataRes.success(%s%s.deleteByPrimaryKey(%s));",bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue()));
+        delete.setContent(String.format("return DataRes.success(%s%s.deleteByPrimaryKey(%s));",bean.getTableValue(),globalConfig.getPackageServiceUp(),bean.getTableValue()));
         delete.setRemark("删除-"+buildJavaConfig.getRemark());
         return delete;
     }
@@ -211,9 +210,9 @@ public interface BuildController {
         StringBuffer content=new StringBuffer();
         BeanColumn beanColumn = bean.getPrimaryKey().get(0);
         MyStringUtils.append(content,"if(%s.get%s()==null){",bean.getTableValue(),beanColumn.getBeanName_());
-        MyStringUtils.append(content,"return DataRes.success(%s%s.insert(%s));",3,bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue());
+        MyStringUtils.append(content,"return DataRes.success(%s%s.insert(%s));",3,bean.getTableValue(),globalConfig.getPackageServiceUp(),bean.getTableValue());
         MyStringUtils.append(content,"}",2);
-        MyStringUtils.append(content,"return DataRes.success(%s%s.update(%s));",2,bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue());
+        MyStringUtils.append(content,"return DataRes.success(%s%s.update(%s));",2,bean.getTableValue(),globalConfig.getPackageServiceUp(),bean.getTableValue());
         save.setContent(content.toString());
         save.setRemark("保存->"+buildJavaConfig.getRemark());
         return save;
@@ -242,7 +241,7 @@ public interface BuildController {
         params.add("HttpServletResponse response");
         selectByPrimaryKey.setParams(params);
         selectByPrimaryKey.setRemark("根据主键查询->"+buildJavaConfig.getRemark());
-        selectByPrimaryKey.setContent(String.format("return DataRes.success(%s%s.selectByPrimaryKey(%s));",bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue()));
+        selectByPrimaryKey.setContent(String.format("return DataRes.success(%s%s.selectByPrimaryKey(%s));",bean.getTableValue(),globalConfig.getPackageServiceUp(),bean.getTableValue()));
         return selectByPrimaryKey;
     }
     /**
@@ -269,7 +268,7 @@ public interface BuildController {
         params.add("HttpServletResponse response");
         selectByCondition.setParams(params);
         selectByCondition.setRemark("根据条件查询->"+buildJavaConfig.getRemark());
-        selectByCondition.setContent(String.format("return DataRes.success(%s%s.selectByCondition(%s));",bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue()));
+        selectByCondition.setContent(String.format("return DataRes.success(%s%s.selectByCondition(%s));",bean.getTableValue(),globalConfig.getPackageServiceUp(),bean.getTableValue()));
         return selectByCondition;
     }
     /**
@@ -296,7 +295,7 @@ public interface BuildController {
         params.add("HttpServletResponse response");
         selectAllByPaging.setParams(params);
         selectAllByPaging.setRemark("分页查询->"+buildJavaConfig.getRemark());
-        selectAllByPaging.setContent(String.format("return DataRes.success(%s%s.selectAllByPaging(%s));",bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue()));
+        selectAllByPaging.setContent(String.format("return DataRes.success(%s%s.selectAllByPaging(%s));",bean.getTableValue(),globalConfig.getPackageServiceUp(),bean.getTableValue()));
         return selectAllByPaging;
     }
     /**
@@ -322,7 +321,7 @@ public interface BuildController {
         params.add("HttpServletResponse response");
         export.setParams(params);
         StringBuffer content=new StringBuffer();
-        MyStringUtils.append(content,"List<%s> list= %s%s.selectAll(%s);",bean.getTableName(),bean.getTableValue(),globalConfig.getPackageService_(),bean.getTableValue());
+        MyStringUtils.append(content,"List<%s> list= %s%s.selectAll(%s);",bean.getTableName(),bean.getTableValue(),globalConfig.getPackageServiceUp(),bean.getTableValue());
         MyStringUtils.append(content,"Map<String, String> header = new LinkedHashMap<>();",2);
         StringBuffer finalContent = content;
         bean.getAllColumns().forEach(t->{
@@ -384,7 +383,7 @@ public interface BuildController {
             buildJavaConfig.setBuildJavaMethods(buildJavaMethods);
         }
         StringBuffer content = buildJavaConfig.getContent();
-        BuildUtils.buildMethods(buildJavaConfig, content);
+        BuildUtils.buildMethods(buildJavaConfig.getBuildJavaMethods(), content);
         return this;
     }
 

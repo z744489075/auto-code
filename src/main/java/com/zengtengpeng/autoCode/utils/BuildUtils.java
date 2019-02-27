@@ -2,22 +2,25 @@ package com.zengtengpeng.autoCode.utils;
 
 import com.zengtengpeng.autoCode.bean.BuildJavaField;
 import com.zengtengpeng.autoCode.bean.BuildJavaMethod;
-import com.zengtengpeng.autoCode.config.BuildJavaConfig;
+import com.zengtengpeng.autoCode.bean.BuildXmlBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.List;
 
 public class BuildUtils {
+
+    static Logger logger = LoggerFactory.getLogger(BuildUtils.class);
     /**
      * 构建字段
-     * @param buildJavaConfig
+     * @param buildJavaFields
      * @param stringBuffer
      */
-    public static void buildField(BuildJavaConfig buildJavaConfig, StringBuffer stringBuffer){
-        if(buildJavaConfig!=null){
+    public static void buildField(List<BuildJavaField> buildJavaFields, StringBuffer stringBuffer){
             //初始化字段
-            List<BuildJavaField> buildJavaFields = buildJavaConfig.getBuildJavaFields();
             if(buildJavaFields!=null) {
                 buildJavaFields.forEach(t -> {
                     if(t!=null) {
@@ -40,19 +43,35 @@ public class BuildUtils {
                     }
                 });
             }
-
-        }
     }
+    /**
+     * 组装sql
+     * @param buildXmlBean
+     * @return
+     */
+    public static String buildXml(BuildXmlBean buildXmlBean){
+        StringBuffer sql=new StringBuffer();
+        String name = buildXmlBean.getXmlElementType().name();
+        sql.append("\t<"+name+" ");
 
+        buildXmlBean.getAttributes().forEach((key, value) -> sql.append(String.format("%s=\"%s\" ", key, value)));
+
+        MyStringUtils.append(sql,">");
+
+        MyStringUtils.append(sql,buildXmlBean.getSql());
+
+        MyStringUtils.append(sql,"</%s>\n",1,name);
+
+        return sql.toString();
+
+    }
     /**
      * 构建方法
-     * @param buildJavaConfig
+     * @param buildJavaMethods
      * @param stringBuffer
      */
-    public static void buildMethods(BuildJavaConfig buildJavaConfig, StringBuffer stringBuffer){
-        if(buildJavaConfig!=null){
+    public static void buildMethods(List<BuildJavaMethod> buildJavaMethods, StringBuffer stringBuffer){
             //初始化方法
-            List<BuildJavaMethod> buildJavaMethods = buildJavaConfig.getBuildJavaMethods();
             if(buildJavaMethods!=null) {
                 buildJavaMethods.forEach(t -> {
                     if(t!=null) {
@@ -87,7 +106,6 @@ public class BuildUtils {
                     }
                 });
             }
-        }
     }
 
     /**
@@ -166,4 +184,98 @@ public class BuildUtils {
             }
         }
     }
+    /**
+     * 追加xml代码
+     */
+    public static void addXmlSql(String filePath, List<BuildXmlBean> buildXmlBeans) {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            logger.error("{}->不存在,忽略追加", filePath);
+            return;
+        }
+        FileInputStream fileInputStream=null;
+        FileOutputStream fileOutputStream=null;
+        try {
+            fileInputStream=new FileInputStream(file);
+            StringBuffer content=new StringBuffer();
+            byte[] buff=new byte[1024];
+            int len;
+            while((len=fileInputStream.read(buff))!=-1){
+                content.append(new String(buff,0,len));
+            }
+
+            //增加导入
+            StringBuffer sql=new StringBuffer("\n");
+            buildXmlBeans.forEach(t->{
+                sql.append(BuildUtils.buildXml(t));
+            });
+            content.insert(content.lastIndexOf("</mapper>")-1,sql);
+
+            fileOutputStream=new FileOutputStream(file);
+            fileOutputStream.write(content.toString().getBytes());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }finally {
+            colse(fileInputStream, fileOutputStream);
+        }
+
+    }
+
+    public static void colse(FileInputStream fileInputStream, FileOutputStream fileOutputStream) {
+        try {
+            if (fileInputStream != null) {
+                fileInputStream.close();
+            }
+            if (fileOutputStream != null) {
+                fileOutputStream.close();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    /**
+     * 追加java代码
+     */
+    public static void addJavaCode(String filePath, List<BuildJavaMethod> buildJavaMethods, List<BuildJavaField> buildJavaFields, List<String> imports){
+        File file=new File(filePath);
+        if (!file.exists()){
+            logger.error("{}->不存在,忽略追加",filePath);
+            return;
+        }
+        FileInputStream fileInputStream=null;
+        FileOutputStream fileOutputStream=null;
+        try {
+            fileInputStream=new FileInputStream(file);
+            StringBuffer content=new StringBuffer();
+            byte[] buff=new byte[1024];
+            int len;
+            while((len=fileInputStream.read(buff))!=-1){
+                content.append(new String(buff,0,len));
+            }
+
+            //增加导入
+            StringBuffer im=new StringBuffer("\n");
+            imports.forEach(t-> im.append(t+";"));
+            content.insert(content.lastIndexOf(";")+1,im);
+
+            //增加字段
+            StringBuffer filedsb=new StringBuffer();
+            BuildUtils.buildField(buildJavaFields,filedsb);
+            content.insert(content.indexOf("{")+1,filedsb);
+
+            //增加方法
+            StringBuffer me=new StringBuffer();
+            BuildUtils.buildMethods(buildJavaMethods,me);
+            content.insert(content.lastIndexOf("}")-1,me);
+            fileOutputStream=new FileOutputStream(file);
+            fileOutputStream.write(content.toString().getBytes());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }finally {
+            colse(fileInputStream, fileOutputStream);
+        }
+    }
+
 }

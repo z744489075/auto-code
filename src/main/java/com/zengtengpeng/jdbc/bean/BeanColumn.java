@@ -48,14 +48,14 @@ public class BeanColumn {
 
     public String getBeanName() {
         if (!MyStringUtils.isEmpty(jdbcName)) {
-            return MyStringUtils.firstUpperCase_(jdbcName, false);
+            return MyStringUtils.upperCase_(jdbcName, false);
         }
         return beanName;
     }
 
     public String getBeanName_() {
         if (!MyStringUtils.isEmpty(jdbcName)) {
-            return MyStringUtils.firstUpperCase_(jdbcName, true);
+            return MyStringUtils.upperCase_(jdbcName, true);
         }
         return beanName;
     }

@@ -135,9 +135,9 @@ public interface BuildServiceImpl {
             GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
 
             BuildJavaField buildJavaField = new BuildJavaField();
-            buildJavaField.setReturnType(bean.getTableName() + globalConfig.getPackageDao_());
+            buildJavaField.setReturnType(bean.getTableName() + globalConfig.getPackageDaoUp());
             buildJavaField.setFiledType("private");
-            buildJavaField.setFiledName(bean.getTableValue() + globalConfig.getPackageDao_());
+            buildJavaField.setFiledName(bean.getTableValue() + globalConfig.getPackageDaoUp());
             List<String> an = new ArrayList<>();
             an.add("@Resource");
             buildJavaField.setAnnotation(an);
@@ -145,7 +145,7 @@ public interface BuildServiceImpl {
             buildJavaFields.add(buildJavaField);
             buildJavaConfig.setBuildJavaFields(buildJavaFields);
         }
-        BuildUtils.buildField(buildJavaConfig, content);
+        BuildUtils.buildField(buildJavaConfig.getBuildJavaFields(), content);
         return this;
     }
 
@@ -170,15 +170,15 @@ public interface BuildServiceImpl {
             List<String> an = new ArrayList<>();
             an.add("@Override");
             buildJavaMethod.setAnnotation(an);
-            buildJavaMethod.setReturnType(bean.getTableName() + globalConfig.getPackageDao_());
+            buildJavaMethod.setReturnType(bean.getTableName() + globalConfig.getPackageDaoUp());
             buildJavaMethod.setMethodType("public");
             buildJavaMethod.setMethodName("initDao");
-            buildJavaMethod.setContent("return " + bean.getTableValue() + globalConfig.getPackageDao_() + ";");
+            buildJavaMethod.setContent("return " + bean.getTableValue() + globalConfig.getPackageDaoUp() + ";");
             buildJavaMethod.setRemark("初始化");
             buildJavaMethods.add(buildJavaMethod);
             buildJavaConfig.setBuildJavaMethods(buildJavaMethods);
         }
-        BuildUtils.buildMethods(buildJavaConfig, content);
+        BuildUtils.buildMethods(buildJavaConfig.getBuildJavaMethods(), content);
         return this;
     }
 

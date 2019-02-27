@@ -94,7 +94,7 @@ public interface BuildDao {
      */
     default BuildDao buildField(AutoCodeConfig autoCodeConfig,BuildJavaConfig buildJavaConfig) {
         StringBuffer content = buildJavaConfig.getContent();
-        BuildUtils.buildField(buildJavaConfig,content);
+        BuildUtils.buildField(buildJavaConfig.getBuildJavaFields(),content);
         return this;
     }
     /**
@@ -104,7 +104,7 @@ public interface BuildDao {
      */
     default BuildDao buildMethods(AutoCodeConfig autoCodeConfig,BuildJavaConfig buildJavaConfig) {
         StringBuffer content = buildJavaConfig.getContent();
-        BuildUtils.buildMethods(buildJavaConfig,content);
+        BuildUtils.buildMethods(buildJavaConfig.getBuildJavaMethods(),content);
         return this;
     }
     /**

@@ -20,7 +20,7 @@ public class TableConfig {
 
     public String getAliasName() {
         if(MyStringUtils.isEmpty(aliasName)){
-            return MyStringUtils.firstUpperCase_(dataName,true);
+            return MyStringUtils.upperCase_(dataName,true);
         }
         return aliasName;
     }
