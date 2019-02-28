@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BuildUtils {
@@ -19,31 +20,34 @@ public class BuildUtils {
      * @param buildJavaFields
      * @param stringBuffer
      */
-    public static void buildField(List<BuildJavaField> buildJavaFields, StringBuffer stringBuffer){
+    public static void buildFields(List<BuildJavaField> buildJavaFields, StringBuffer stringBuffer){
             //初始化字段
             if(buildJavaFields!=null) {
-                buildJavaFields.forEach(t -> {
-                    if(t!=null) {
-                        List<String> annotation = t.getAnnotation();
-                        if (!MyStringUtils.isEmpty(t.getRemark())) {
-                            stringBuffer.append("\t/**\n" +
-                                    "\t * " + t.getRemark() +
-                                    "\n\t */\n");
-                        }
-                        if (annotation != null) {
-                            annotation.forEach(tt -> stringBuffer.append("\t" + tt + "\n"));
-                        }
-                        String init = t.getInit();
-                        if (!MyStringUtils.isEmpty(init)) {
-                            init = "=" + init;
-                        } else {
-                            init = "";
-                        }
-                        stringBuffer.append(String.format("\t%s %s %s %s;\n\n",t.getFiledType(), t.getReturnType(), t.getFiledName(), init));
-                    }
-                });
+                buildJavaFields.forEach(t -> buildFild(stringBuffer, t));
             }
     }
+
+    public static void buildFild(StringBuffer stringBuffer, BuildJavaField t) {
+        if(t!=null) {
+            List<String> annotation = t.getAnnotation();
+            if (!MyStringUtils.isEmpty(t.getRemark())) {
+                stringBuffer.append("\t/**\n" +
+                        "\t * " + t.getRemark() +
+                        "\n\t */\n");
+            }
+            if (annotation != null) {
+                annotation.forEach(tt -> stringBuffer.append("\t" + tt + "\n"));
+            }
+            String init = t.getInit();
+            if (!MyStringUtils.isEmpty(init)) {
+                init = "=" + init;
+            } else {
+                init = "";
+            }
+            stringBuffer.append(String.format("\t%s %s %s %s;\n\n",t.getFiledType(), t.getReturnType(), t.getFiledName(), init));
+        }
+    }
+
     /**
      * 组装sql
      * @param buildXmlBean
@@ -73,39 +77,41 @@ public class BuildUtils {
     public static void buildMethods(List<BuildJavaMethod> buildJavaMethods, StringBuffer stringBuffer){
             //初始化方法
             if(buildJavaMethods!=null) {
-                buildJavaMethods.forEach(t -> {
-                    if(t!=null) {
-                        List<String> annotation = t.getAnnotation();
-                        if (!MyStringUtils.isEmpty(t.getRemark())) {
-                            stringBuffer.append("\t/**\n" +
-                                    "\t * " + t.getRemark() +
-                                    "\n\t */\n");
-                        }
-                        if (annotation != null) {
-                            annotation.forEach(ttt -> MyStringUtils.append(stringBuffer, "%s", 1, ttt));
-                        }
-                        StringBuffer params = new StringBuffer();
-                        List<String> params1 = t.getParams();
-                        if (params1 != null) {
-                            params1.forEach(tt -> params.append(tt + ","));
-                        }
-                        String p = "";
-                        if (params.length() > 0) {
-                            p = params.substring(0, params.length() - 1);
-                        }
-                        stringBuffer.append(String.format("\t%s %s %s(%s)", t.getMethodType(), t.getReturnType(), t.getMethodName(), p));
-
-                        if (MyStringUtils.isEmpty(t.getContent())) {
-                            stringBuffer.append(";\n");
-                        } else {
-                            stringBuffer.append("{\n");
-                            MyStringUtils.append(stringBuffer, "%s", 2, t.getContent());
-                            MyStringUtils.append(stringBuffer, "}\n\n", 1);
-
-                        }
-                    }
-                });
+                buildJavaMethods.forEach(t -> buildMethod(stringBuffer, t));
             }
+    }
+
+    public static void buildMethod(StringBuffer stringBuffer, BuildJavaMethod t) {
+        if(t!=null) {
+            List<String> annotation = t.getAnnotation();
+            if (!MyStringUtils.isEmpty(t.getRemark())) {
+                stringBuffer.append("\t/**\n" +
+                        "\t * " + t.getRemark() +
+                        "\n\t */\n");
+            }
+            if (annotation != null) {
+                annotation.forEach(ttt -> MyStringUtils.append(stringBuffer, "%s", 1, ttt));
+            }
+            StringBuffer params = new StringBuffer();
+            List<String> params1 = t.getParams();
+            if (params1 != null) {
+                params1.forEach(tt -> params.append(tt + ","));
+            }
+            String p = "";
+            if (params.length() > 0) {
+                p = params.substring(0, params.length() - 1);
+            }
+            stringBuffer.append(String.format("\t%s %s %s(%s)", t.getMethodType(), t.getReturnType(), t.getMethodName(), p));
+
+            if (MyStringUtils.isEmpty(t.getContent())) {
+                stringBuffer.append(";\n");
+            } else {
+                stringBuffer.append("{\n");
+                MyStringUtils.append(stringBuffer, "%s", 2, t.getContent());
+                MyStringUtils.append(stringBuffer, "}\n\n", 1);
+
+            }
+        }
     }
 
     /**
@@ -217,7 +223,12 @@ public class BuildUtils {
             //增加导入
             StringBuffer sql=new StringBuffer("\n");
             buildXmlBeans.forEach(t->{
-                sql.append(BuildUtils.buildXml(t));
+                String str = BuildUtils.buildXml(t);
+                if(content.indexOf(str)<0){
+                    sql.append(str);
+                }else {
+                    logger.info("查找到重复,忽略生成 文件->{}\n内容->{}",file,str);
+                }
             });
             content.insert(content.lastIndexOf("</mapper>")-1,sql);
 
@@ -267,17 +278,46 @@ public class BuildUtils {
 
             //增加导入
             StringBuffer im=new StringBuffer("\n");
-            imports.forEach(t-> im.append("\nimport "+t+";"));
+            imports.forEach(t -> {
+                String s = "import " + t + ";";
+                if(content.indexOf(s)<0){
+                    im.append("\n" + s);
+                }else {
+                    logger.info("查找到重复,忽略生成 文件{}\n内容{}",file,s);
+                }
+            });
             content.insert(content.indexOf(";")+1,im);
 
             //增加字段
             StringBuffer filedsb=new StringBuffer();
-            BuildUtils.buildField(buildJavaFields,filedsb);
+            List<BuildJavaField> fields=new ArrayList<>();
+
+            buildJavaFields.forEach(t->{
+                StringBuffer c=new StringBuffer();
+                BuildUtils.buildFild(c,t);
+                if(content.indexOf(c.toString())<0){
+                    fields.add(t);
+                }else {
+                    logger.info("查找到重复,忽略生成 文件{}\n内容{}",file,c.toString());
+                }
+            });
+            BuildUtils.buildFields(fields,filedsb);
             content.insert(content.indexOf("{")+1,"\n"+filedsb);
 
             //增加方法
             StringBuffer me=new StringBuffer();
-            BuildUtils.buildMethods(buildJavaMethods,me);
+            List<BuildJavaMethod> buildJavaMethod=new ArrayList<>();
+
+            buildJavaMethods.forEach(t->{
+                StringBuffer c=new StringBuffer();
+                BuildUtils.buildMethod(c,t);
+                if(content.indexOf(c.toString())<0){
+                    buildJavaMethod.add(t);
+                }else {
+                    logger.info("查找到重复,忽略生成 文件{}\n内容{}",file,c.toString());
+                }
+            });
+            BuildUtils.buildMethods(buildJavaMethod,me);
             content.insert(content.lastIndexOf("}")-1,me);
             fileOutputStream=new FileOutputStream(file);
             fileOutputStream.write(content.toString().getBytes());

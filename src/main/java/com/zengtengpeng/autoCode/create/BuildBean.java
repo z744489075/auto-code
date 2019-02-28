@@ -145,7 +145,7 @@ public interface BuildBean {
             buildJavaConfig.setBuildJavaFields(finalBuildJavaFields);
         }
         StringBuffer content = buildJavaConfig.getContent();
-        BuildUtils.buildField(buildJavaConfig.getBuildJavaFields(), content);
+        BuildUtils.buildFields(buildJavaConfig.getBuildJavaFields(), content);
         return this;
     }
 

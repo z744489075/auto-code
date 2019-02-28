@@ -152,7 +152,7 @@ public interface BuildController {
             buildJavaConfig.setBuildJavaFields(buildJavaFields);
         }
         StringBuffer content = buildJavaConfig.getContent();
-        BuildUtils.buildField(buildJavaConfig.getBuildJavaFields(), content);
+        BuildUtils.buildFields(buildJavaConfig.getBuildJavaFields(), content);
         return this;
     }
 

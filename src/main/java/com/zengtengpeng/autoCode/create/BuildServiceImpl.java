@@ -145,7 +145,7 @@ public interface BuildServiceImpl {
             buildJavaFields.add(buildJavaField);
             buildJavaConfig.setBuildJavaFields(buildJavaFields);
         }
-        BuildUtils.buildField(buildJavaConfig.getBuildJavaFields(), content);
+        BuildUtils.buildFields(buildJavaConfig.getBuildJavaFields(), content);
         return this;
     }
 

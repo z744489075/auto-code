@@ -7,6 +7,8 @@ import com.zengtengpeng.autoCode.create.*;
 import com.zengtengpeng.autoCode.utils.BuildUtils;
 import com.zengtengpeng.jdbc.bean.Bean;
 import com.zengtengpeng.jdbc.utils.JDBCUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.sql.Connection;
@@ -19,6 +21,7 @@ import java.util.List;
 @FunctionalInterface
 public interface StartCode {
 
+    Logger logger = LoggerFactory.getLogger(StartCode.class);
     /**
      * 解析yaml文件
      */
@@ -172,11 +175,13 @@ public interface StartCode {
         List<TableConfig> tableConfigs = saxTable(autoCodeConfig);
         AutoCodeConfig finalAutoCodeConfig = autoCodeConfig;
         tableConfigs.forEach(t->{
+            logger.info("----------------------------------------单表开始生成{}",t.getDataName());
             Bean bean=new Bean();
             bean.setTableName(t.getAliasName());
             bean.setDataName(t.getDataName());
             finalAutoCodeConfig.setBean(bean);
             build(finalAutoCodeConfig);
+            logger.info("----------------------------------------单表生成结束{}",t.getDataName());
         });
     }
 }
