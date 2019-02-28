@@ -54,7 +54,9 @@ public class RelationUtils {
      * 一对一关系
      */
     public static void oneToOne(RelationConfig relationConfig, StartCode startCode, BuildOneToOne startOneToOne){
-        if (checks(relationConfig, startCode)) return;
+        if (!checks(relationConfig, startCode)){
+            return;
+        }
         startOneToOne.build(relationConfig);
     }
 

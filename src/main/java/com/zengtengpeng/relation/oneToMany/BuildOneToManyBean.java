@@ -41,11 +41,12 @@ public interface BuildOneToManyBean extends BuildBaseBean {
      */
     default List<BuildJavaField> primaryFields(RelationConfig relationConfig){
         RelationTable primary = relationConfig.getPrimary();
+        RelationTable foreign = relationConfig.getForeign();
         List<BuildJavaField> buildJavaFields=new ArrayList<>();
         BuildJavaField buildJavaField=new BuildJavaField();
         buildJavaField.setRemark(primary.getRemark());
-        buildJavaField.setFiledName(primary.getBeanNameLower()+"List");
-        buildJavaField.setReturnType("List<"+primary.getBeanName()+">");
+        buildJavaField.setFiledName(foreign.getBeanNameLower()+"List");
+        buildJavaField.setReturnType("List<"+foreign.getBeanName()+">");
         buildJavaField.setFiledType("private");
         buildJavaFields.add(buildJavaField);
         return buildJavaFields;
