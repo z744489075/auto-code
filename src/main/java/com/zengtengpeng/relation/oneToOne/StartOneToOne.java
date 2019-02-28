@@ -1,7 +1,6 @@
 package com.zengtengpeng.relation.oneToOne;
 
 import com.zengtengpeng.autoCode.config.AutoCodeConfig;
-import com.zengtengpeng.autoCode.create.BuildController;
 import com.zengtengpeng.relation.bean.RelationTable;
 
 /**
@@ -56,7 +55,7 @@ public interface StartOneToOne {
      * 自定义
      * @return
      */
-    void custom(RelationTable primaryKey, RelationTable foreign,AutoCodeConfig autoCodeConfig);
+     void custom(RelationTable primaryKey, RelationTable foreign,AutoCodeConfig autoCodeConfig);
     /**
      * 构建
      * @param primaryKey

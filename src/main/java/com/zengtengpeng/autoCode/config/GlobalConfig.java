@@ -22,6 +22,11 @@ public class GlobalConfig {
      */
     private String parentPack;
 
+    /**
+     * 是否覆盖生成 默认不覆盖
+     */
+    private Boolean cover=false;
+
 
     /**
      * java在项目中的classpath位置
@@ -53,6 +58,14 @@ public class GlobalConfig {
      * service的名称
      */
     private String packageService="service";
+
+    public Boolean getCover() {
+        return cover;
+    }
+
+    public void setCover(Boolean cover) {
+        this.cover = cover;
+    }
 
     public String getXmlPath() {
         return xmlPath;

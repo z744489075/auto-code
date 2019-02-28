@@ -2,10 +2,12 @@ package com.zengtengpeng.relation;
 
 import com.zengtengpeng.autoCode.StartCode;
 import com.zengtengpeng.autoCode.config.AutoCodeConfig;
+import com.zengtengpeng.autoCode.config.BuildJavaConfig;
 import com.zengtengpeng.autoCode.config.GlobalConfig;
 import com.zengtengpeng.autoCode.config.TableConfig;
 import com.zengtengpeng.autoCode.utils.MyStringUtils;
 import com.zengtengpeng.relation.bean.RelationTable;
+import com.zengtengpeng.relation.oneToOne.BuildOneToOneController;
 import com.zengtengpeng.relation.oneToOne.StartOneToOne;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,13 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 关系构建
+ * 关系构建工具类
  */
-public class RelationBuild {
+public class RelationUtils {
 
-   static Logger logger = LoggerFactory.getLogger(RelationBuild.class);
+   static Logger logger = LoggerFactory.getLogger(RelationUtils.class);
     public static void main(String[] args) {
         StartCode startCode=t->{};
+        AutoCodeConfig autoCodeConfig = StartCode.saxYaml();
         RelationTable primary=new RelationTable();
         primary.setDataName("test_user");
         primary.setPrimaryKey("id");
@@ -35,7 +38,11 @@ public class RelationBuild {
         foreign.setExistParentPackage("com.zengtengpeng.test");
         foreign.setRemark("班级");
 
-        RelationBuild.oneToOne(primary,foreign,startCode,(p, f, autoCodeConfig) -> {});
+        StartOneToOne startOneToOne = (p, f, a) -> {
+
+        };
+
+        RelationUtils.oneToOne(primary,foreign,startCode,autoCodeConfig, startOneToOne);
     }
 
 
@@ -43,10 +50,9 @@ public class RelationBuild {
      * 一对一关系
      * @param primaryKey
      * @param foreign
-     * @param startCode
-     * @param startOneToOne
+     * @param autoCodeConfig
      */
-    public static void oneToOne(RelationTable primaryKey, RelationTable foreign,StartCode startCode,StartOneToOne startOneToOne){
+    public static void oneToOne(RelationTable primaryKey, RelationTable foreign, StartCode startCode, AutoCodeConfig autoCodeConfig, StartOneToOne startOneToOne){
 
         if(!primaryKey.getGenerate()&& MyStringUtils.isEmpty(primaryKey.getExistParentPackage())){
             logger.info("primaryKey当generate为false时,请设置existParentPackage");
@@ -58,8 +64,6 @@ public class RelationBuild {
             return;
         }
         List<TableConfig> tableConfigs=new ArrayList<>();
-
-        AutoCodeConfig autoCodeConfig = startCode.saxYaml();
         check(primaryKey, tableConfigs,autoCodeConfig);
 
         check(foreign, tableConfigs,autoCodeConfig);
@@ -69,7 +73,6 @@ public class RelationBuild {
             globalConfig.setTableNames(tableConfigs);
             startCode.start(autoCodeConfig);
         }
-
         startOneToOne.build(primaryKey,foreign,autoCodeConfig);
 
     }

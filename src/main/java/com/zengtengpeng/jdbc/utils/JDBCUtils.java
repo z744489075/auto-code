@@ -56,7 +56,7 @@ public class JDBCUtils {
                 if (rs != null && rs.next()) {
                     String createDDL = rs.getString(2);
                     String comment = parse(createDDL);
-                    logger.info("表注释->{}",comment);
+                    logger.info("解析表-{}->{}",tableName,comment);
                     bean.setTableRemarks(comment);
                 }
 

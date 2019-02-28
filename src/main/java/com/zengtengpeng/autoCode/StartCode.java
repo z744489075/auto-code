@@ -22,10 +22,9 @@ public interface StartCode {
     /**
      * 解析yaml文件
      */
-    default AutoCodeConfig saxYaml(){
+    static AutoCodeConfig saxYaml(){
         Yaml yaml=new Yaml();
-        AutoCodeConfig autoCodeConfig = yaml.loadAs(this.getClass().getClassLoader().getResourceAsStream("auto-code.yaml"), AutoCodeConfig.class);
-       return autoCodeConfig;
+        return yaml.loadAs(StartCode.class.getClassLoader().getResourceAsStream("auto-code.yaml"), AutoCodeConfig.class);
     }
 
     /**
@@ -34,8 +33,7 @@ public interface StartCode {
      */
     default List<TableConfig> saxTable(AutoCodeConfig autoCodeConfig){
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
-        List<TableConfig> tableNames = globalConfig.getTableNames();
-        return tableNames;
+        return globalConfig.getTableNames();
     }
 
     /**
@@ -89,7 +87,7 @@ public interface StartCode {
 
 
     /**
-     * 解析数据库获得表
+     * 开始获取表数据.生成文件
      * @param autoCodeConfig
      */
     default void build(AutoCodeConfig autoCodeConfig){
@@ -121,26 +119,27 @@ public interface StartCode {
                 String beans=BuildBean().build(autoCodeConfig);
 
                 //开始生成文件
+                Boolean cover = globalConfig.getCover();
                 BuildUtils.createXMLFile(globalConfig.getParentPathResources() ,globalConfig.getXmlPath(),
-                        bean.getTableName()+globalConfig.getPackageDaoUp(),xml);
+                        bean.getTableName()+globalConfig.getPackageDaoUp(),xml, cover);
 
                 String parentPath = globalConfig.getParentPathJavaSource();
 
 
                 BuildUtils.createJavaFile(parentPath,globalConfig.getParentPack(),globalConfig.getPackageController(),
-                        bean.getTableName()+globalConfig.getPackageControllerUp(),controller);
+                        bean.getTableName()+globalConfig.getPackageControllerUp(),controller,cover);
 
                 BuildUtils.createJavaFile(parentPath,globalConfig.getParentPack(),globalConfig.getPackageDao(),
-                        bean.getTableName()+globalConfig.getPackageDaoUp(),dao);
+                        bean.getTableName()+globalConfig.getPackageDaoUp(),dao, cover);
 
                 BuildUtils.createJavaFile(parentPath,globalConfig.getParentPack(),globalConfig.getPackageService(),
-                        bean.getTableName()+globalConfig.getPackageServiceUp(),server);
+                        bean.getTableName()+globalConfig.getPackageServiceUp(),server, cover);
 
                 BuildUtils.createJavaFile(parentPath,globalConfig.getParentPack(),globalConfig.getPackageService()+".impl",
-                        bean.getTableName()+globalConfig.getPackageServiceUp()+"Impl",serviceImpl);
+                        bean.getTableName()+globalConfig.getPackageServiceUp()+"Impl",serviceImpl, cover);
 
                 BuildUtils.createJavaFile(parentPath,globalConfig.getParentPack(),globalConfig.getPackageBean(),
-                        bean.getTableName(),beans);
+                        bean.getTableName(),beans, cover);
 
                 //自定义构建
                 custom(autoCodeConfig);
@@ -156,15 +155,19 @@ public interface StartCode {
         }
     }
 
-    void custom(AutoCodeConfig autoCodeConfig);
+    /**
+     * 构建文件成功后执行方法
+     * @param autoCodeConfig
+     */
+     void custom(AutoCodeConfig autoCodeConfig);
+
 
     /**
      * 开始
-     * @param autoCodeConfig
      */
     default void start(AutoCodeConfig autoCodeConfig){
         if(autoCodeConfig==null){
-            autoCodeConfig=saxYaml();
+            autoCodeConfig = saxYaml();
         }
         List<TableConfig> tableConfigs = saxTable(autoCodeConfig);
         AutoCodeConfig finalAutoCodeConfig = autoCodeConfig;

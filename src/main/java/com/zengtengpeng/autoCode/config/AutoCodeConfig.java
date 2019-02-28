@@ -1,7 +1,6 @@
 package com.zengtengpeng.autoCode.config;
 
 
-import com.zengtengpeng.autoCode.create.*;
 import com.zengtengpeng.jdbc.bean.Bean;
 
 /**

@@ -24,4 +24,6 @@ globalConfig:
     parentPath: f:/core
     #生成代码的父包 如父包是com.zengtengpeng.test  controller将在com.zengtengpeng.test.controller下 bean 将在com.zengtengpeng.test.bean下 ,service,dao同理
     parentPack: com.zengtengpeng.de
+    #是否覆盖生成文件 如果为true将会把以前的文件覆盖掉
+    cover: false
 

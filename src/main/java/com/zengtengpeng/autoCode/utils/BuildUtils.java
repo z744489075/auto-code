@@ -115,8 +115,9 @@ public class BuildUtils {
      * @param pack 包名
      * @param beanName 文件名称
      * @param context 内容
+     * @param cover true覆盖生成 false不覆盖
      */
-    public static void createJavaFile(String parentPath,String parentPack,String pack,String beanName,String context){
+    public static void createJavaFile(String parentPath, String parentPack, String pack, String beanName, String context, Boolean cover){
 
         File parentFile=new File(packageJavaPath(parentPath,parentPack,pack));
         if (!parentFile.exists()){
@@ -124,6 +125,10 @@ public class BuildUtils {
         }
 
         File file=new File(parentFile,beanName+".java");
+        if(file.exists()&&!cover){
+            logger.info("{}已经存在,conver为{},不再重新生成",file.getAbsolutePath(),cover);
+            return;
+        }
         create(context, file);
     }
 
@@ -161,9 +166,14 @@ public class BuildUtils {
      * @param xmlPath xml存放的目录
      * @param name 文件名称
      * @param context 内容
+     * @param cover true 覆盖生成
      */
-    public static void createXMLFile(String parentPath, String xmlPath,String name,String context){
+    public static void createXMLFile(String parentPath, String xmlPath, String name, String context, Boolean cover){
         File file=new File(packageXmlPath(parentPath,xmlPath),name+".xml");
+        if(file.exists()&&!cover){
+            logger.info("{}已经存在,conver为{},不再重新生成",file.getAbsolutePath(),cover);
+            return;
+        }
         create(context, file);
     }
 
