@@ -39,7 +39,7 @@ public class BuildUtils {
                         } else {
                             init = "";
                         }
-                        stringBuffer.append(String.format("\t%s %s %s;\n\n", t.getReturnType(), t.getFiledName(), init));
+                        stringBuffer.append(String.format("\t%s %s %s %s;\n\n",t.getFiledType(), t.getReturnType(), t.getFiledName(), init));
                     }
                 });
             }
@@ -257,13 +257,13 @@ public class BuildUtils {
 
             //增加导入
             StringBuffer im=new StringBuffer("\n");
-            imports.forEach(t-> im.append(t+";"));
-            content.insert(content.lastIndexOf(";")+1,im);
+            imports.forEach(t-> im.append("\nimport "+t+";"));
+            content.insert(content.indexOf(";")+1,im);
 
             //增加字段
             StringBuffer filedsb=new StringBuffer();
             BuildUtils.buildField(buildJavaFields,filedsb);
-            content.insert(content.indexOf("{")+1,filedsb);
+            content.insert(content.indexOf("{")+1,"\n"+filedsb);
 
             //增加方法
             StringBuffer me=new StringBuffer();

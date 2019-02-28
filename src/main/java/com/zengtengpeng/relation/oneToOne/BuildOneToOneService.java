@@ -51,7 +51,16 @@ public interface BuildOneToOneService {
      * @return
      */
     default BuildJavaMethod foreignSelect(RelationTable primaryKey, RelationTable foreign, AutoCodeConfig autoCodeConfig){
-        return select(foreign, primaryKey);
+        BuildJavaMethod foreignSelect = new BuildJavaMethod();
+        String foreignBeanName = foreign.getBeanName();
+        String primaryKeyBeanName = primaryKey.getBeanName();
+        foreignSelect.setReturnType(foreignBeanName);
+        foreignSelect.setMethodName(String.format("select%sAnd%s", primaryKeyBeanName, foreignBeanName));
+        List<String> params=new ArrayList<>();
+        params.add(foreignBeanName +" "+ foreign.getBeanNameLower());
+        foreignSelect.setParams(params);
+        foreignSelect.setRemark("级联查询(带分页) "+primaryKey.getRemark()+"--"+foreign.getRemark());
+        return foreignSelect;
     }
 
 
@@ -64,24 +73,18 @@ public interface BuildOneToOneService {
      * @return
      */
     default BuildJavaMethod primarySelect(RelationTable primaryKey, RelationTable foreign, AutoCodeConfig autoCodeConfig){
-        return select(primaryKey, foreign);
-    }
-
-
-    default BuildJavaMethod select(RelationTable primaryKey, RelationTable foreign) {
-
         BuildJavaMethod foreignSelect = new BuildJavaMethod();
-        String primaryKeyBeanName_ =primaryKey.getBeanNameLower();
         String foreignBeanName = foreign.getBeanName();
         String primaryKeyBeanName = primaryKey.getBeanName();
         foreignSelect.setReturnType(primaryKeyBeanName);
         foreignSelect.setMethodName(String.format("select%sAnd%s", primaryKeyBeanName, foreignBeanName));
         List<String> params=new ArrayList<>();
-        params.add(primaryKeyBeanName +" "+ primaryKeyBeanName_);
+        params.add(primaryKey.getBeanName() +" "+ primaryKey.getBeanNameLower());
         foreignSelect.setParams(params);
         foreignSelect.setRemark("级联查询(带分页) "+primaryKey.getRemark()+"--"+foreign.getRemark());
         return foreignSelect;
     }
+
     /**
      * 主表级联删除(根据主键删除)
      * @param primaryKey
@@ -90,7 +93,17 @@ public interface BuildOneToOneService {
      * @return
      */
     default BuildJavaMethod primaryDelete(RelationTable primaryKey, RelationTable foreign, AutoCodeConfig autoCodeConfig){
-        return delete(primaryKey, foreign);
+        String primaryKeyBeanName_ = primaryKey.getBeanNameLower();
+        String foreignBeanName = foreign.getBeanName();
+        String primaryKeyBeanName = primaryKey.getBeanName();
+        BuildJavaMethod deleteTestUserAndTestClass = new BuildJavaMethod();
+        deleteTestUserAndTestClass.setReturnType("Integer");
+        deleteTestUserAndTestClass.setMethodName(String.format("delete%sAnd%s", primaryKeyBeanName, foreignBeanName));
+        List<String> params=new ArrayList<>();
+        params.add(primaryKeyBeanName +" "+ primaryKeyBeanName_);
+        deleteTestUserAndTestClass.setParams(params);
+        deleteTestUserAndTestClass.setRemark("级联删除(根据主键删除) "+primaryKey.getRemark()+"--"+foreign.getRemark());
+        return deleteTestUserAndTestClass;
     }
     /**
      * 外表级联删除(根据主键删除)
@@ -100,18 +113,13 @@ public interface BuildOneToOneService {
      * @return
      */
     default BuildJavaMethod foreignDelete(RelationTable primaryKey, RelationTable foreign, AutoCodeConfig autoCodeConfig){
-        return delete(foreign,primaryKey);
-    }
-
-    default BuildJavaMethod delete(RelationTable primaryKey, RelationTable foreign) {
-        String primaryKeyBeanName_ = primaryKey.getBeanNameLower();
         String foreignBeanName = foreign.getBeanName();
         String primaryKeyBeanName = primaryKey.getBeanName();
         BuildJavaMethod deleteTestUserAndTestClass = new BuildJavaMethod();
         deleteTestUserAndTestClass.setReturnType("Integer");
         deleteTestUserAndTestClass.setMethodName(String.format("delete%sAnd%s", primaryKeyBeanName, foreignBeanName));
         List<String> params=new ArrayList<>();
-        params.add(primaryKeyBeanName +" "+ primaryKeyBeanName_);
+        params.add(foreign.getBeanName() +" "+ foreign.getBeanNameLower());
         deleteTestUserAndTestClass.setParams(params);
         deleteTestUserAndTestClass.setRemark("级联删除(根据主键删除) "+primaryKey.getRemark()+"--"+foreign.getRemark());
         return deleteTestUserAndTestClass;

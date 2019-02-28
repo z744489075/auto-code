@@ -54,7 +54,24 @@ public interface BuildOneToOneController {
      * @return
      */
     default BuildJavaMethod foreignSelect(RelationTable primaryKey, RelationTable foreign, AutoCodeConfig autoCodeConfig){
-        return select(foreign, primaryKey);
+        BuildJavaMethod foreignSelect = new BuildJavaMethod();
+        List<String> an = new ArrayList<>();
+        an.add("@ResponseBody");
+        String foreignBeanName = foreign.getBeanName();
+        String primaryKeyBeanName = primaryKey.getBeanName();
+        an.add(String.format("@RequestMapping(\"%s/select%sAnd%s\")", foreign.getBeanNameLower(), primaryKeyBeanName, foreignBeanName));
+        foreignSelect.setAnnotation(an);
+        foreignSelect.setReturnType("DataRes");
+        foreignSelect.setMethodType("public");
+        foreignSelect.setMethodName(String.format("select%sAnd%s", primaryKeyBeanName, foreignBeanName));
+        List<String> params=new ArrayList<>();
+        params.add(foreignBeanName +" "+ foreign.getBeanNameLower());
+        params.add("HttpServletRequest request");
+        params.add("HttpServletResponse response");
+        foreignSelect.setParams(params);
+        foreignSelect.setContent(String.format("return DataRes.success(%sService.select%sAnd%s(%s));", foreign.getBeanNameLower(), primaryKeyBeanName, foreignBeanName, foreign.getBeanNameLower()));
+        foreignSelect.setRemark("级联查询(带分页) "+primaryKey.getRemark()+"--"+foreign.getRemark());
+        return foreignSelect;
     }
 
 
@@ -67,11 +84,6 @@ public interface BuildOneToOneController {
      * @return
      */
     default BuildJavaMethod primarySelect(RelationTable primaryKey, RelationTable foreign, AutoCodeConfig autoCodeConfig){
-        return select(primaryKey, foreign);
-    }
-
-
-    default BuildJavaMethod select(RelationTable primaryKey, RelationTable foreign) {
         BuildJavaMethod foreignSelect = new BuildJavaMethod();
         List<String> an = new ArrayList<>();
         an.add("@ResponseBody");
@@ -92,6 +104,9 @@ public interface BuildOneToOneController {
         foreignSelect.setRemark("级联查询(带分页) "+primaryKey.getRemark()+"--"+foreign.getRemark());
         return foreignSelect;
     }
+
+
+
     /**
      * 主表级联删除(根据主键删除)
      * @param primaryKey
@@ -100,20 +115,6 @@ public interface BuildOneToOneController {
      * @return
      */
     default BuildJavaMethod primaryDelete(RelationTable primaryKey, RelationTable foreign, AutoCodeConfig autoCodeConfig){
-        return delete(primaryKey, foreign);
-    }
-    /**
-     * 外表级联删除(根据主键删除)
-     * @param primaryKey
-     * @param foreign
-     * @param autoCodeConfig
-     * @return
-     */
-    default BuildJavaMethod foreignDelete(RelationTable primaryKey, RelationTable foreign, AutoCodeConfig autoCodeConfig){
-        return delete(foreign,primaryKey);
-    }
-
-    default BuildJavaMethod delete(RelationTable primaryKey, RelationTable foreign) {
         String primaryKeyBeanName_ = primaryKey.getBeanNameLower();
         String foreignBeanName = foreign.getBeanName();
         String primaryKeyBeanName = primaryKey.getBeanName();
@@ -134,6 +135,34 @@ public interface BuildOneToOneController {
         deleteTestUserAndTestClass.setRemark("级联删除(根据主键删除) "+primaryKey.getRemark()+"--"+foreign.getRemark());
         return deleteTestUserAndTestClass;
     }
+    /**
+     * 外表级联删除(根据主键删除)
+     * @param primaryKey
+     * @param foreign
+     * @param autoCodeConfig
+     * @return
+     */
+    default BuildJavaMethod foreignDelete(RelationTable primaryKey, RelationTable foreign, AutoCodeConfig autoCodeConfig){
+        String foreignBeanName = foreign.getBeanName();
+        String primaryKeyBeanName = primaryKey.getBeanName();
+        BuildJavaMethod deleteTestUserAndTestClass = new BuildJavaMethod();
+        List<String> an = new ArrayList<>();
+        an.add("@ResponseBody");
+        an.add(String.format("@RequestMapping(\"%s/delete%sAnd%s\")", foreign.getBeanNameLower(), primaryKeyBeanName, foreignBeanName));
+        deleteTestUserAndTestClass.setAnnotation(an);
+        deleteTestUserAndTestClass.setReturnType("DataRes");
+        deleteTestUserAndTestClass.setMethodType("public");
+        deleteTestUserAndTestClass.setMethodName(String.format("delete%sAnd%s", primaryKeyBeanName, foreignBeanName));
+        List<String> params=new ArrayList<>();
+        params.add(foreignBeanName +" "+ foreign.getBeanNameLower());
+        params.add("HttpServletRequest request");
+        params.add("HttpServletResponse response");
+        deleteTestUserAndTestClass.setParams(params);
+        deleteTestUserAndTestClass.setContent(String.format("return DataRes.success(%sService.delete%sAnd%s(%s));", foreign.getBeanNameLower(), primaryKeyBeanName, foreignBeanName, foreign.getBeanNameLower()));
+        deleteTestUserAndTestClass.setRemark("级联删除(根据主键删除) "+primaryKey.getRemark()+"--"+foreign.getRemark());
+        return deleteTestUserAndTestClass;
+    }
+
 
 
     /**

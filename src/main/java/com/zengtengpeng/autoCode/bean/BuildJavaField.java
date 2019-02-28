@@ -17,7 +17,7 @@ public class BuildJavaField {
      */
     private String returnType;
     /**
-     * 字段类型类型  如 private String fileType; 中的 private
+     * 字段类型类型  如 private String fileType; 中的 private 或者 private static String fileType; 中的 private static
      */
     private String filedType;
 

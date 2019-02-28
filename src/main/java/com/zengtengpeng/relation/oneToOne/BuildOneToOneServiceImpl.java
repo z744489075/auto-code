@@ -46,34 +46,39 @@ public interface BuildOneToOneServiceImpl {
      * @return
      */
     default BuildJavaMethod primarySelect(RelationTable primaryKey, RelationTable foreign, AutoCodeConfig autoCodeConfig){
-        BuildJavaMethod foreignSelect = new BuildJavaMethod();
+        BuildJavaMethod javaMethod = new BuildJavaMethod();
         List<String> an = new ArrayList<>();
         an.add("@Override");
         String primaryKeyBeanName_ =primaryKey.getBeanNameLower();
         String foreignBeanName = foreign.getBeanName();
+        String foreignBeanNameLower = foreign.getBeanNameLower();
         String primaryKeyBeanName = primaryKey.getBeanName();
-        foreignSelect.setAnnotation(an);
-        foreignSelect.setReturnType(primaryKeyBeanName);
-        foreignSelect.setMethodType("public");
-        foreignSelect.setMethodName(String.format("select%sAnd%s", primaryKeyBeanName, foreignBeanName));
+        javaMethod.setAnnotation(an);
+        javaMethod.setReturnType(primaryKeyBeanName);
+        javaMethod.setMethodType("public");
+        javaMethod.setMethodName(String.format("select%sAnd%s", primaryKeyBeanName, foreignBeanName));
         List<String> params=new ArrayList<>();
         params.add(primaryKeyBeanName +" "+ primaryKeyBeanName_);
-        foreignSelect.setParams(params);
+        javaMethod.setParams(params);
         StringBuffer content=new StringBuffer();
         MyStringUtils.append(content,"%s = this.selectAllByPaging(%s);",primaryKeyBeanName_,primaryKeyBeanName_);
         MyStringUtils.append(content,"if(%s!=null && %s.getRows()!=null){",2,primaryKeyBeanName_,primaryKeyBeanName_);
         MyStringUtils.append(content,"%s.getRows().forEach(t->{",3,primaryKeyBeanName_);
-        MyStringUtils.append(content,"%s data= (%s) t;",4,primaryKeyBeanName_,primaryKeyBeanName_);
-        MyStringUtils.append(content,"%s %s=new %s();",4,primaryKeyBeanName,primaryKeyBeanName_,primaryKeyBeanName);
-        MyStringUtils.append(content,"%s.set%s(data.get%s());",4,primaryKeyBeanName_,
-                primaryKey.getPrimaryKeyUp(true),
-                foreign.getForeignKeyUp(true));
-        foreignSelect.setContent(content.toString());
+        MyStringUtils.append(content,"%s data= (%s) t;",4,primaryKeyBeanName,primaryKeyBeanName);
+        MyStringUtils.append(content,"%s %s=new %s();",4,foreignBeanName,foreignBeanNameLower,foreignBeanName);
+        MyStringUtils.append(content,"%s.set%s(data.get%s());",4,foreignBeanNameLower,
+                foreign.getForeignKeyUp(true),
+                primaryKey.getPrimaryKeyUp(true));
+        MyStringUtils.append(content,"List<%s> lists = %s%s.selectByCondition(%s);",4,foreignBeanName,foreignBeanNameLower,autoCodeConfig.getGlobalConfig().getPackageDaoUp(),foreignBeanNameLower);
+        MyStringUtils.append(content,"if(lists!=null && lists.size()>0){",4);
+        MyStringUtils.append(content,"data.set%s(lists.get(0));",5,foreignBeanName);
+        MyStringUtils.append(content,"}",4);
         MyStringUtils.append(content,"});",3);
         MyStringUtils.append(content,"}",2);
         MyStringUtils.append(content,"return %s;",2,primaryKeyBeanName_);
-        foreignSelect.setRemark("级联查询(带分页) "+primaryKey.getRemark()+"--"+foreign.getRemark());
-        return foreignSelect;
+        javaMethod.setContent(content.toString());
+        javaMethod.setRemark("级联查询(带分页) "+primaryKey.getRemark()+"--"+foreign.getRemark());
+        return javaMethod;
     }
 
     /**
@@ -86,8 +91,10 @@ public interface BuildOneToOneServiceImpl {
     default BuildJavaMethod primaryDelete(RelationTable primaryKey, RelationTable foreign, AutoCodeConfig autoCodeConfig){
         String primaryKeyBeanName_ = primaryKey.getBeanNameLower();
         String foreignBeanName = foreign.getBeanName();
+        String foreignBeanNameLower = foreign.getBeanNameLower();
         String primaryKeyBeanName = primaryKey.getBeanName();
         BuildJavaMethod deleteTestUserAndTestClass = new BuildJavaMethod();
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         List<String> an = new ArrayList<>();
         an.add("@Override");
         deleteTestUserAndTestClass.setAnnotation(an);
@@ -98,9 +105,10 @@ public interface BuildOneToOneServiceImpl {
         params.add(primaryKeyBeanName +" "+ primaryKeyBeanName_);
         deleteTestUserAndTestClass.setParams(params);
         StringBuffer content=new StringBuffer();
-        MyStringUtils.append(content,"%s %s=new %s();",primaryKeyBeanName,primaryKeyBeanName_,primaryKeyBeanName);
-        MyStringUtils.append(content,"%s.set%s(%s.get%s());",2,primaryKeyBeanName_,foreign.getForeignKeyUp(true),primaryKeyBeanName,primaryKey.getPrimaryKeyUp(true));
-        MyStringUtils.append(content,"return %s%s.deleteBy%s(%s);;",2,primaryKeyBeanName_,autoCodeConfig.getGlobalConfig().getPackageDaoUp(),foreign.getForeignKeyUp(true),primaryKeyBeanName_);
+        MyStringUtils.append(content,"%s %s=new %s();",foreignBeanName,foreignBeanNameLower,foreignBeanName);
+        MyStringUtils.append(content,"%s.set%s(%s.get%s());",2,foreignBeanNameLower,foreign.getForeignKeyUp(true),primaryKeyBeanName_,primaryKey.getPrimaryKeyUp(true));
+        MyStringUtils.append(content,"%s%s.deleteBy%s(%s);",2,foreignBeanNameLower, globalConfig.getPackageDaoUp(),foreign.getForeignKeyUp(true),foreignBeanNameLower);
+        MyStringUtils.append(content,"return %s%s.deleteByPrimaryKey(%s);",2,primaryKeyBeanName_, globalConfig.getPackageDaoUp(),primaryKeyBeanName_);
         deleteTestUserAndTestClass.setContent(content.toString());
         deleteTestUserAndTestClass.setRemark("级联删除(根据主表删除) "+primaryKey.getRemark()+"--"+foreign.getRemark());
         return deleteTestUserAndTestClass;
@@ -115,6 +123,10 @@ public interface BuildOneToOneServiceImpl {
         List<String> im=new ArrayList<>();
         im.add(foreign.getExistParentPackage()+"."+autoCodeConfig.getGlobalConfig().getPackageDao()+"."+
                 foreign.getBeanName()+autoCodeConfig.getGlobalConfig().getPackageDaoUp());
+        String packageBean = autoCodeConfig.getGlobalConfig().getPackageBean();
+        im.add(primaryKey.getExistParentPackage()+"."+ packageBean+"."+primaryKey.getBeanName());
+        im.add(foreign.getExistParentPackage()+"."+ packageBean+"."+foreign.getBeanName());
+        im.add("java.util.List");
         return im;
     }
 
@@ -176,12 +188,13 @@ public interface BuildOneToOneServiceImpl {
         MyStringUtils.append(content,"%s.getRows().forEach(t->{",3,foreignBeanNameLower);
         MyStringUtils.append(content,"%s data= (%s) t;",4,foreignBeanName,foreignBeanName);
         MyStringUtils.append(content,"%s %s=new %s();",4,primaryKeyBeanName, primaryKeyBeanNameLower,primaryKeyBeanName);
-        MyStringUtils.append(content,"%s.set%s(data.get%s());",4,foreignBeanName,primaryKey.getPrimaryKeyUp(true),foreign.getForeignKeyUp(true));
+        MyStringUtils.append(content,"%s.set%s(data.get%s());",4,primaryKeyBeanNameLower,primaryKey.getPrimaryKeyUp(true),foreign.getForeignKeyUp(true));
         MyStringUtils.append(content,"data.set%s(%s%s.selectByPrimaryKey(%s));",4,primaryKeyBeanName,
                 primaryKeyBeanNameLower,globalConfig.getPackageDaoUp(),primaryKeyBeanNameLower);
         MyStringUtils.append(content,"});",3);
         MyStringUtils.append(content,"}",2);
         MyStringUtils.append(content,"return %s;",2,foreign.getBeanNameLower());
+        foreignSelect.setContent(content.toString());
         foreignSelect.setRemark("级联查询(带分页) "+primaryKey.getRemark()+"--"+foreign.getRemark());
         return foreignSelect;
     }
@@ -208,15 +221,15 @@ public interface BuildOneToOneServiceImpl {
         deleteTestUserAndTestClass.setMethodType("public");
         deleteTestUserAndTestClass.setMethodName(String.format("delete%sAnd%s", primaryKeyBeanName, foreignBeanName));
         List<String> params=new ArrayList<>();
-        params.add(primaryKeyBeanName +" "+ primaryKeyBeanName_);
+        params.add(foreignBeanName +" "+ foreignBeanNameLower);
         deleteTestUserAndTestClass.setParams(params);
         StringBuffer content=new StringBuffer();
         MyStringUtils.append(content,"%s = %s%s.selectByPrimaryKey(%s);",foreignBeanNameLower,foreignBeanNameLower,
-                globalConfig.getPackageDaoUp(),primaryKeyBeanName,foreignBeanNameLower);
+                globalConfig.getPackageDaoUp(),foreignBeanNameLower);
         MyStringUtils.append(content,"if(%s!=null){",2,foreignBeanNameLower);
         MyStringUtils.append(content,"%s %s=new %s();",3,primaryKeyBeanName,primaryKeyBeanName_,primaryKeyBeanName);
         MyStringUtils.append(content,"%s.set%s(%s.get%s());",3,primaryKeyBeanName_,
-                primaryKey.getPrimaryKeyUp(true),foreignBeanName,foreign.getForeignKeyUp(true));
+                primaryKey.getPrimaryKeyUp(true),foreignBeanNameLower,foreign.getForeignKeyUp(true));
         MyStringUtils.append(content,"%s%s.deleteByPrimaryKey(%s);",3,primaryKeyBeanName_,globalConfig.getPackageDaoUp(),
                 primaryKeyBeanName_);
         MyStringUtils.append(content,"}",2);
@@ -233,13 +246,26 @@ public interface BuildOneToOneServiceImpl {
      * @return
      */
     default List<String> foreignImports(RelationTable primaryKey, RelationTable foreign, AutoCodeConfig autoCodeConfig){
-//        import com.zengtengpeng.test.dao.TestClassDao;
         List<String> im=new ArrayList<>();
         im.add(primaryKey.getExistParentPackage()+"."+autoCodeConfig.getGlobalConfig().getPackageDao()+"."+
                 primaryKey.getBeanName()+autoCodeConfig.getGlobalConfig().getPackageDaoUp());
+        String packageBean = autoCodeConfig.getGlobalConfig().getPackageBean();
+        globalImports(primaryKey, foreign, im, packageBean);
         return im;
     }
-    
+
+    /**
+     * 公共的参数
+     * @param primaryKey
+     * @param foreign
+     * @param im
+     * @param packageBean
+     */
+    default void globalImports(RelationTable primaryKey, RelationTable foreign, List<String> im, String packageBean) {
+        im.add(primaryKey.getExistParentPackage()+"."+ packageBean+"."+primaryKey.getBeanName());
+        im.add(foreign.getExistParentPackage()+"."+ packageBean+"."+foreign.getBeanName());
+    }
+
 
     /**
      * 外表字段

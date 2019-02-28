@@ -54,8 +54,8 @@ public interface BuildOneToOneDao {
     default BuildJavaMethod foreignDelete(RelationTable primaryKey, RelationTable foreign, AutoCodeConfig autoCodeConfig){
         String foreignBeanName = foreign.getBeanName();
         BuildJavaMethod deleteTestUserAndTestClass = new BuildJavaMethod();
-        deleteTestUserAndTestClass.setReturnType("void");
-        deleteTestUserAndTestClass.setMethodName(String.format("deleteBy%s", foreign.getForeignKeyUp(false)));
+        deleteTestUserAndTestClass.setReturnType("Integer");
+        deleteTestUserAndTestClass.setMethodName(String.format("deleteBy%s", foreign.getForeignKeyUp(true)));
         List<String> params=new ArrayList<>();
         params.add(foreignBeanName +" "+ foreign.getBeanNameLower());
         deleteTestUserAndTestClass.setParams(params);
