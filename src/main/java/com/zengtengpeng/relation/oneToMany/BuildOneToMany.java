@@ -1,8 +1,7 @@
-package com.zengtengpeng.relation.build;
+package com.zengtengpeng.relation.oneToMany;
 
 import com.zengtengpeng.relation.bean.RelationTable;
 import com.zengtengpeng.relation.config.RelationConfig;
-import com.zengtengpeng.relation.oneToMany.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

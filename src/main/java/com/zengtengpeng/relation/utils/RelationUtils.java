@@ -1,4 +1,4 @@
-package com.zengtengpeng.relation;
+package com.zengtengpeng.relation.utils;
 
 import com.zengtengpeng.autoCode.StartCode;
 import com.zengtengpeng.autoCode.config.AutoCodeConfig;
@@ -6,8 +6,8 @@ import com.zengtengpeng.autoCode.config.GlobalConfig;
 import com.zengtengpeng.autoCode.config.TableConfig;
 import com.zengtengpeng.autoCode.utils.MyStringUtils;
 import com.zengtengpeng.relation.bean.RelationTable;
-import com.zengtengpeng.relation.build.BuildOneToMany;
-import com.zengtengpeng.relation.build.BuildOneToOne;
+import com.zengtengpeng.relation.oneToMany.BuildOneToMany;
+import com.zengtengpeng.relation.oneToOne.BuildOneToOne;
 import com.zengtengpeng.relation.config.RelationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

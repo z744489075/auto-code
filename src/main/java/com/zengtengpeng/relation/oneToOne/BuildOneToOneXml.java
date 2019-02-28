@@ -1,6 +1,6 @@
 package com.zengtengpeng.relation.oneToOne;
 
-import com.zengtengpeng.relation.config.BuildBaseXml;
+import com.zengtengpeng.relation.build.BuildBaseXml;
 
 /**
  * 构建一对一Xml

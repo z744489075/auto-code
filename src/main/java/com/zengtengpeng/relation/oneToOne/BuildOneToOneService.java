@@ -1,6 +1,6 @@
 package com.zengtengpeng.relation.oneToOne;
 
-import com.zengtengpeng.relation.config.BuildBaseService;
+import com.zengtengpeng.relation.build.BuildBaseService;
 
 /**
  * 构建一对一service

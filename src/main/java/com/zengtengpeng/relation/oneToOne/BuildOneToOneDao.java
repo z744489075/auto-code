@@ -1,6 +1,6 @@
 package com.zengtengpeng.relation.oneToOne;
 
-import com.zengtengpeng.relation.config.BuildBaseDao;
+import com.zengtengpeng.relation.build.BuildBaseDao;
 
 /**
  * 构建一对一dao

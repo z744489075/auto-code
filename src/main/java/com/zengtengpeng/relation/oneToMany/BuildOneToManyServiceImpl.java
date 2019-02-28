@@ -1,17 +1,11 @@
 package com.zengtengpeng.relation.oneToMany;
 
-import com.zengtengpeng.autoCode.bean.BuildJavaField;
 import com.zengtengpeng.autoCode.bean.BuildJavaMethod;
 import com.zengtengpeng.autoCode.config.AutoCodeConfig;
-import com.zengtengpeng.autoCode.config.BuildJavaConfig;
-import com.zengtengpeng.autoCode.config.GlobalConfig;
-import com.zengtengpeng.autoCode.utils.BuildUtils;
 import com.zengtengpeng.autoCode.utils.MyStringUtils;
 import com.zengtengpeng.relation.bean.RelationTable;
-import com.zengtengpeng.relation.config.BuildBaseServiceImpl;
+import com.zengtengpeng.relation.build.BuildBaseServiceImpl;
 import com.zengtengpeng.relation.config.RelationConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;

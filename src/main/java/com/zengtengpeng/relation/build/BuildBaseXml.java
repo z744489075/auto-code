@@ -1,4 +1,4 @@
-package com.zengtengpeng.relation.config;
+package com.zengtengpeng.relation.build;
 
 import com.zengtengpeng.autoCode.bean.BuildXmlBean;
 import com.zengtengpeng.autoCode.config.AutoCodeConfig;
@@ -6,6 +6,7 @@ import com.zengtengpeng.autoCode.config.GlobalConfig;
 import com.zengtengpeng.autoCode.enums.XmlElementType;
 import com.zengtengpeng.autoCode.utils.BuildUtils;
 import com.zengtengpeng.relation.bean.RelationTable;
+import com.zengtengpeng.relation.config.RelationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,7 @@ public interface BuildBaseXml {
      * @param primaryBuildXmlBean 主表sql
      * @param foreignBuildXmlBean 外表sql
      */
-    void custom(RelationConfig relationConfig,List<BuildXmlBean> primaryBuildXmlBean,List<BuildXmlBean> foreignBuildXmlBean);
+    void custom(RelationConfig relationConfig, List<BuildXmlBean> primaryBuildXmlBean, List<BuildXmlBean> foreignBuildXmlBean);
 
 
     /**

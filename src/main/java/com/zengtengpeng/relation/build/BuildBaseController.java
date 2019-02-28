@@ -1,4 +1,4 @@
-package com.zengtengpeng.relation.config;
+package com.zengtengpeng.relation.build;
 
 import com.zengtengpeng.autoCode.bean.BuildJavaField;
 import com.zengtengpeng.autoCode.bean.BuildJavaMethod;
@@ -7,6 +7,7 @@ import com.zengtengpeng.autoCode.config.BuildJavaConfig;
 import com.zengtengpeng.autoCode.config.GlobalConfig;
 import com.zengtengpeng.autoCode.utils.BuildUtils;
 import com.zengtengpeng.relation.bean.RelationTable;
+import com.zengtengpeng.relation.config.RelationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
