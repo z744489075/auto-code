@@ -1,4 +1,4 @@
-package com.zengtengpeng.relation.ManyToMany;
+package com.zengtengpeng.relation.manyToMany;
 
 import com.zengtengpeng.relation.build.BuildBaseService;
 

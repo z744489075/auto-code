@@ -24,21 +24,21 @@ public interface BuildBaseServiceImpl {
     Logger logger = LoggerFactory.getLogger(BuildBaseServiceImpl.class);
     /**
      * 自定义构建
-     * @param relationConfig 关系描述配置
+     * @param autoCodeConfig 关系描述配置
      * @param primaryBuildJavaConfig 主表自定义配置
      * @param foreignBuildJavaConfig 外表自定义配置
      */
-    void custom(RelationConfig relationConfig, BuildJavaConfig primaryBuildJavaConfig, BuildJavaConfig foreignBuildJavaConfig);
+    void custom(AutoCodeConfig autoCodeConfig, BuildJavaConfig primaryBuildJavaConfig, BuildJavaConfig foreignBuildJavaConfig);
 
     /**
      * 构建主表 级联查询(带分页)
      * @return
      */
-    default BuildJavaMethod primarySelect(RelationConfig relationConfig){
+    default BuildJavaMethod primarySelect(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         BuildJavaMethod javaMethod = new BuildJavaMethod();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         List<String> an = new ArrayList<>();
         an.add("@Override");
         String primaryKeyBeanName_ =primary.getBeanNameLower();
@@ -77,10 +77,10 @@ public interface BuildBaseServiceImpl {
      * 主表级联删除(根据主表删除)
      * @return
      */
-    default BuildJavaMethod primaryDelete(RelationConfig relationConfig){
+    default BuildJavaMethod primaryDelete(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         String primaryKeyBeanName_ = primary.getBeanNameLower();
         String foreignBeanName = foreign.getBeanName();
         String foreignBeanNameLower = foreign.getBeanNameLower();
@@ -110,10 +110,10 @@ public interface BuildBaseServiceImpl {
      * 主表导入
      * @return
      */
-    default List<String> primaryImports(RelationConfig relationConfig){
+    default List<String> primaryImports(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         List<String> im=new ArrayList<>();
         im.add(foreign.getExistParentPackage()+"."+autoCodeConfig.getGlobalConfig().getPackageDao()+"."+
                 foreign.getBeanName()+autoCodeConfig.getGlobalConfig().getPackageDaoUp());
@@ -128,10 +128,10 @@ public interface BuildBaseServiceImpl {
      * 主表字段
      * @return
      */
-    default List<BuildJavaField> primaryFields(RelationConfig relationConfig){
+    default List<BuildJavaField> primaryFields(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         List<BuildJavaField> buildJavaFields=new ArrayList<>();
         RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         BuildJavaField buildJavaField=new BuildJavaField();
         List<String> an=new ArrayList<>();
         an.add("@Resource");
@@ -149,10 +149,10 @@ public interface BuildBaseServiceImpl {
      * 构建外表 级联查询(带分页)
      * @return
      */
-    default BuildJavaMethod foreignSelect(RelationConfig relationConfig){
+    default BuildJavaMethod foreignSelect(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         BuildJavaMethod foreignSelect = new BuildJavaMethod();
         List<String> an = new ArrayList<>();
         an.add("@Override");
@@ -188,11 +188,10 @@ public interface BuildBaseServiceImpl {
      * 外表级联删除(根据主表删除)
      * @return
      */
-    default BuildJavaMethod foreignDelete(RelationConfig relationConfig){
-
+    default BuildJavaMethod foreignDelete(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
 
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
 
@@ -232,11 +231,11 @@ public interface BuildBaseServiceImpl {
      * 外表导入
      * @return
      */
-    default List<String> foreignImports(RelationConfig relationConfig){
+    default List<String> foreignImports(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         List<String> im=new ArrayList<>();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         im.add(primary.getExistParentPackage()+"."+autoCodeConfig.getGlobalConfig().getPackageDao()+"."+
                 primary.getBeanName()+autoCodeConfig.getGlobalConfig().getPackageDaoUp());
         String packageBean = autoCodeConfig.getGlobalConfig().getPackageBean();
@@ -261,10 +260,10 @@ public interface BuildBaseServiceImpl {
      * 外表字段
      * @return
      */
-    default List<BuildJavaField> foreignFields(RelationConfig relationConfig){
+    default List<BuildJavaField> foreignFields(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         List<BuildJavaField> buildJavaFields=new ArrayList<>();
         BuildJavaField buildJavaField=new BuildJavaField();
         List<String> an=new ArrayList<>();
@@ -283,20 +282,20 @@ public interface BuildBaseServiceImpl {
     /**
      * 构建主表的serverimpl
      */
-    default void buildPrimary(RelationConfig relationConfig, BuildJavaConfig buildJavaConfig){
+    default void buildPrimary(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         List<BuildJavaMethod> buildJavaMethods =buildJavaConfig.getBuildJavaMethods();
 
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
-        buildJavaMethods.add(primarySelect(relationConfig));
-        buildJavaMethods.add(primaryDelete(relationConfig));
+        buildJavaMethods.add(primarySelect(autoCodeConfig));
+        buildJavaMethods.add(primaryDelete(autoCodeConfig));
 
         List<String> imports = buildJavaConfig.getImports();
-        imports.addAll(primaryImports(relationConfig));
+        imports.addAll(primaryImports(autoCodeConfig));
 
         List<BuildJavaField> buildJavaFields = buildJavaConfig.getBuildJavaFields();
-        buildJavaFields.addAll(primaryFields(relationConfig));
+        buildJavaFields.addAll(primaryFields(autoCodeConfig));
 
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         String filePath = BuildUtils.packageJavaPath(globalConfig.getParentPathJavaSource(), primary.getExistParentPackage(),
@@ -306,18 +305,18 @@ public interface BuildBaseServiceImpl {
     /**
      * 构建外表的ServiceImpl
      */
-    default void buildForeign(RelationConfig relationConfig, BuildJavaConfig buildJavaConfig){
+    default void buildForeign(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         List<BuildJavaMethod> buildJavaMethods = buildJavaConfig.getBuildJavaMethods();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
-        buildJavaMethods.add(foreignSelect(relationConfig));
-        buildJavaMethods.add(foreignDelete(relationConfig));
+        buildJavaMethods.add(foreignSelect(autoCodeConfig));
+        buildJavaMethods.add(foreignDelete(autoCodeConfig));
         List<String> imports = buildJavaConfig.getImports();
-        imports.addAll(foreignImports(relationConfig));
+        imports.addAll(foreignImports(autoCodeConfig));
 
         List<BuildJavaField> buildJavaFields = buildJavaConfig.getBuildJavaFields();
-        buildJavaFields.addAll(foreignFields(relationConfig));
+        buildJavaFields.addAll(foreignFields(autoCodeConfig));
 
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         String filePath = BuildUtils.packageJavaPath(globalConfig.getParentPathJavaSource(), foreign.getExistParentPackage(),
@@ -329,13 +328,13 @@ public interface BuildBaseServiceImpl {
     /**
      * 开始构建
      */
-    default void build(RelationConfig relationConfig){
+    default void build(AutoCodeConfig autoCodeConfig){
 
         BuildJavaConfig p = new BuildJavaConfig();
         BuildJavaConfig f = new BuildJavaConfig();
-        custom(relationConfig,p,f);
-        buildPrimary(relationConfig,p);
-        buildForeign(relationConfig,f);
+        custom(autoCodeConfig,p,f);
+        buildPrimary(autoCodeConfig,p);
+        buildForeign(autoCodeConfig,f);
 
     }
 }

@@ -1,4 +1,4 @@
-package com.zengtengpeng.relation.ManyToMany;
+package com.zengtengpeng.relation.manyToMany;
 
 import com.zengtengpeng.autoCode.bean.BuildJavaField;
 import com.zengtengpeng.autoCode.bean.BuildJavaMethod;
@@ -21,10 +21,10 @@ public interface BuildManyToManyDao extends BuildBaseDao {
 
     /**
      * 主表导入
-     * @param relationConfig
+     * @param autoCodeConfig
      * @return
      */
-    default List<String> primaryImports(RelationConfig relationConfig){
+    default List<String> primaryImports(AutoCodeConfig autoCodeConfig){
         List list=new ArrayList();
         list.add("java.util.List");
         return list;
@@ -32,10 +32,11 @@ public interface BuildManyToManyDao extends BuildBaseDao {
 
     /**
      * 主表查询
-     * @param relationConfig
+     * @param autoCodeConfig
      * @return
      */
-    default BuildJavaMethod primarySelect(RelationConfig relationConfig) {
+    default BuildJavaMethod primarySelect(AutoCodeConfig autoCodeConfig) {
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         BuildJavaMethod buildJavaMethod = select(primary, foreign);
@@ -55,10 +56,10 @@ public interface BuildManyToManyDao extends BuildBaseDao {
 
     /**
      * 主表删除
-     * @param relationConfig
      * @return
      */
-    default BuildJavaMethod primaryDelete(RelationConfig relationConfig) {
+    default BuildJavaMethod primaryDelete(AutoCodeConfig autoCodeConfig) {
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         BuildJavaMethod buildJavaMethod = delete(primary, foreign);
@@ -78,11 +79,12 @@ public interface BuildManyToManyDao extends BuildBaseDao {
 
     /**
      * 外表删除
-     * @param relationConfig
+     * @param autoCodeConfig
      * @return
      */
     @Override
-    default BuildJavaMethod foreignDelete(RelationConfig relationConfig) {
+    default BuildJavaMethod foreignDelete(AutoCodeConfig autoCodeConfig) {
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         BuildJavaMethod buildJavaMethod = delete(foreign, primary);
@@ -91,10 +93,10 @@ public interface BuildManyToManyDao extends BuildBaseDao {
 
     /**
      * 外表查询
-     * @param relationConfig
      * @return
      */
-    default BuildJavaMethod foreignSelect(RelationConfig relationConfig) {
+    default BuildJavaMethod foreignSelect(AutoCodeConfig autoCodeConfig) {
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable  primary= relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         BuildJavaMethod buildJavaMethod = select(foreign, primary);
@@ -103,10 +105,9 @@ public interface BuildManyToManyDao extends BuildBaseDao {
 
     /**
      * 外表导入
-     * @param relationConfig
      * @return
      */
-    default List<String> foreignImports(RelationConfig relationConfig){
+    default List<String> foreignImports(AutoCodeConfig autoCodeConfig){
         List list=new ArrayList();
         list.add("java.util.List");
         return list;
@@ -115,16 +116,16 @@ public interface BuildManyToManyDao extends BuildBaseDao {
     /**
      * 构建主表的dao
      */
-    default void buildPrimary(RelationConfig relationConfig, BuildJavaConfig buildJavaConfig){
+    default void buildPrimary(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
 
         List<BuildJavaMethod> buildJavaMethods =buildJavaConfig.getBuildJavaMethods();
-        buildJavaMethods.add(primarySelect(relationConfig));
-        buildJavaMethods.add(primaryDelete(relationConfig));
+        buildJavaMethods.add(primarySelect(autoCodeConfig));
+        buildJavaMethods.add(primaryDelete(autoCodeConfig));
 
         List<String> imports = buildJavaConfig.getImports();
-        imports.addAll(primaryImports(relationConfig));
+        imports.addAll(primaryImports(autoCodeConfig));
 
         List<BuildJavaField> buildJavaFields = buildJavaConfig.getBuildJavaFields();
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
@@ -135,15 +136,15 @@ public interface BuildManyToManyDao extends BuildBaseDao {
     /**
      * 构建外表的dao
      */
-    default void buildForeign(RelationConfig relationConfig, BuildJavaConfig buildJavaConfig){
+    default void buildForeign(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         List<BuildJavaMethod> buildJavaMethods = buildJavaConfig.getBuildJavaMethods();
-        buildJavaMethods.add(foreignSelect(relationConfig));
-        buildJavaMethods.add(foreignDelete(relationConfig));
+        buildJavaMethods.add(foreignSelect(autoCodeConfig));
+        buildJavaMethods.add(foreignDelete(autoCodeConfig));
 
         List<String> imports = buildJavaConfig.getImports();
-        imports.addAll(foreignImports(relationConfig));
+        imports.addAll(foreignImports(autoCodeConfig));
 
         List<BuildJavaField> buildJavaFields = buildJavaConfig.getBuildJavaFields();
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();

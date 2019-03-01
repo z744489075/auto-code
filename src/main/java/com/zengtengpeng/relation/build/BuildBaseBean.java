@@ -25,19 +25,19 @@ public interface BuildBaseBean {
 
     /**
      * 自定义构建
-     * @param relationConfig 关系描述配置
+     * @param autoCodeConfig 关系描述配置
      * @param primaryBuildJavaConfig 主表自定义配置
      * @param foreignBuildJavaConfig 外表自定义配置
      */
-    void custom(RelationConfig relationConfig, BuildJavaConfig primaryBuildJavaConfig, BuildJavaConfig foreignBuildJavaConfig);
+    void custom(AutoCodeConfig autoCodeConfig, BuildJavaConfig primaryBuildJavaConfig, BuildJavaConfig foreignBuildJavaConfig);
 
     /**
      * 主表导入
      * @return
      */
-    default List<String> primaryImports(RelationConfig relationConfig){
+    default List<String> primaryImports(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         List<String> im=new ArrayList<>();
         im.add(foreign.getExistParentPackage()+"."+autoCodeConfig.getGlobalConfig().getPackageBean()+"."+
                 foreign.getBeanName());
@@ -49,7 +49,8 @@ public interface BuildBaseBean {
      * 主表字段
      * @return
      */
-    default List<BuildJavaField> primaryFields(RelationConfig relationConfig){
+    default List<BuildJavaField> primaryFields(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         return RelationBuilUtils.getBaseBeanJavaFields(relationConfig.getForeign());
     }
 
@@ -57,7 +58,8 @@ public interface BuildBaseBean {
      * 主表方法
      * @return
      */
-    default List<BuildJavaMethod> primaryMethods(RelationConfig relationConfig){
+    default List<BuildJavaMethod> primaryMethods(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         return RelationBuilUtils.getBaseBeanJavaMethods(relationConfig.getForeign());
     }
 
@@ -66,9 +68,9 @@ public interface BuildBaseBean {
      * 外表导入
      * @return
      */
-    default List<String> foreignImports(RelationConfig relationConfig){
+    default List<String> foreignImports(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         List<String> im=new ArrayList<>();
         im.add(primary.getExistParentPackage()+"."+autoCodeConfig.getGlobalConfig().getPackageBean()+"."+
                 primary.getBeanName());
@@ -81,7 +83,8 @@ public interface BuildBaseBean {
      * 外表字段
      * @return
      */
-    default List<BuildJavaField> foreignFields(RelationConfig relationConfig){
+    default List<BuildJavaField> foreignFields(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         return RelationBuilUtils.getBaseBeanJavaFields(relationConfig.getPrimary());
     }
 
@@ -91,7 +94,8 @@ public interface BuildBaseBean {
      * 外表方法
      * @return
      */
-    default List<BuildJavaMethod> foreignMethods(RelationConfig relationConfig){
+    default List<BuildJavaMethod> foreignMethods(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         return RelationBuilUtils.getBaseBeanJavaMethods(relationConfig.getPrimary());
     }
 
@@ -100,17 +104,17 @@ public interface BuildBaseBean {
      * 构建主表的bean
      * @param buildJavaConfig
      */
-    default void buildPrimary(RelationConfig relationConfig, BuildJavaConfig buildJavaConfig){
+    default void buildPrimary(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         List<BuildJavaMethod> buildJavaMethods =buildJavaConfig.getBuildJavaMethods();
-        buildJavaMethods.addAll(primaryMethods(relationConfig));
+        buildJavaMethods.addAll(primaryMethods(autoCodeConfig));
 
         List<String> imports = buildJavaConfig.getImports();
-        imports.addAll(primaryImports(relationConfig));
+        imports.addAll(primaryImports(autoCodeConfig));
 
         List<BuildJavaField> buildJavaFields = buildJavaConfig.getBuildJavaFields();
-        buildJavaFields.addAll(primaryFields(relationConfig));
+        buildJavaFields.addAll(primaryFields(autoCodeConfig));
 
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         String filePath = BuildUtils.packageJavaPath(globalConfig.getParentPathJavaSource(), primary.getExistParentPackage(),
@@ -120,17 +124,17 @@ public interface BuildBaseBean {
     /**
      * 构建外表的bean
      */
-    default void buildForeign(RelationConfig relationConfig, BuildJavaConfig buildJavaConfig){
+    default void buildForeign(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         List<BuildJavaMethod> buildJavaMethods = buildJavaConfig.getBuildJavaMethods();
-        buildJavaMethods.addAll(foreignMethods(relationConfig));
+        buildJavaMethods.addAll(foreignMethods(autoCodeConfig));
 
         List<String> imports = buildJavaConfig.getImports();
-        imports.addAll(foreignImports(relationConfig));
+        imports.addAll(foreignImports(autoCodeConfig));
 
         List<BuildJavaField> buildJavaFields = buildJavaConfig.getBuildJavaFields();
-        buildJavaFields.addAll(foreignFields(relationConfig));
+        buildJavaFields.addAll(foreignFields(autoCodeConfig));
 
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         String filePath = BuildUtils.packageJavaPath(globalConfig.getParentPathJavaSource(), foreign.getExistParentPackage(),
@@ -142,14 +146,14 @@ public interface BuildBaseBean {
     /**
      * 开始构建
      */
-    default void build(RelationConfig relationConfig){
+    default void build(AutoCodeConfig autoCodeConfig){
 
         BuildJavaConfig p = new BuildJavaConfig();
         BuildJavaConfig f = new BuildJavaConfig();
-        custom(relationConfig,p,f);
+        custom(autoCodeConfig,p,f);
         //获取受影响的文件 controller,server,serverImpl dao xml
-        buildPrimary(relationConfig,p);
-        buildForeign(relationConfig,f);
+        buildPrimary(autoCodeConfig,p);
+        buildForeign(autoCodeConfig,f);
 
     }
 }

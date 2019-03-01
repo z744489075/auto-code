@@ -1,4 +1,4 @@
-package com.zengtengpeng.relation.ManyToMany;
+package com.zengtengpeng.relation.manyToMany;
 
 import com.zengtengpeng.autoCode.StartCode;
 import com.zengtengpeng.autoCode.bean.BuildXmlBean;
@@ -28,40 +28,41 @@ public interface BuildManyToManyXml extends BuildBaseXml {
      * 主表级联删除(根据主键删除)
      * @return
      */
-    default BuildXmlBean primaryDelete(RelationConfig relationConfig){
-
+    default BuildXmlBean primaryDelete(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         return RelationBuilUtils.getXmlBaseDelete(relationConfig.getForeign(),relationConfig.getPrimary());
     }
     /**
      * 主表级联查询
      * @return
      */
-    default BuildXmlBean primarySelect(RelationConfig relationConfig){
+    default BuildXmlBean primarySelect(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         RelationTable thirdparty = relationConfig.getThirdparty();
         String primaryKey = thirdparty.getPrimaryKey();
         String primaryKeyUp = thirdparty.getPrimaryKeyUp(false);
 
-        return select(relationConfig, primary, foreign, thirdparty, primaryKey, primaryKeyUp);
+        return select(autoCodeConfig, primary, foreign, thirdparty, primaryKey, primaryKeyUp);
     }
     /**
      * 主表级联查询
      * @return
      */
-    default BuildXmlBean foreignSelect(RelationConfig relationConfig){
+    default BuildXmlBean foreignSelect(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         RelationTable thirdparty = relationConfig.getThirdparty();
         String foreignKey = thirdparty.getForeignKey();
         String foreignKeyUp = thirdparty.getForeignKeyUp(false);
 
-        return select(relationConfig,  foreign,primary, thirdparty, foreignKey, foreignKeyUp);
+        return select(autoCodeConfig,  foreign,primary, thirdparty, foreignKey, foreignKeyUp);
     }
 
     /**
      * 多对多查询
-     * @param relationConfig
      * @param primary
      * @param foreign
      * @param thirdparty
@@ -69,8 +70,8 @@ public interface BuildManyToManyXml extends BuildBaseXml {
      * @param primaryKeyUp
      * @return
      */
-    default BuildXmlBean select(RelationConfig relationConfig, RelationTable primary, RelationTable foreign, RelationTable thirdparty, String primaryKey, String primaryKeyUp) {
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
+    default BuildXmlBean select(AutoCodeConfig autoCodeConfig, RelationTable primary, RelationTable foreign,
+                                RelationTable thirdparty, String primaryKey, String primaryKeyUp) {
         BuildXmlBean buildXmlBean=new BuildXmlBean();
         buildXmlBean.setXmlElementType(XmlElementType.select);
         Map<String, String> attrs=new HashMap<>();
@@ -102,23 +103,23 @@ public interface BuildManyToManyXml extends BuildBaseXml {
 
 
     @Override
-    default void buildPrimary(RelationConfig relationConfig, List<BuildXmlBean> buildXmlBeans) {
+    default void buildPrimary(AutoCodeConfig autoCodeConfig, List<BuildXmlBean> buildXmlBeans) {
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
-        buildXmlBeans.add(primarySelect(relationConfig));
-        buildXmlBeans.add(primaryDelete(relationConfig));
+        buildXmlBeans.add(primarySelect(autoCodeConfig));
+        buildXmlBeans.add(primaryDelete(autoCodeConfig));
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         String filePath = BuildUtils.packageXmlPath(globalConfig.getParentPathResources(),globalConfig.getXmlPath())+"/"+primary.getBeanName()+globalConfig.getPackageDaoUp()+".xml";
         BuildUtils.addXmlSql(filePath,buildXmlBeans);
     }
 
     @Override
-    default void buildForeign(RelationConfig relationConfig, List<BuildXmlBean> buildXmlBeans) {
+    default void buildForeign(AutoCodeConfig autoCodeConfig, List<BuildXmlBean> buildXmlBeans) {
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
 
-        buildXmlBeans.add(foreignSelect(relationConfig));
-        buildXmlBeans.add(foreignDelete(relationConfig));
+        buildXmlBeans.add(foreignSelect(autoCodeConfig));
+        buildXmlBeans.add(foreignDelete(autoCodeConfig));
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         String filePath = BuildUtils.packageXmlPath(globalConfig.getParentPathResources(),globalConfig.getXmlPath())+"/"+foreign.getBeanName()+globalConfig.getPackageDaoUp()+".xml";
         BuildUtils.addXmlSql(filePath,buildXmlBeans);

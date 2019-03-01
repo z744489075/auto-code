@@ -1,5 +1,6 @@
 package com.zengtengpeng.relation.oneToOne;
 
+import com.zengtengpeng.autoCode.config.AutoCodeConfig;
 import com.zengtengpeng.relation.bean.RelationTable;
 import com.zengtengpeng.relation.config.*;
 import org.slf4j.Logger;
@@ -57,21 +58,23 @@ public interface BuildOneToOne {
      * 自定义
      * @return
      */
-     void custom(RelationConfig relationConfig);
+     void custom(AutoCodeConfig autoCodeConfig);
     /**
      * 构建
+     * @param autoCodeConfig
      */
-    default void build(RelationConfig relationConfig){
+    default void build(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         logger.info("-------------------------------------开始构建一对一 ->主键:{} ->外表{}", primary.getBeanName(),foreign.getBeanName());
-        buildOneToOneController().build(relationConfig);
-        buildOneToOneBean().build(relationConfig);
-        buildOneToOneDao().build(relationConfig);
-        buildOneToOneService().build(relationConfig);
-        buildOneToOneServiceImpl().build(relationConfig);
-        BuildOneToOneXml().build(relationConfig);
-        custom(relationConfig);
+        buildOneToOneController().build(autoCodeConfig);
+        buildOneToOneBean().build(autoCodeConfig);
+        buildOneToOneDao().build(autoCodeConfig);
+        buildOneToOneService().build(autoCodeConfig);
+        buildOneToOneServiceImpl().build(autoCodeConfig);
+        BuildOneToOneXml().build(autoCodeConfig);
+        custom(autoCodeConfig);
         logger.info("--------------------------------------构建一对一结束 ->主键:{} ->外表{}",primary.getBeanName(),foreign.getBeanName());
     }
 

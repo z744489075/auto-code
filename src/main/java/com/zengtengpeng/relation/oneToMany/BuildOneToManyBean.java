@@ -23,7 +23,8 @@ public interface BuildOneToManyBean extends BuildBaseBean {
      * 主表字段
      * @return
      */
-    default List<BuildJavaField> primaryFields(RelationConfig relationConfig){
+    default List<BuildJavaField> primaryFields(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
         return RelationBuilUtils.getBeanListJavaFields(foreign);
     }
@@ -34,7 +35,8 @@ public interface BuildOneToManyBean extends BuildBaseBean {
      * 主表方法
      * @return
      */
-    default List<BuildJavaMethod> primaryMethods(RelationConfig relationConfig){
+    default List<BuildJavaMethod> primaryMethods(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         return RelationBuilUtils.getBeanListJavaMethods(relationConfig.getForeign());
     }
 

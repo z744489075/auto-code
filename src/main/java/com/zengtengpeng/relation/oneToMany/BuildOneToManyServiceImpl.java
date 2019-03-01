@@ -19,10 +19,10 @@ public interface BuildOneToManyServiceImpl extends BuildBaseServiceImpl {
      * 构建主表 级联查询(带分页)
      * @return
      */
-    default BuildJavaMethod primarySelect(RelationConfig relationConfig){
+    default BuildJavaMethod primarySelect(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         BuildJavaMethod javaMethod = new BuildJavaMethod();
         List<String> an = new ArrayList<>();
         an.add("@Override");

@@ -25,18 +25,20 @@ public interface BuildBaseController {
 
     /**
      * 自定义构建
-     * @param relationConfig 关系描述配置
+     * @param autoCodeConfig 关系描述配置
      * @param primaryBuildJavaConfig 主表自定义配置
      * @param foreignBuildJavaConfig 外表自定义配置
      */
-    void custom(RelationConfig relationConfig, BuildJavaConfig primaryBuildJavaConfig, BuildJavaConfig foreignBuildJavaConfig);
+    void custom(AutoCodeConfig autoCodeConfig, BuildJavaConfig primaryBuildJavaConfig, BuildJavaConfig foreignBuildJavaConfig);
 
 
     /**
      * 构建外表 级联查询(带分页) 默认 page=1 pageSize等于10 详见 Page类(所有bean都继承改类)
      * @return
      */
-    default BuildJavaMethod foreignSelect(RelationConfig relationConfig){
+    default BuildJavaMethod foreignSelect(AutoCodeConfig autoCodeConfig){
+
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         BuildJavaMethod foreignSelect = new BuildJavaMethod();
@@ -64,7 +66,8 @@ public interface BuildBaseController {
      * 构建主表 级联查询(带分页)
      * @return
      */
-    default BuildJavaMethod primarySelect(RelationConfig relationConfig){
+    default BuildJavaMethod primarySelect(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         BuildJavaMethod foreignSelect = new BuildJavaMethod();
@@ -94,10 +97,10 @@ public interface BuildBaseController {
      * 主表级联删除(根据主键删除)
      * @return
      */
-    default BuildJavaMethod primaryDelete(RelationConfig relationConfig){
+    default BuildJavaMethod primaryDelete(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         String primaryKeyBeanName_ = primary.getBeanNameLower();
         String foreignBeanName = foreign.getBeanName();
         String primaryKeyBeanName = primary.getBeanName();
@@ -122,7 +125,8 @@ public interface BuildBaseController {
      * 外表级联删除(根据主键删除)
      * @return
      */
-    default BuildJavaMethod foreignDelete(RelationConfig relationConfig){
+    default BuildJavaMethod foreignDelete(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         String foreignBeanName = foreign.getBeanName();
@@ -150,12 +154,12 @@ public interface BuildBaseController {
     /**
      * 构建主表的controller
      */
-    default void buildPrimary(RelationConfig relationConfig, BuildJavaConfig buildJavaConfig){
+    default void buildPrimary(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig){
         List<BuildJavaMethod> buildJavaMethods =buildJavaConfig.getBuildJavaMethods();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
-        buildJavaMethods.add(primarySelect(relationConfig));
-        buildJavaMethods.add(primaryDelete(relationConfig));
+        buildJavaMethods.add(primarySelect(autoCodeConfig));
+        buildJavaMethods.add(primaryDelete(autoCodeConfig));
 
         List<String> imports = buildJavaConfig.getImports();
 
@@ -168,12 +172,12 @@ public interface BuildBaseController {
     /**
      * 构建外表的controller
      */
-    default void buildForeign(RelationConfig relationConfig, BuildJavaConfig buildJavaConfig){
+    default void buildForeign(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig){
         List<BuildJavaMethod> buildJavaMethods = buildJavaConfig.getBuildJavaMethods();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
-        buildJavaMethods.add(foreignSelect(relationConfig));
-        buildJavaMethods.add(foreignDelete(relationConfig));
+        buildJavaMethods.add(foreignSelect(autoCodeConfig));
+        buildJavaMethods.add(foreignDelete(autoCodeConfig));
         List<String> imports = buildJavaConfig.getImports();
 
         List<BuildJavaField> buildJavaFields = buildJavaConfig.getBuildJavaFields();
@@ -187,14 +191,14 @@ public interface BuildBaseController {
     /**
      * 开始构建
      */
-    default void build(RelationConfig relationConfig){
+    default void build(AutoCodeConfig autoCodeConfig){
 
         BuildJavaConfig p = new BuildJavaConfig();
         BuildJavaConfig f = new BuildJavaConfig();
-        custom(relationConfig,p,f);
+        custom(autoCodeConfig,p,f);
         //获取受影响的文件 controller,server,serverImpl dao xml
-        buildPrimary(relationConfig,p);
-        buildForeign(relationConfig,f);
+        buildPrimary(autoCodeConfig,p);
+        buildForeign(autoCodeConfig,f);
 
     }
 }

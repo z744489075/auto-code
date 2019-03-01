@@ -6,6 +6,7 @@ import com.zengtengpeng.autoCode.config.GlobalConfig;
 import com.zengtengpeng.autoCode.config.TableConfig;
 import com.zengtengpeng.autoCode.utils.MyStringUtils;
 import com.zengtengpeng.relation.bean.RelationTable;
+import com.zengtengpeng.relation.manyToMany.BuildManyToMany;
 import com.zengtengpeng.relation.oneToMany.BuildOneToMany;
 import com.zengtengpeng.relation.oneToOne.BuildOneToOne;
 import com.zengtengpeng.relation.config.RelationConfig;
@@ -22,54 +23,32 @@ public class RelationUtils {
 
    static Logger logger = LoggerFactory.getLogger(RelationUtils.class);
     public static void main(String[] args) {
-        StartCode startCode=t->{};
-        RelationConfig relationConfig=new RelationConfig();
 
-        AutoCodeConfig autoCodeConfig = StartCode.saxYaml();
-        relationConfig.setAutoCodeConfig(autoCodeConfig);
-
-        RelationTable primary=new RelationTable();
-        primary.setDataName("test_user");
-        primary.setPrimaryKey("id");
-        primary.setGenerate(true);
-        primary.setRemark("用户");
-        relationConfig.setPrimary(primary);
-
-        RelationTable foreign=new RelationTable();
-        foreign.setDataName("test_class");
-        foreign.setForeignKey("user_id");
-        foreign.setGenerate(false);
-        foreign.setExistParentPackage("com.zengtengpeng.test");
-        foreign.setRemark("班级");
-        relationConfig.setForeign(foreign);
-
-        BuildOneToOne startOneToOne = rt -> {
-        };
-
-        RelationUtils.oneToOne(relationConfig,startCode, startOneToOne);
+        RelationUtils.manyToMany(StartCode.saxYaml(),t->{}, c -> {});
+        RelationUtils.oneToMany(StartCode.saxYaml(),t->{}, c -> {});
+        RelationUtils.oneToOne(StartCode.saxYaml(),t->{}, c -> {});
     }
 
 
     /**
      * 一对一关系
      */
-    public static void oneToOne(RelationConfig relationConfig, StartCode startCode, BuildOneToOne startOneToOne){
-        if (!checks(relationConfig, startCode)){
+    public static void oneToOne(AutoCodeConfig autoCodeConfig, StartCode startCode, BuildOneToOne startOneToOne){
+        if (!checks(autoCodeConfig, startCode)){
             return;
         }
-        startOneToOne.build(relationConfig);
+        startOneToOne.build(autoCodeConfig);
     }
 
     /**
      * 校验,以及生成单表
-     * @param relationConfig
      * @param startCode
      * @return
      */
-    public static boolean checks(RelationConfig relationConfig, StartCode startCode) {
+    public static boolean checks(AutoCodeConfig autoCodeConfig, StartCode startCode) {
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         if (!primary.getGenerate() && MyStringUtils.isEmpty(primary.getExistParentPackage())) {
             logger.info("primaryKey当generate为false时,请设置existParentPackage");
             return false;
@@ -93,13 +72,29 @@ public class RelationUtils {
     }
 
     /**
-     * 一对一关系
+     * 一对多关系
      */
-    public static void oneToMany(RelationConfig relationConfig, StartCode startCode,BuildOneToMany buildOneToMany){
-        if (!checks(relationConfig, startCode)){
+    public static void oneToMany(AutoCodeConfig autoCodeConfig, StartCode startCode,BuildOneToMany buildOneToMany){
+        if (!checks(autoCodeConfig, startCode)){
             return;
         }
-        buildOneToMany.build(relationConfig);
+        buildOneToMany.build(autoCodeConfig);
+    }
+    /**
+     * 多对多关系
+     */
+    public static void manyToMany(AutoCodeConfig autoCodeConfig, StartCode startCode, BuildManyToMany buildManyToMany){
+        if (!checks(autoCodeConfig, startCode)){
+            return;
+        }
+        RelationTable thirdparty = autoCodeConfig.getGlobalConfig().getRelationConfig().getThirdparty();
+        if(thirdparty==null || MyStringUtils.isEmpty(thirdparty.getDataName())
+                || MyStringUtils.isEmpty(thirdparty.getPrimaryKey()) || MyStringUtils.isEmpty(thirdparty.getForeignKey())){
+            logger.info("多对多请将第三表信息填写完整");
+            return;
+        }
+
+        buildManyToMany.build(autoCodeConfig);
     }
 
 

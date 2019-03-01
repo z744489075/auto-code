@@ -1,8 +1,8 @@
-package com.zengtengpeng.relation.ManyToMany;
+package com.zengtengpeng.relation.manyToMany;
 
 import com.zengtengpeng.autoCode.bean.BuildJavaField;
 import com.zengtengpeng.autoCode.bean.BuildJavaMethod;
-import com.zengtengpeng.autoCode.utils.BuildUtils;
+import com.zengtengpeng.autoCode.config.AutoCodeConfig;
 import com.zengtengpeng.relation.bean.RelationTable;
 import com.zengtengpeng.relation.build.BuildBaseBean;
 import com.zengtengpeng.relation.config.RelationConfig;
@@ -22,7 +22,8 @@ public interface BuildManyToManyBean extends BuildBaseBean {
      * 主表字段
      * @return
      */
-    default List<BuildJavaField> primaryFields(RelationConfig relationConfig){
+    default List<BuildJavaField> primaryFields(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
         List<BuildJavaField> beanListJavaFields = RelationBuilUtils.getBeanListJavaFields(foreign);
         RelationTable thirdparty = relationConfig.getThirdparty();
@@ -41,7 +42,8 @@ public interface BuildManyToManyBean extends BuildBaseBean {
      * 主表方法
      * @return
      */
-    default List<BuildJavaMethod> primaryMethods(RelationConfig relationConfig){
+    default List<BuildJavaMethod> primaryMethods(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
         List<BuildJavaMethod> beanListJavaMethods = RelationBuilUtils.getBeanListJavaMethods(foreign);
         RelationTable thirdparty = relationConfig.getThirdparty();
@@ -59,7 +61,8 @@ public interface BuildManyToManyBean extends BuildBaseBean {
 
 
     @Override
-    default List<BuildJavaField> foreignFields(RelationConfig relationConfig) {
+    default List<BuildJavaField> foreignFields(AutoCodeConfig autoCodeConfig) {
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         List<BuildJavaField> beanListJavaFields = RelationBuilUtils.getBeanListJavaFields(primary);
         RelationTable thirdparty = relationConfig.getThirdparty();
@@ -74,7 +77,8 @@ public interface BuildManyToManyBean extends BuildBaseBean {
     }
 
     @Override
-    default List<BuildJavaMethod> foreignMethods(RelationConfig relationConfig) {
+    default List<BuildJavaMethod> foreignMethods(AutoCodeConfig autoCodeConfig) {
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         List<BuildJavaMethod> beanListJavaMethods = RelationBuilUtils.getBeanListJavaMethods(primary);
         RelationTable thirdparty = relationConfig.getThirdparty();

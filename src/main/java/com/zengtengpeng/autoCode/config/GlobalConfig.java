@@ -1,9 +1,7 @@
 package com.zengtengpeng.autoCode.config;
 
-
-import com.zengtengpeng.autoCode.create.BuildDao;
-import com.zengtengpeng.autoCode.create.BuildXml;
 import com.zengtengpeng.autoCode.utils.MyStringUtils;
+import com.zengtengpeng.relation.config.RelationConfig;
 
 import java.util.List;
 
@@ -13,6 +11,11 @@ public class GlobalConfig {
      * 表名称集合
      */
     private List<TableConfig> tableNames;
+
+    /**
+     * 表关系配置
+     */
+    private RelationConfig relationConfig;
     /**
      * 生成代码的项目路径
      */
@@ -61,6 +64,14 @@ public class GlobalConfig {
 
     public Boolean getCover() {
         return cover;
+    }
+
+    public RelationConfig getRelationConfig() {
+        return relationConfig;
+    }
+
+    public void setRelationConfig(RelationConfig relationConfig) {
+        this.relationConfig = relationConfig;
     }
 
     public void setCover(Boolean cover) {

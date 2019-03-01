@@ -5,7 +5,6 @@ import com.zengtengpeng.autoCode.bean.BuildJavaMethod;
 import com.zengtengpeng.autoCode.bean.BuildXmlBean;
 import com.zengtengpeng.autoCode.enums.XmlElementType;
 import com.zengtengpeng.relation.bean.RelationTable;
-import com.zengtengpeng.relation.config.RelationConfig;
 
 import java.util.ArrayList;
 import java.util.HashMap;

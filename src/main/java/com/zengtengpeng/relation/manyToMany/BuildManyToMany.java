@@ -1,5 +1,6 @@
-package com.zengtengpeng.relation.ManyToMany;
+package com.zengtengpeng.relation.manyToMany;
 
+import com.zengtengpeng.autoCode.config.AutoCodeConfig;
 import com.zengtengpeng.relation.bean.RelationTable;
 import com.zengtengpeng.relation.config.RelationConfig;
 import org.slf4j.Logger;
@@ -57,22 +58,24 @@ public interface BuildManyToMany {
      * 自定义
      * @return
      */
-    void custom(RelationConfig relationConfig);
+    void custom(AutoCodeConfig autoCodeConfig);
     /**
      * 构建
+     * @param autoCodeConfig
      */
-    default void build(RelationConfig relationConfig){
+    default void build(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
-        logger.info("-------------------------------------开始构建一对多 ->主键:{} ->外表{}", primary.getBeanName(),foreign.getBeanName());
-        BuildManyToManyController().build(relationConfig);
-        BuildManyToManyBean().build(relationConfig);
-        BuildManyToManyDao().build(relationConfig);
-        BuildManyToManyService().build(relationConfig);
-        BuildManyToManyServiceImpl().build(relationConfig);
-        BuildManyToManyXml().build(relationConfig);
-        custom(relationConfig);
-        logger.info("--------------------------------------构建一对多结束 ->主键:{} ->外表{}",primary.getBeanName(),foreign.getBeanName());
+        logger.info("-------------------------------------开始构建多对多 ->主键:{} ->外表{}", primary.getBeanName(),foreign.getBeanName());
+        BuildManyToManyController().build(autoCodeConfig);
+        BuildManyToManyBean().build(autoCodeConfig);
+        BuildManyToManyDao().build(autoCodeConfig);
+        BuildManyToManyService().build(autoCodeConfig);
+        BuildManyToManyServiceImpl().build(autoCodeConfig);
+        BuildManyToManyXml().build(autoCodeConfig);
+        custom(autoCodeConfig);
+        logger.info("--------------------------------------构建多对多结束 ->主键:{} ->外表{}",primary.getBeanName(),foreign.getBeanName());
     }
 
 

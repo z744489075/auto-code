@@ -28,7 +28,7 @@ public interface BuildBaseDao {
      * @param primaryBuildJavaConfig 主表自定义配置
      * @param foreignBuildJavaConfig 外表自定义配置
      */
-    void custom(RelationConfig relationConfig, BuildJavaConfig primaryBuildJavaConfig, BuildJavaConfig foreignBuildJavaConfig);
+    void custom(AutoCodeConfig autoCodeConfig, BuildJavaConfig primaryBuildJavaConfig, BuildJavaConfig foreignBuildJavaConfig);
 
 
 
@@ -36,7 +36,8 @@ public interface BuildBaseDao {
      * 外表级联删除(根据主键删除)
      * @return
      */
-    default BuildJavaMethod foreignDelete(RelationConfig relationConfig){
+    default BuildJavaMethod foreignDelete(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
         String foreignBeanName = foreign.getBeanName();
         BuildJavaMethod deleteTestUserAndTestClass = new BuildJavaMethod();
@@ -54,9 +55,9 @@ public interface BuildBaseDao {
     /**
      * 构建主表的dao
      */
-    default void buildPrimary(RelationConfig relationConfig, BuildJavaConfig buildJavaConfig){
+    default void buildPrimary(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         List<BuildJavaMethod> buildJavaMethods =buildJavaConfig.getBuildJavaMethods();
 
         List<String> imports = buildJavaConfig.getImports();
@@ -70,11 +71,11 @@ public interface BuildBaseDao {
     /**
      * 构建外表的dao
      */
-    default void buildForeign(RelationConfig relationConfig, BuildJavaConfig buildJavaConfig){
+    default void buildForeign(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         List<BuildJavaMethod> buildJavaMethods = buildJavaConfig.getBuildJavaMethods();
-        buildJavaMethods.add(foreignDelete(relationConfig));
+        buildJavaMethods.add(foreignDelete(autoCodeConfig));
         List<String> imports = buildJavaConfig.getImports();
 
         List<BuildJavaField> buildJavaFields = buildJavaConfig.getBuildJavaFields();
@@ -88,14 +89,14 @@ public interface BuildBaseDao {
     /**
      * 开始构建
      */
-    default void build(RelationConfig relationConfig){
+    default void build(AutoCodeConfig autoCodeConfig){
 
         BuildJavaConfig p = new BuildJavaConfig();
         BuildJavaConfig f = new BuildJavaConfig();
-        custom(relationConfig,p,f);
+        custom(autoCodeConfig,p,f);
         //获取受影响的文件 controller,server,serverImpl dao xml
-        buildPrimary(relationConfig,p);
-        buildForeign(relationConfig,f);
+        buildPrimary(autoCodeConfig,p);
+        buildForeign(autoCodeConfig,f);
 
     }
 }

@@ -26,11 +26,11 @@ public interface BuildBaseXml {
 
     /**
      * 自定义构建
-     * @param relationConfig 关系描述配置
+     * @param autoCodeConfig 关系描述配置
      * @param primaryBuildXmlBean 主表sql
      * @param foreignBuildXmlBean 外表sql
      */
-    void custom(RelationConfig relationConfig, List<BuildXmlBean> primaryBuildXmlBean, List<BuildXmlBean> foreignBuildXmlBean);
+    void custom(AutoCodeConfig autoCodeConfig, List<BuildXmlBean> primaryBuildXmlBean, List<BuildXmlBean> foreignBuildXmlBean);
 
 
 
@@ -38,8 +38,8 @@ public interface BuildBaseXml {
      * 外表级联删除(根据主键删除)
      * @return
      */
-    default BuildXmlBean foreignDelete(RelationConfig relationConfig){
-
+    default BuildXmlBean foreignDelete(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         return RelationBuilUtils.getXmlBaseDelete(relationConfig.getPrimary(),relationConfig.getForeign());
     }
 
@@ -47,10 +47,9 @@ public interface BuildBaseXml {
     /**
      * 构建主表的dao
      */
-    default void buildPrimary(RelationConfig relationConfig, List<BuildXmlBean> buildXmlBeans){
+    default void buildPrimary(AutoCodeConfig autoCodeConfig, List<BuildXmlBean> buildXmlBeans){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
-        RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         String filePath = BuildUtils.packageXmlPath(globalConfig.getParentPathResources(),globalConfig.getXmlPath())+"/"+primary.getBeanName()+globalConfig.getPackageDaoUp()+".xml";
         BuildUtils.addXmlSql(filePath,buildXmlBeans);
@@ -58,10 +57,10 @@ public interface BuildBaseXml {
     /**
      * 构建外表的dao
      */
-    default void buildForeign(RelationConfig relationConfig, List<BuildXmlBean> buildXmlBeans){
+    default void buildForeign(AutoCodeConfig autoCodeConfig, List<BuildXmlBean> buildXmlBeans){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
-        buildXmlBeans.add(foreignDelete(relationConfig));
+        buildXmlBeans.add(foreignDelete(autoCodeConfig));
 
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         String filePath = BuildUtils.packageXmlPath(globalConfig.getParentPathResources(),globalConfig.getXmlPath())+"/"+foreign.getBeanName()+globalConfig.getPackageDaoUp()+".xml";
@@ -72,13 +71,13 @@ public interface BuildBaseXml {
     /**
      * 开始构建
      */
-    default void build(RelationConfig relationConfig){
+    default void build(AutoCodeConfig autoCodeConfig){
         List<BuildXmlBean> p = new ArrayList<>();
 
         List<BuildXmlBean> f = new ArrayList<>();
-        custom(relationConfig,p,f);
-        buildPrimary(relationConfig,p);
-        buildForeign(relationConfig,f);
+        custom(autoCodeConfig,p,f);
+        buildPrimary(autoCodeConfig,p);
+        buildForeign(autoCodeConfig,f);
 
     }
 }

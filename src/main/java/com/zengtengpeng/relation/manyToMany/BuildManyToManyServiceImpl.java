@@ -1,4 +1,4 @@
-package com.zengtengpeng.relation.ManyToMany;
+package com.zengtengpeng.relation.manyToMany;
 
 import com.zengtengpeng.autoCode.bean.BuildJavaMethod;
 import com.zengtengpeng.autoCode.config.AutoCodeConfig;
@@ -18,39 +18,42 @@ import java.util.List;
 public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
 
     @Override
-    default BuildJavaMethod foreignSelect(RelationConfig relationConfig) {
+    default BuildJavaMethod foreignSelect(AutoCodeConfig autoCodeConfig) {
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         String primaryKeyUp = relationConfig.getThirdparty().getPrimaryKeyUp(true);
-        return select(relationConfig, foreign, primary, primaryKeyUp);
+        return select(autoCodeConfig, foreign, primary, primaryKeyUp);
     }
 
     @Override
-    default BuildJavaMethod foreignDelete(RelationConfig relationConfig) {
+    default BuildJavaMethod foreignDelete(AutoCodeConfig autoCodeConfig) {
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         String primaryKeyUp = relationConfig.getThirdparty().getForeignKeyUp(true);
-        return delete(relationConfig, foreign,primary,primaryKeyUp);
+        return delete(autoCodeConfig, foreign,primary,primaryKeyUp);
     }
 
     /**
      * 构建主表 级联查询(带分页)
      * @return
      */
-    default BuildJavaMethod primarySelect(RelationConfig relationConfig){
+    default BuildJavaMethod primarySelect(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         String primaryKeyUp = relationConfig.getThirdparty().getPrimaryKeyUp(true);
 
-        return select(relationConfig, primary, foreign, primaryKeyUp);
+        return select(autoCodeConfig, primary, foreign, primaryKeyUp);
     }
 
-    default BuildJavaMethod select(RelationConfig relationConfig, RelationTable primary, RelationTable foreign, String primaryKeyUp) {
+    default BuildJavaMethod select(AutoCodeConfig autoCodeConfig, RelationTable primary, RelationTable foreign, String primaryKeyUp) {
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         String primaryKeyBeanName_ =primary.getBeanNameLower();
         String foreignBeanName = foreign.getBeanName();
         String foreignBeanNameLower = foreign.getBeanNameLower();
         String primaryKeyBeanName = primary.getBeanName();
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         BuildJavaMethod javaMethod = new BuildJavaMethod();
         List<String> an = new ArrayList<>();
         an.add("@Override");
@@ -84,19 +87,19 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
 
     /**
      * 主表删除
-     * @param relationConfig
      * @return
      */
     @Override
-    default BuildJavaMethod primaryDelete(RelationConfig relationConfig) {
+    default BuildJavaMethod primaryDelete(AutoCodeConfig autoCodeConfig) {
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         String primaryKeyUp = relationConfig.getThirdparty().getPrimaryKeyUp(true);
-        return delete(relationConfig, primary, foreign,primaryKeyUp);
+        return delete(autoCodeConfig, primary, foreign,primaryKeyUp);
     }
 
-    default BuildJavaMethod delete(RelationConfig relationConfig, RelationTable primary, RelationTable foreign,String primaryKeyUp) {
-        AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
+    default BuildJavaMethod delete(AutoCodeConfig autoCodeConfig, RelationTable primary, RelationTable foreign,String primaryKeyUp) {
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         String primaryKeyBeanName_ = primary.getBeanNameLower();
         String foreignBeanName = foreign.getBeanName();
         String foreignBeanNameLower = foreign.getBeanNameLower();

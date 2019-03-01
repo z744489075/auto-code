@@ -22,10 +22,6 @@ public class RelationConfig {
      */
     private RelationTable thirdparty;
 
-    /**
-     * 全局配置
-     */
-    private AutoCodeConfig autoCodeConfig;
 
     /**
      * 如果检测到存在是否继续增加 true 继续增加  false不增加
@@ -64,11 +60,4 @@ public class RelationConfig {
         this.exist = exist;
     }
 
-    public AutoCodeConfig getAutoCodeConfig() {
-        return autoCodeConfig;
-    }
-
-    public void setAutoCodeConfig(AutoCodeConfig autoCodeConfig) {
-        this.autoCodeConfig = autoCodeConfig;
-    }
 }
