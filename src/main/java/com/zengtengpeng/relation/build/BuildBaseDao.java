@@ -71,7 +71,6 @@ public interface BuildBaseDao {
      * 构建外表的dao
      */
     default void buildForeign(RelationConfig relationConfig, BuildJavaConfig buildJavaConfig){
-        RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
         List<BuildJavaMethod> buildJavaMethods = buildJavaConfig.getBuildJavaMethods();

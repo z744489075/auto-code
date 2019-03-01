@@ -8,6 +8,7 @@ import com.zengtengpeng.autoCode.config.GlobalConfig;
 import com.zengtengpeng.autoCode.utils.BuildUtils;
 import com.zengtengpeng.relation.bean.RelationTable;
 import com.zengtengpeng.relation.config.RelationConfig;
+import com.zengtengpeng.relation.utils.RelationBuilUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +41,7 @@ public interface BuildBaseBean {
         List<String> im=new ArrayList<>();
         im.add(foreign.getExistParentPackage()+"."+autoCodeConfig.getGlobalConfig().getPackageBean()+"."+
                 foreign.getBeanName());
+        im.add("java.util.List");
         return im;
     }
 
@@ -48,7 +50,7 @@ public interface BuildBaseBean {
      * @return
      */
     default List<BuildJavaField> primaryFields(RelationConfig relationConfig){
-        return getBuildJavaFields(relationConfig.getForeign());
+        return RelationBuilUtils.getBaseBeanJavaFields(relationConfig.getForeign());
     }
 
     /**
@@ -56,34 +58,8 @@ public interface BuildBaseBean {
      * @return
      */
     default List<BuildJavaMethod> primaryMethods(RelationConfig relationConfig){
-        return getBuildJavaMethods(relationConfig.getForeign());
+        return RelationBuilUtils.getBaseBeanJavaMethods(relationConfig.getForeign());
     }
-
-    default List<BuildJavaMethod> getBuildJavaMethods(RelationTable relationTable) {
-        List<BuildJavaMethod> buildJavaMethods=new ArrayList<>();
-
-        BuildJavaMethod get=new BuildJavaMethod();
-        get.setContent(String.format("return %s;",relationTable.getBeanNameLower()));
-        get.setRemark(relationTable.getRemark());
-        get.setMethodName(String.format("get%s",relationTable.getBeanName()));
-        get.setMethodType("public");
-        get.setReturnType(relationTable.getBeanName());
-        buildJavaMethods.add(get);
-
-        BuildJavaMethod set=new BuildJavaMethod();
-        set.setContent(String.format("this.%s = %s;",relationTable.getBeanNameLower(),relationTable.getBeanNameLower()));
-        set.setRemark(relationTable.getRemark());
-        set.setMethodName(String.format("set%s",relationTable.getBeanName()));
-        set.setMethodType("public");
-        set.setReturnType("void");
-        List<String> param=new ArrayList<>();
-        param.add(relationTable.getBeanName()+" "+relationTable.getBeanNameLower());
-        set.setParams(param);
-        buildJavaMethods.add(set);
-
-        return buildJavaMethods;
-    }
-
 
 
     /**
@@ -96,6 +72,7 @@ public interface BuildBaseBean {
         List<String> im=new ArrayList<>();
         im.add(primary.getExistParentPackage()+"."+autoCodeConfig.getGlobalConfig().getPackageBean()+"."+
                 primary.getBeanName());
+        im.add("java.util.List");
         return im;
     }
     
@@ -105,26 +82,17 @@ public interface BuildBaseBean {
      * @return
      */
     default List<BuildJavaField> foreignFields(RelationConfig relationConfig){
-        return getBuildJavaFields(relationConfig.getPrimary());
+        return RelationBuilUtils.getBaseBeanJavaFields(relationConfig.getPrimary());
     }
 
-    default List<BuildJavaField> getBuildJavaFields(RelationTable relationTable) {
-        List<BuildJavaField> buildJavaFields=new ArrayList<>();
-        BuildJavaField buildJavaField=new BuildJavaField();
-        buildJavaField.setRemark(relationTable.getRemark());
-        buildJavaField.setFiledName(relationTable.getBeanNameLower());
-        buildJavaField.setReturnType(relationTable.getBeanName());
-        buildJavaField.setFiledType("private");
-        buildJavaFields.add(buildJavaField);
-        return buildJavaFields;
-    }
+
 
     /**
      * 外表方法
      * @return
      */
     default List<BuildJavaMethod> foreignMethods(RelationConfig relationConfig){
-        return getBuildJavaMethods(relationConfig.getPrimary());
+        return RelationBuilUtils.getBaseBeanJavaMethods(relationConfig.getPrimary());
     }
 
 

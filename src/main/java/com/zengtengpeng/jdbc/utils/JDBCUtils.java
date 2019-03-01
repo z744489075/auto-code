@@ -39,7 +39,7 @@ public class JDBCUtils {
      * 获取table相关数据
      * @return
      */
-    public static Bean getTable(Connection connection, AutoCodeConfig autoCodeConfig){
+    public static Bean saxTable(Connection connection, AutoCodeConfig autoCodeConfig){
         Statement statement =null;
         ResultSet rs = null;
         Bean bean = autoCodeConfig.getBean();

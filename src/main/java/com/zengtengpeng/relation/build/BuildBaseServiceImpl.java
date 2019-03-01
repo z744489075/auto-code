@@ -99,7 +99,7 @@ public interface BuildBaseServiceImpl {
         StringBuffer content=new StringBuffer();
         MyStringUtils.append(content,"%s %s=new %s();",foreignBeanName,foreignBeanNameLower,foreignBeanName);
         MyStringUtils.append(content,"%s.set%s(%s.get%s());",2,foreignBeanNameLower,foreign.getForeignKeyUp(true),primaryKeyBeanName_,primary.getPrimaryKeyUp(true));
-        MyStringUtils.append(content,"%s%s.deleteBy%s(%s);",2,foreignBeanNameLower, globalConfig.getPackageDaoUp(),foreign.getForeignKeyUp(true),foreignBeanNameLower);
+        MyStringUtils.append(content,"%s%s.delete%sBy%s(%s);",2,foreignBeanNameLower, globalConfig.getPackageDaoUp(),foreignBeanName,primaryKeyBeanName,foreignBeanNameLower);
         MyStringUtils.append(content,"return %s%s.deleteByPrimaryKey(%s);",2,primaryKeyBeanName_, globalConfig.getPackageDaoUp(),primaryKeyBeanName_);
         deleteTestUserAndTestClass.setContent(content.toString());
         deleteTestUserAndTestClass.setRemark("级联删除(根据主表删除) "+primary.getRemark()+"--"+foreign.getRemark());

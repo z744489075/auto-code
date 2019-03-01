@@ -289,7 +289,7 @@ public class BuildUtils {
             content.insert(content.indexOf(";")+1,im);
 
             //增加字段
-            StringBuffer filedsb=new StringBuffer();
+            StringBuffer filedsb=new StringBuffer("\n");
             List<BuildJavaField> fields=new ArrayList<>();
 
             buildJavaFields.forEach(t->{
@@ -305,7 +305,7 @@ public class BuildUtils {
             content.insert(content.indexOf("{")+1,"\n"+filedsb);
 
             //增加方法
-            StringBuffer me=new StringBuffer();
+            StringBuffer me=new StringBuffer("\n");
             List<BuildJavaMethod> buildJavaMethod=new ArrayList<>();
 
             buildJavaMethods.forEach(t->{

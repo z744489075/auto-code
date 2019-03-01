@@ -14,42 +14,42 @@ public interface BuildManyToMany {
      * 创建默认的controller
      * @return
      */
-    default BuildManyToManyController BuildOneToManyController(){
+    default BuildManyToManyController BuildManyToManyController(){
         return (rt, p, f)->{};
     }
     /**
      * 创建默认的bean
      * @return
      */
-    default BuildManyToManyBean BuildOneToManyBean(){
+    default BuildManyToManyBean BuildManyToManyBean(){
         return (rt, p, f)->{};
     }
     /**
      * 创建默认的dao
      * @return
      */
-    default BuildManyToManyDao BuildOneToManyDao(){
+    default BuildManyToManyDao BuildManyToManyDao(){
         return (rt, p, f)->{};
     }
     /**
      * 创建默认的service
      * @return
      */
-    default BuildManyToManyService BuildOneToManyService(){
+    default BuildManyToManyService BuildManyToManyService(){
         return (rt, p, f)->{};
     }
     /**
      * 创建默认的serviceImpl
      * @return
      */
-    default BuildManyToManyServiceImpl BuildOneToManyServiceImpl(){
+    default BuildManyToManyServiceImpl BuildManyToManyServiceImpl(){
         return (rt, p, f)->{};
     }
     /**
      * 创建默认的xml
      * @return
      */
-    default BuildManyToManyXml BuildOneToManyXml(){
+    default BuildManyToManyXml BuildManyToManyXml(){
         return (rt, p, f)->{};
     }
 
@@ -65,12 +65,12 @@ public interface BuildManyToMany {
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         logger.info("-------------------------------------开始构建一对多 ->主键:{} ->外表{}", primary.getBeanName(),foreign.getBeanName());
-        BuildOneToManyController().build(relationConfig);
-        BuildOneToManyBean().build(relationConfig);
-        BuildOneToManyDao().build(relationConfig);
-        BuildOneToManyService().build(relationConfig);
-        BuildOneToManyServiceImpl().build(relationConfig);
-        BuildOneToManyXml().build(relationConfig);
+        BuildManyToManyController().build(relationConfig);
+        BuildManyToManyBean().build(relationConfig);
+        BuildManyToManyDao().build(relationConfig);
+        BuildManyToManyService().build(relationConfig);
+        BuildManyToManyServiceImpl().build(relationConfig);
+        BuildManyToManyXml().build(relationConfig);
         custom(relationConfig);
         logger.info("--------------------------------------构建一对多结束 ->主键:{} ->外表{}",primary.getBeanName(),foreign.getBeanName());
     }

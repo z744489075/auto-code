@@ -22,136 +22,95 @@ import java.util.List;
 public interface StartCode {
 
     Logger logger = LoggerFactory.getLogger(StartCode.class);
+
     /**
      * 解析yaml文件
      */
-    static AutoCodeConfig saxYaml(){
-        Yaml yaml=new Yaml();
+    static AutoCodeConfig saxYaml() {
+        Yaml yaml = new Yaml();
         return yaml.loadAs(StartCode.class.getClassLoader().getResourceAsStream("auto-code.yaml"), AutoCodeConfig.class);
     }
 
     /**
      * 解析数据库获得表
+     *
      * @param autoCodeConfig
      */
-    default List<TableConfig> saxTable(AutoCodeConfig autoCodeConfig){
+    default List<TableConfig> getTable(AutoCodeConfig autoCodeConfig) {
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         return globalConfig.getTableNames();
     }
 
     /**
      * 构建xml
+     *
      * @return
      */
-    default BuildXml BuildXml(){
-        return t->null;
+    default BuildXml BuildXml() {
+        return t -> null;
     }
 
     /**
      * 构建 controller
+     *
      * @return
      */
-    default BuildController BuildController(){
-        return t->null;
+    default BuildController BuildController() {
+        return t -> null;
     }
 
     /**
      * 构建 dao
+     *
      * @return
      */
-    default BuildDao BuildDao(){
-        return t->null;
-    }
-    /**
-     * 构建 Service
-     * @return
-     */
-    default BuildService BuildService(){
-        return t->null;
-    }
-    /**
-     * 构建 ServiceImpl
-     * @return
-     */
-    default BuildServiceImpl BuildServiceImpl(){
-        return t->null;
-    }
-    /**
-     * 构建 bean
-     * @return
-     */
-    default BuildBean BuildBean(){
-        return t->null;
+    default BuildDao BuildDao() {
+        return t -> null;
     }
 
-    default Connection getConnection(AutoCodeConfig autoCodeConfig){
+    /**
+     * 构建 Service
+     *
+     * @return
+     */
+    default BuildService BuildService() {
+        return t -> null;
+    }
+
+    /**
+     * 构建 ServiceImpl
+     *
+     * @return
+     */
+    default BuildServiceImpl BuildServiceImpl() {
+        return t -> null;
+    }
+
+    /**
+     * 构建 bean
+     *
+     * @return
+     */
+    default BuildBean BuildBean() {
+        return t -> null;
+    }
+
+    default Connection getConnection(AutoCodeConfig autoCodeConfig) {
         return JDBCUtils.getConnection(autoCodeConfig.getDatasourceConfig());
     }
 
-
-    /**
-     * 开始获取表数据.生成文件
-     * @param autoCodeConfig
-     */
-    default void build(AutoCodeConfig autoCodeConfig){
-        Connection connection =null;
+    default Bean saxTable(AutoCodeConfig autoCodeConfig) {
+        Connection connection = null;
         try {
-            connection =getConnection(autoCodeConfig);
+            connection = getConnection(autoCodeConfig);
 
-            if(JDBCUtils.getTable(connection, autoCodeConfig)!=null){
-                Bean bean = autoCodeConfig.getBean();
-                //构建xml
-                GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
-                //xml
-                String xml=BuildXml().build(autoCodeConfig);
-
-                //构建 controller
-                String controller=BuildController().build(autoCodeConfig);
-
-                //构建dao
-                String dao=BuildDao().build(autoCodeConfig);
-
-                //构建server
-                String server=BuildService().build(autoCodeConfig);
-
-                //构建 serviceImpl
-                String serviceImpl=BuildServiceImpl().build(autoCodeConfig);
-
-
-                //构建bean
-                String beans=BuildBean().build(autoCodeConfig);
-
-                //开始生成文件
-                Boolean cover = globalConfig.getCover();
-                BuildUtils.createXMLFile(globalConfig.getParentPathResources() ,globalConfig.getXmlPath(),
-                        bean.getTableName()+globalConfig.getPackageDaoUp(),xml, cover);
-
-                String parentPath = globalConfig.getParentPathJavaSource();
-
-
-                BuildUtils.createJavaFile(parentPath,globalConfig.getParentPack(),globalConfig.getPackageController(),
-                        bean.getTableName()+globalConfig.getPackageControllerUp(),controller,cover);
-
-                BuildUtils.createJavaFile(parentPath,globalConfig.getParentPack(),globalConfig.getPackageDao(),
-                        bean.getTableName()+globalConfig.getPackageDaoUp(),dao, cover);
-
-                BuildUtils.createJavaFile(parentPath,globalConfig.getParentPack(),globalConfig.getPackageService(),
-                        bean.getTableName()+globalConfig.getPackageServiceUp(),server, cover);
-
-                BuildUtils.createJavaFile(parentPath,globalConfig.getParentPack(),globalConfig.getPackageService()+".impl",
-                        bean.getTableName()+globalConfig.getPackageServiceUp()+"Impl",serviceImpl, cover);
-
-                BuildUtils.createJavaFile(parentPath,globalConfig.getParentPack(),globalConfig.getPackageBean(),
-                        bean.getTableName(),beans, cover);
-
-                //自定义构建
-                custom(autoCodeConfig);
-            }
+            Bean bean = JDBCUtils.saxTable(connection, autoCodeConfig);
+            return bean;
         } finally {
-            if(connection!=null){
+            if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -159,29 +118,88 @@ public interface StartCode {
     }
 
     /**
-     * 构建文件成功后执行方法
+     * 开始获取表数据.生成文件
+     *
      * @param autoCodeConfig
      */
-     void custom(AutoCodeConfig autoCodeConfig);
+    default void build(AutoCodeConfig autoCodeConfig) {
+        Bean bean = saxTable(autoCodeConfig);
+        if (bean != null) {
+            //构建xml
+            GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+            //xml
+            String xml = BuildXml().build(autoCodeConfig);
+
+            //构建 controller
+            String controller = BuildController().build(autoCodeConfig);
+
+            //构建dao
+            String dao = BuildDao().build(autoCodeConfig);
+
+            //构建server
+            String server = BuildService().build(autoCodeConfig);
+
+            //构建 serviceImpl
+            String serviceImpl = BuildServiceImpl().build(autoCodeConfig);
+
+
+            //构建bean
+            String beans = BuildBean().build(autoCodeConfig);
+
+            //开始生成文件
+            Boolean cover = globalConfig.getCover();
+            BuildUtils.createXMLFile(globalConfig.getParentPathResources(), globalConfig.getXmlPath(),
+                    bean.getTableName() + globalConfig.getPackageDaoUp(), xml, cover);
+
+            String parentPath = globalConfig.getParentPathJavaSource();
+
+
+            BuildUtils.createJavaFile(parentPath, globalConfig.getParentPack(), globalConfig.getPackageController(),
+                    bean.getTableName() + globalConfig.getPackageControllerUp(), controller, cover);
+
+            BuildUtils.createJavaFile(parentPath, globalConfig.getParentPack(), globalConfig.getPackageDao(),
+                    bean.getTableName() + globalConfig.getPackageDaoUp(), dao, cover);
+
+            BuildUtils.createJavaFile(parentPath, globalConfig.getParentPack(), globalConfig.getPackageService(),
+                    bean.getTableName() + globalConfig.getPackageServiceUp(), server, cover);
+
+            BuildUtils.createJavaFile(parentPath, globalConfig.getParentPack(), globalConfig.getPackageService() + ".impl",
+                    bean.getTableName() + globalConfig.getPackageServiceUp() + "Impl", serviceImpl, cover);
+
+            BuildUtils.createJavaFile(parentPath, globalConfig.getParentPack(), globalConfig.getPackageBean(),
+                    bean.getTableName(), beans, cover);
+
+            //自定义构建
+            custom(autoCodeConfig);
+        }
+
+    }
+
+    /**
+     * 构建文件成功后执行方法
+     *
+     * @param autoCodeConfig
+     */
+    void custom(AutoCodeConfig autoCodeConfig);
 
 
     /**
      * 开始
      */
-    default void start(AutoCodeConfig autoCodeConfig){
-        if(autoCodeConfig==null){
+    default void start(AutoCodeConfig autoCodeConfig) {
+        if (autoCodeConfig == null) {
             autoCodeConfig = saxYaml();
         }
-        List<TableConfig> tableConfigs = saxTable(autoCodeConfig);
+        List<TableConfig> tableConfigs = getTable(autoCodeConfig);
         AutoCodeConfig finalAutoCodeConfig = autoCodeConfig;
-        tableConfigs.forEach(t->{
-            logger.info("----------------------------------------单表开始生成{}",t.getDataName());
-            Bean bean=new Bean();
+        tableConfigs.forEach(t -> {
+            logger.info("----------------------------------------单表开始生成{}", t.getDataName());
+            Bean bean = new Bean();
             bean.setTableName(t.getAliasName());
             bean.setDataName(t.getDataName());
             finalAutoCodeConfig.setBean(bean);
             build(finalAutoCodeConfig);
-            logger.info("----------------------------------------单表生成结束{}",t.getDataName());
+            logger.info("----------------------------------------单表生成结束{}", t.getDataName());
         });
     }
 }

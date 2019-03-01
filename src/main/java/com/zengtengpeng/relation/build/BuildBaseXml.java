@@ -7,6 +7,7 @@ import com.zengtengpeng.autoCode.enums.XmlElementType;
 import com.zengtengpeng.autoCode.utils.BuildUtils;
 import com.zengtengpeng.relation.bean.RelationTable;
 import com.zengtengpeng.relation.config.RelationConfig;
+import com.zengtengpeng.relation.utils.RelationBuilUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,23 +33,15 @@ public interface BuildBaseXml {
     void custom(RelationConfig relationConfig, List<BuildXmlBean> primaryBuildXmlBean, List<BuildXmlBean> foreignBuildXmlBean);
 
 
+
     /**
      * 外表级联删除(根据主键删除)
      * @return
      */
-    default BuildXmlBean deleteByUserId(RelationConfig relationConfig){
-        RelationTable foreign = relationConfig.getForeign();
-        BuildXmlBean buildXmlBean=new BuildXmlBean();
-        buildXmlBean.setXmlElementType(XmlElementType.delete);
-        Map<String, String> attrs=new HashMap<>();
-        attrs.put("id","deleteBy"+foreign.getForeignKeyUp(true));
-        buildXmlBean.setAttributes(attrs);
-        buildXmlBean.setSql(String.format("\t\tdelete from  %s\n" +
-                "\t\twhere %s=#{%s}",foreign.getDataName(),foreign.getForeignKey(),foreign.getForeignKeyUp(false)));
+    default BuildXmlBean foreignDelete(RelationConfig relationConfig){
 
-        return buildXmlBean;
+        return RelationBuilUtils.getXmlBaseDelete(relationConfig.getPrimary(),relationConfig.getForeign());
     }
-
 
 
     /**
@@ -68,7 +61,7 @@ public interface BuildBaseXml {
     default void buildForeign(RelationConfig relationConfig, List<BuildXmlBean> buildXmlBeans){
         RelationTable foreign = relationConfig.getForeign();
         AutoCodeConfig autoCodeConfig = relationConfig.getAutoCodeConfig();
-        buildXmlBeans.add(deleteByUserId(relationConfig));
+        buildXmlBeans.add(foreignDelete(relationConfig));
 
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         String filePath = BuildUtils.packageXmlPath(globalConfig.getParentPathResources(),globalConfig.getXmlPath())+"/"+foreign.getBeanName()+globalConfig.getPackageDaoUp()+".xml";
