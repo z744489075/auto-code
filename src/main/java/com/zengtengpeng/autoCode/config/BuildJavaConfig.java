@@ -66,7 +66,6 @@ public class BuildJavaConfig {
     }
 
     public String getRemark() {
-
         return remark;
     }
 
