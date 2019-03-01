@@ -22,8 +22,9 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
-        String primaryKeyUp = relationConfig.getThirdparty().getPrimaryKeyUp(true);
-        return select(autoCodeConfig, foreign, primary, primaryKeyUp);
+        String primaryKeyUp = relationConfig.getThirdparty().getForeignKeyUp(true);
+        return select(String.format("select%sAnd%s", primary.getBeanName(), foreign.getBeanName()),autoCodeConfig, foreign,
+                primary, primaryKeyUp,foreign.getForeignKeyUp(true));
     }
 
     @Override
@@ -32,7 +33,8 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         String primaryKeyUp = relationConfig.getThirdparty().getForeignKeyUp(true);
-        return delete(autoCodeConfig, foreign,primary,primaryKeyUp);
+        return delete(String.format("delete%sAnd%s", primary.getBeanName(), foreign.getBeanName()),autoCodeConfig,
+                foreign,primary,primaryKeyUp, foreign.getForeignKeyUp(true));
     }
 
     /**
@@ -45,11 +47,11 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
         RelationTable foreign = relationConfig.getForeign();
         String primaryKeyUp = relationConfig.getThirdparty().getPrimaryKeyUp(true);
 
-        return select(autoCodeConfig, primary, foreign, primaryKeyUp);
+        return select(String.format("select%sAnd%s", primary.getBeanName(), foreign.getBeanName()),autoCodeConfig, primary,
+                foreign, primaryKeyUp,primary.getPrimaryKeyUp(true));
     }
 
-    default BuildJavaMethod select(AutoCodeConfig autoCodeConfig, RelationTable primary, RelationTable foreign, String primaryKeyUp) {
-        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
+    default BuildJavaMethod select(String methodName,AutoCodeConfig autoCodeConfig, RelationTable primary, RelationTable foreign, String primaryKeyUp,String pId) {
         String primaryKeyBeanName_ =primary.getBeanNameLower();
         String foreignBeanName = foreign.getBeanName();
         String foreignBeanNameLower = foreign.getBeanNameLower();
@@ -60,7 +62,7 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
         javaMethod.setAnnotation(an);
         javaMethod.setReturnType(primaryKeyBeanName);
         javaMethod.setMethodType("public");
-        javaMethod.setMethodName(String.format("select%sAnd%s", primaryKeyBeanName, foreignBeanName));
+        javaMethod.setMethodName(methodName);
         List<String> params=new ArrayList<>();
         params.add(primaryKeyBeanName +" "+ primaryKeyBeanName_);
         javaMethod.setParams(params);
@@ -71,7 +73,7 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
         MyStringUtils.append(content,"%s data= (%s) t;",4,primaryKeyBeanName,primaryKeyBeanName);
         MyStringUtils.append(content,"%s %s=new %s();",4,foreignBeanName,foreignBeanNameLower,foreignBeanName);
         MyStringUtils.append(content,"%s.set%s(data.get%s().toString());",4,foreignBeanNameLower,
-                primaryKeyUp,primary.getPrimaryKeyUp(true));
+                primaryKeyUp,pId);
 
         MyStringUtils.append(content,"List<%s> datas=%s%s.select%sBy%s(%s);",4,foreignBeanName,foreignBeanNameLower,
                 autoCodeConfig.getGlobalConfig().getPackageDaoUp(),foreignBeanName,primaryKeyBeanName,foreignBeanNameLower);
@@ -95,11 +97,11 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         String primaryKeyUp = relationConfig.getThirdparty().getPrimaryKeyUp(true);
-        return delete(autoCodeConfig, primary, foreign,primaryKeyUp);
+        return delete(String.format("delete%sAnd%s", primary.getBeanName(), foreign.getBeanName()),autoCodeConfig, primary, foreign,primaryKeyUp,primary.getPrimaryKeyUp(true));
     }
 
-    default BuildJavaMethod delete(AutoCodeConfig autoCodeConfig, RelationTable primary, RelationTable foreign,String primaryKeyUp) {
-        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
+    default BuildJavaMethod delete(String methodName, AutoCodeConfig autoCodeConfig, RelationTable primary,
+                                   RelationTable foreign, String primaryKeyUp, String keyUp) {
         String primaryKeyBeanName_ = primary.getBeanNameLower();
         String foreignBeanName = foreign.getBeanName();
         String foreignBeanNameLower = foreign.getBeanNameLower();
@@ -111,7 +113,7 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
         deleteTestUserAndTestClass.setAnnotation(an);
         deleteTestUserAndTestClass.setReturnType("Integer");
         deleteTestUserAndTestClass.setMethodType("public");
-        deleteTestUserAndTestClass.setMethodName(String.format("delete%sAnd%s", primaryKeyBeanName, foreignBeanName));
+        deleteTestUserAndTestClass.setMethodName(methodName);
         List<String> params=new ArrayList<>();
         params.add(primaryKeyBeanName +" "+ primaryKeyBeanName_);
         deleteTestUserAndTestClass.setParams(params);
@@ -120,7 +122,7 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
         MyStringUtils.append(content,"%s = %s%s.selectByPrimaryKey(%s);",2,primaryKeyBeanName_,primaryKeyBeanName_,
                 autoCodeConfig.getGlobalConfig().getPackageDaoUp(),primaryKeyBeanName_);
         MyStringUtils.append(content,"%s.set%s(%s.get%s().toString());",2,foreignBeanNameLower,
-                primaryKeyUp,primaryKeyBeanName_,primary.getPrimaryKeyUp(true));
+                primaryKeyUp,primaryKeyBeanName_,keyUp);
         MyStringUtils.append(content,"%s%s.delete%sBy%s(%s);",2,foreignBeanNameLower,autoCodeConfig.getGlobalConfig().getPackageDaoUp(),
                 foreignBeanName,primaryKeyBeanName,foreignBeanNameLower);
         MyStringUtils.append(content,"return %s%s.deleteByPrimaryKey(%s);",2,primaryKeyBeanName_, globalConfig.getPackageDaoUp(),primaryKeyBeanName_);

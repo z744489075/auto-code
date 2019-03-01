@@ -65,4 +65,4 @@ globalConfig:
             #外键名称 该字段将和外表配置关联起来
             foreignKey: role_id
             #备注
-            remark: "班级"
+            remark: "用户角色"

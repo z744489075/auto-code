@@ -67,7 +67,7 @@ public interface BuildManyToMany {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
-        logger.info("-------------------------------------开始构建多对多 ->主键:{} ->外表{}", primary.getBeanName(),foreign.getBeanName());
+        logger.info("-------------------------------------开始构建多对多 ->主表:{} ->外表{}", primary.getBeanName(),foreign.getBeanName());
         BuildManyToManyController().build(autoCodeConfig);
         BuildManyToManyBean().build(autoCodeConfig);
         BuildManyToManyDao().build(autoCodeConfig);
@@ -75,7 +75,7 @@ public interface BuildManyToMany {
         BuildManyToManyServiceImpl().build(autoCodeConfig);
         BuildManyToManyXml().build(autoCodeConfig);
         custom(autoCodeConfig);
-        logger.info("--------------------------------------构建多对多结束 ->主键:{} ->外表{}",primary.getBeanName(),foreign.getBeanName());
+        logger.info("--------------------------------------构建多对多结束 ->主表:{} ->外表{}",primary.getBeanName(),foreign.getBeanName());
     }
 
 

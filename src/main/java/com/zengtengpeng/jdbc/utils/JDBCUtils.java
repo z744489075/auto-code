@@ -57,6 +57,9 @@ public class JDBCUtils {
                     String createDDL = rs.getString(2);
                     String comment = parse(createDDL);
                     logger.info("解析表-{}->{}",tableName,comment);
+                    if(MyStringUtils.isEmpty(comment)){
+                        comment=tableName;
+                    }
                     bean.setTableRemarks(comment);
                 }
 
@@ -85,7 +88,12 @@ public class JDBCUtils {
                     if(!MyStringUtils.isEmpty(rs.getString("IS_AUTOINCREMENT")) && rs.getString("IS_AUTOINCREMENT").equalsIgnoreCase("yes")){
                         beanColumn.setIdentity(true);
                     }
-                    beanColumn.setRemarks(rs.getString("REMARKS"));
+                    String remarks = rs.getString("REMARKS");
+                    if(MyStringUtils.isEmpty(remarks)){
+                        beanColumn.setRemarks(beanColumn.getJdbcName());
+                    }else {
+                        beanColumn.setRemarks(remarks);
+                    }
                     beanColumn.setDefaultValue(rs.getString("COLUMN_DEF"));
 
                     if(pk.get(beanColumn.getJdbcName())!=null){

@@ -56,6 +56,14 @@ public interface BuildManyToManyBean extends BuildBaseBean {
         params.add(String.format("String %s",thirdparty.getForeignKeyUp(false)));
         set.setParams(params);
         set.setContent(String.format("this.%s=%s;",thirdparty.getForeignKeyUp(false),thirdparty.getForeignKeyUp(false)));
+        beanListJavaMethods.add(set);
+
+        BuildJavaMethod get = new BuildJavaMethod();
+        get.setReturnType("String");
+        get.setMethodType("public");
+        get.setMethodName("get"+thirdparty.getForeignKeyUp(true));
+        get.setContent("return "+thirdparty.getForeignKeyUp(false)+";");
+        beanListJavaMethods.add(get);
         return beanListJavaMethods;
     }
 
@@ -91,6 +99,14 @@ public interface BuildManyToManyBean extends BuildBaseBean {
         params.add(String.format("String %s",thirdparty.getPrimaryKeyUp(false)));
         set.setParams(params);
         set.setContent(String.format("this.%s=%s;",thirdparty.getPrimaryKeyUp(false),thirdparty.getPrimaryKeyUp(false)));
+        beanListJavaMethods.add(set);
+
+        BuildJavaMethod get = new BuildJavaMethod();
+        get.setReturnType("String");
+        get.setMethodType("public");
+        get.setMethodName("get"+thirdparty.getPrimaryKeyUp(true));
+        get.setContent("return "+thirdparty.getPrimaryKeyUp(false)+";");
+        beanListJavaMethods.add(get);
         return beanListJavaMethods;
     }
 }

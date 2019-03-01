@@ -9,6 +9,7 @@ import com.zengtengpeng.autoCode.utils.BuildUtils;
 import com.zengtengpeng.relation.bean.RelationTable;
 import com.zengtengpeng.relation.build.BuildBaseDao;
 import com.zengtengpeng.relation.config.RelationConfig;
+import com.zengtengpeng.relation.utils.RelationBuilUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,34 +63,10 @@ public interface BuildManyToManyDao extends BuildBaseDao {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
-        BuildJavaMethod buildJavaMethod = delete(primary, foreign);
+        BuildJavaMethod buildJavaMethod = RelationBuilUtils.getDaoBaseDelete(primary, foreign);
         return buildJavaMethod;
     }
 
-    default BuildJavaMethod delete(RelationTable primary, RelationTable foreign) {
-        BuildJavaMethod buildJavaMethod=new BuildJavaMethod();
-        buildJavaMethod.setRemark(String.format("根据%s删除%s",foreign.getRemark(),primary.getRemark()));
-        buildJavaMethod.setReturnType("Integer");
-        buildJavaMethod.setMethodName(String.format("delete%sBy%s",primary.getBeanName(),foreign.getBeanName()));
-        List<String> params=new ArrayList<>();
-        params.add(primary.getBeanName()+" "+primary.getBeanNameLower());
-        buildJavaMethod.setParams(params);
-        return buildJavaMethod;
-    }
-
-    /**
-     * 外表删除
-     * @param autoCodeConfig
-     * @return
-     */
-    @Override
-    default BuildJavaMethod foreignDelete(AutoCodeConfig autoCodeConfig) {
-        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
-        RelationTable primary = relationConfig.getPrimary();
-        RelationTable foreign = relationConfig.getForeign();
-        BuildJavaMethod buildJavaMethod = delete(foreign, primary);
-        return buildJavaMethod;
-    }
 
     /**
      * 外表查询

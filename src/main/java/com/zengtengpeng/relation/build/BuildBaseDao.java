@@ -8,6 +8,7 @@ import com.zengtengpeng.autoCode.config.GlobalConfig;
 import com.zengtengpeng.autoCode.utils.BuildUtils;
 import com.zengtengpeng.relation.bean.RelationTable;
 import com.zengtengpeng.relation.config.RelationConfig;
+import com.zengtengpeng.relation.utils.RelationBuilUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,16 +39,10 @@ public interface BuildBaseDao {
      */
     default BuildJavaMethod foreignDelete(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
+        RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
-        String foreignBeanName = foreign.getBeanName();
-        BuildJavaMethod deleteTestUserAndTestClass = new BuildJavaMethod();
-        deleteTestUserAndTestClass.setReturnType("Integer");
-        deleteTestUserAndTestClass.setMethodName(String.format("deleteBy%s", foreign.getForeignKeyUp(true)));
-        List<String> params=new ArrayList<>();
-        params.add(foreignBeanName +" "+ foreign.getBeanNameLower());
-        deleteTestUserAndTestClass.setParams(params);
-        deleteTestUserAndTestClass.setRemark(String.format("根据%s删除%s",foreign.getForeignKeyUp(false),foreign.getRemark()));
-        return deleteTestUserAndTestClass;
+        BuildJavaMethod buildJavaMethod = RelationBuilUtils.getDaoBaseDelete(foreign, primary);
+        return buildJavaMethod;
     }
 
 

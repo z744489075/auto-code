@@ -116,11 +116,22 @@ public class RelationBuilUtils {
         BuildXmlBean buildXmlBean=new BuildXmlBean();
         buildXmlBean.setXmlElementType(XmlElementType.delete);
         Map<String, String> attrs=new HashMap<>();
-        attrs.put("id",String.format("delete%sBy%s",primary.getBeanName(),foreign.getBeanName()));
+        attrs.put("id",String.format("delete%sBy%s",foreign.getBeanName(),primary.getBeanName()));
         buildXmlBean.setAttributes(attrs);
         buildXmlBean.setSql(String.format("\t\tdelete from  %s\n" +
-                "\t\twhere %s=#{%s}",primary.getDataName(),primary.getForeignKey(),primary.getForeignKeyUp(false)));
+                "\t\twhere %s=#{%s}",foreign.getDataName(),foreign.getForeignKey(),foreign.getForeignKeyUp(false)));
 
         return buildXmlBean;
+    }
+
+    public static BuildJavaMethod getDaoBaseDelete(RelationTable primary, RelationTable foreign) {
+        BuildJavaMethod buildJavaMethod=new BuildJavaMethod();
+        buildJavaMethod.setRemark(String.format("根据%s删除%s",foreign.getRemark(),primary.getRemark()));
+        buildJavaMethod.setReturnType("Integer");
+        buildJavaMethod.setMethodName(String.format("delete%sBy%s",primary.getBeanName(),foreign.getBeanName()));
+        List<String> params=new ArrayList<>();
+        params.add(primary.getBeanName()+" "+primary.getBeanNameLower());
+        buildJavaMethod.setParams(params);
+        return buildJavaMethod;
     }
 }

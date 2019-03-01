@@ -190,6 +190,8 @@ public interface BuildBean {
                 String remarks = t.getRemarks();
                 try {
                     Map<Object,Object> map = objectMapper.readValue(remarks, Map.class);
+
+                    logger.info("字段成功转成json->"+t.getBeanName()+"注释->"+t.getRemarks()+"");
                     List<String> an=new ArrayList<>();
                     an.add("@JsonIgnore");
                     get.setAnnotation(an);
@@ -214,8 +216,6 @@ public interface BuildBean {
                     get1.setContent(json.toString());
                     finalBuildJavaMethods.add(get1);
                 } catch (Exception e) {
-                    logger.info("字段->"+t.getBeanName()+"注释->"+t.getRemarks()+"不是json忽略转换");
-                    System.out.printf("");
                 }
 
                 get.setReturnType(t.getBeanType_());

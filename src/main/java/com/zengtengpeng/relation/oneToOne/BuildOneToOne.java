@@ -67,7 +67,7 @@ public interface BuildOneToOne {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
-        logger.info("-------------------------------------开始构建一对一 ->主键:{} ->外表{}", primary.getBeanName(),foreign.getBeanName());
+        logger.info("-------------------------------------开始构建一对一 ->主表:{} ->外表{}", primary.getBeanName(),foreign.getBeanName());
         buildOneToOneController().build(autoCodeConfig);
         buildOneToOneBean().build(autoCodeConfig);
         buildOneToOneDao().build(autoCodeConfig);
@@ -75,7 +75,7 @@ public interface BuildOneToOne {
         buildOneToOneServiceImpl().build(autoCodeConfig);
         BuildOneToOneXml().build(autoCodeConfig);
         custom(autoCodeConfig);
-        logger.info("--------------------------------------构建一对一结束 ->主键:{} ->外表{}",primary.getBeanName(),foreign.getBeanName());
+        logger.info("--------------------------------------构建一对一结束 ->主表:{} ->外表{}",primary.getBeanName(),foreign.getBeanName());
     }
 
 

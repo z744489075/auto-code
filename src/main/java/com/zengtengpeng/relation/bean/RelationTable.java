@@ -62,18 +62,18 @@ public class RelationTable {
     }
 
     public void setDataName(String dataName) {
-        if(MyStringUtils.isEmpty(beanName)){
-            this.beanName=MyStringUtils.upperCase_(dataName,true);
-        }
         this.dataName = dataName;
     }
 
     public String getBeanName() {
+        if(MyStringUtils.isEmpty(beanName)){
+            return MyStringUtils.upperCase_(dataName,true);
+        }
         return beanName;
     }
     public String getBeanNameLower() {
-        if(!MyStringUtils.isEmpty(beanName)){
-            return MyStringUtils.firstLowerCase(beanName);
+        if(!MyStringUtils.isEmpty(getBeanName())){
+            return MyStringUtils.firstLowerCase(getBeanName());
         }
         return "";
     }
@@ -83,6 +83,9 @@ public class RelationTable {
     }
 
     public String getRemark() {
+        if(MyStringUtils.isEmpty(remark)){
+            return dataName;
+        }
         return remark;
     }
 

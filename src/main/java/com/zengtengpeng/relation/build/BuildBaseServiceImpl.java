@@ -239,20 +239,10 @@ public interface BuildBaseServiceImpl {
         im.add(primary.getExistParentPackage()+"."+autoCodeConfig.getGlobalConfig().getPackageDao()+"."+
                 primary.getBeanName()+autoCodeConfig.getGlobalConfig().getPackageDaoUp());
         String packageBean = autoCodeConfig.getGlobalConfig().getPackageBean();
-        globalImports(primary, foreign, im, packageBean);
-        return im;
-    }
-
-    /**
-     * 公共的参数
-     * @param primaryKey
-     * @param foreign
-     * @param im
-     * @param packageBean
-     */
-    default void globalImports(RelationTable primaryKey, RelationTable foreign, List<String> im, String packageBean) {
-        im.add(primaryKey.getExistParentPackage()+"."+ packageBean+"."+primaryKey.getBeanName());
+        im.add(primary.getExistParentPackage()+"."+ packageBean+"."+primary.getBeanName());
         im.add(foreign.getExistParentPackage()+"."+ packageBean+"."+foreign.getBeanName());
+        im.add("java.util.List");
+        return im;
     }
 
 

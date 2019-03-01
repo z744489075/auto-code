@@ -30,8 +30,38 @@ public interface BuildManyToManyXml extends BuildBaseXml {
      */
     default BuildXmlBean primaryDelete(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
-        return RelationBuilUtils.getXmlBaseDelete(relationConfig.getForeign(),relationConfig.getPrimary());
+        RelationTable foreign = relationConfig.getForeign();
+        RelationTable primary = relationConfig.getPrimary();
+        RelationTable thirdparty = relationConfig.getThirdparty();
+
+        BuildXmlBean buildXmlBean=new BuildXmlBean();
+        buildXmlBean.setXmlElementType(XmlElementType.delete);
+        Map<String, String> attrs=new HashMap<>();
+        attrs.put("id",String.format("delete%sBy%s",primary.getBeanName(),foreign.getBeanName()));
+        buildXmlBean.setAttributes(attrs);
+        buildXmlBean.setSql(String.format("\t\tDELETE FROM %s WHERE %s=#{%s}",thirdparty.getDataName(),
+                thirdparty.getForeignKey(),thirdparty.getForeignKeyUp(false)));
+
+        return buildXmlBean;
     }
+
+    @Override
+    default BuildXmlBean foreignDelete(AutoCodeConfig autoCodeConfig) {
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
+        RelationTable foreign = relationConfig.getForeign();
+        RelationTable primary = relationConfig.getPrimary();
+        RelationTable thirdparty = relationConfig.getThirdparty();
+
+        BuildXmlBean buildXmlBean=new BuildXmlBean();
+        buildXmlBean.setXmlElementType(XmlElementType.delete);
+        Map<String, String> attrs=new HashMap<>();
+        attrs.put("id",String.format("delete%sBy%s",foreign.getBeanName(),primary.getBeanName()));
+        buildXmlBean.setAttributes(attrs);
+        buildXmlBean.setSql(String.format("\t\tDELETE FROM %s WHERE %s=#{%s}",thirdparty.getDataName(),thirdparty.getPrimaryKey(),thirdparty.getPrimaryKeyUp(false)));
+        return buildXmlBean;
+    }
+
+
     /**
      * 主表级联查询
      * @return
@@ -41,41 +71,11 @@ public interface BuildManyToManyXml extends BuildBaseXml {
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         RelationTable thirdparty = relationConfig.getThirdparty();
-        String primaryKey = thirdparty.getPrimaryKey();
-        String primaryKeyUp = thirdparty.getPrimaryKeyUp(false);
 
-        return select(autoCodeConfig, primary, foreign, thirdparty, primaryKey, primaryKeyUp);
-    }
-    /**
-     * 主表级联查询
-     * @return
-     */
-    default BuildXmlBean foreignSelect(AutoCodeConfig autoCodeConfig){
-        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
-        RelationTable primary = relationConfig.getPrimary();
-        RelationTable foreign = relationConfig.getForeign();
-        RelationTable thirdparty = relationConfig.getThirdparty();
-        String foreignKey = thirdparty.getForeignKey();
-        String foreignKeyUp = thirdparty.getForeignKeyUp(false);
-
-        return select(autoCodeConfig,  foreign,primary, thirdparty, foreignKey, foreignKeyUp);
-    }
-
-    /**
-     * 多对多查询
-     * @param primary
-     * @param foreign
-     * @param thirdparty
-     * @param primaryKey
-     * @param primaryKeyUp
-     * @return
-     */
-    default BuildXmlBean select(AutoCodeConfig autoCodeConfig, RelationTable primary, RelationTable foreign,
-                                RelationTable thirdparty, String primaryKey, String primaryKeyUp) {
         BuildXmlBean buildXmlBean=new BuildXmlBean();
         buildXmlBean.setXmlElementType(XmlElementType.select);
         Map<String, String> attrs=new HashMap<>();
-        attrs.put("id",String.format("selecte%sBy%s",primary.getBeanName(),foreign.getBeanName()));
+        attrs.put("id",String.format("select%sBy%s",primary.getBeanName(),foreign.getBeanName()));
         attrs.put("resultMap","BaseResultMap");
         buildXmlBean.setAttributes(attrs);
         StringBuffer content=new StringBuffer();
@@ -88,18 +88,57 @@ public interface BuildManyToManyXml extends BuildBaseXml {
         bean = startCode.saxTable(autoCodeConfig);
 
         bean.getAllColumns().forEach(t->{
-            MyStringUtils.append(content,"%s.%s,\n",3,primary.getDataName(),t.getJdbcName());
+            MyStringUtils.append(content,"%s.%s,",3,primary.getDataName(),t.getJdbcName());
         });
         content.deleteCharAt(content.length()-2);
         MyStringUtils.append(content,"FROM",2);
         MyStringUtils.append(content,"%s,%s",3,primary.getDataName(),thirdparty.getDataName());
         MyStringUtils.append(content,"WHERE %s.%s=%s.%s",2,primary.getDataName(),primary.getPrimaryKey()
-                ,thirdparty.getDataName(), primaryKey);
-        MyStringUtils.append(content,"and %s.`%s`=#{%s}",2,thirdparty.getDataName(), primaryKey, primaryKeyUp);
+                ,thirdparty.getDataName(), thirdparty.getPrimaryKey());
+        MyStringUtils.append(content,"and %s.%s=#{%s}",2,thirdparty.getDataName(), thirdparty.getForeignKey(), thirdparty.getForeignKeyUp(false));
 
         buildXmlBean.setSql(content.toString());
         return buildXmlBean;
     }
+    /**
+     * 主表级联查询
+     * @return
+     */
+    default BuildXmlBean foreignSelect(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
+        RelationTable primary = relationConfig.getPrimary();
+        RelationTable foreign = relationConfig.getForeign();
+        RelationTable thirdparty = relationConfig.getThirdparty();
+
+        BuildXmlBean buildXmlBean=new BuildXmlBean();
+        buildXmlBean.setXmlElementType(XmlElementType.select);
+        Map<String, String> attrs=new HashMap<>();
+        attrs.put("id",String.format("select%sBy%s",foreign.getBeanName(),primary.getBeanName()));
+        attrs.put("resultMap","BaseResultMap");
+        buildXmlBean.setAttributes(attrs);
+        StringBuffer content=new StringBuffer();
+        MyStringUtils.append(content,"SELECT",2);
+        Bean bean=new Bean();
+        bean.setDataName(foreign.getDataName());
+        bean.setTableName(foreign.getBeanName());
+        StartCode startCode= t->{};
+        autoCodeConfig.setBean(bean);
+        bean = startCode.saxTable(autoCodeConfig);
+        bean.getAllColumns().forEach(t->{
+            MyStringUtils.append(content,"%s.%s,",3,foreign.getDataName(),t.getJdbcName());
+        });
+        content.deleteCharAt(content.length()-2);
+        MyStringUtils.append(content,"FROM",2);
+        MyStringUtils.append(content,"%s,%s",3,foreign.getDataName(),thirdparty.getDataName());
+        MyStringUtils.append(content,"WHERE %s.%s=%s.%s",2,foreign.getDataName(),foreign.getForeignKey()
+                ,thirdparty.getDataName(), thirdparty.getForeignKey());
+        MyStringUtils.append(content,"and %s.%s=#{%s}",2,thirdparty.getDataName(), thirdparty.getPrimaryKey(), thirdparty.getPrimaryKeyUp(false));
+
+        buildXmlBean.setSql(content.toString());
+        return buildXmlBean;
+    }
+
+
 
 
     @Override
