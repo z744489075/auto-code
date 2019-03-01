@@ -1,4 +1,4 @@
-package com.zengtengpeng.relation.oneToMany;
+package com.zengtengpeng.relation.ManyToMany;
 
 import com.zengtengpeng.autoCode.bean.BuildJavaField;
 import com.zengtengpeng.autoCode.bean.BuildJavaMethod;
@@ -14,8 +14,7 @@ import java.util.List;
  * 构建一对多Bean
  */
 @FunctionalInterface
-public interface BuildOneToManyBean extends BuildBaseBean {
-
+public interface BuildManyToManyBean extends BuildBaseBean {
 
 
     /**
@@ -27,7 +26,7 @@ public interface BuildOneToManyBean extends BuildBaseBean {
         RelationTable foreign = relationConfig.getForeign();
         List<BuildJavaField> buildJavaFields=new ArrayList<>();
         BuildJavaField buildJavaField=new BuildJavaField();
-        buildJavaField.setRemark(foreign.getRemark());
+        buildJavaField.setRemark(primary.getRemark());
         buildJavaField.setFiledName(foreign.getBeanNameLower()+"List");
         buildJavaField.setReturnType("List<"+foreign.getBeanName()+">");
         buildJavaField.setFiledType("private");

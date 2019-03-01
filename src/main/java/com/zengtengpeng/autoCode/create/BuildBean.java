@@ -40,8 +40,6 @@ public interface BuildBean {
     default BuildBean buildImports(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
 
         StringBuffer content = buildJavaConfig.getContent();
-        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
-        Bean bean = autoCodeConfig.getBean();
         List<String> imports = buildJavaConfig.getImports();
         if (imports == null) {
             imports = new ArrayList<>();
@@ -68,7 +66,6 @@ public interface BuildBean {
     default BuildBean buildClass(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
 
         Bean bean = autoCodeConfig.getBean();
-        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         StringBuffer extendsb = new StringBuffer();
         StringBuffer isb = new StringBuffer();
         List<String> extend = buildJavaConfig.getExtend();

@@ -272,7 +272,7 @@ public interface BuildController {
         return selectByCondition;
     }
     /**
-     * 构建 根据分页查询
+     * 构建 根据分页查询 默认 page=1 pageSize等于10 详见 Page类(所有bean都继承改类)
      * @param autoCodeConfig
      * @param buildJavaConfig
      * @return

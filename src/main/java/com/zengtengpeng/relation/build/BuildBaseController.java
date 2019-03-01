@@ -33,7 +33,7 @@ public interface BuildBaseController {
 
 
     /**
-     * 构建外表 级联查询(带分页)
+     * 构建外表 级联查询(带分页) 默认 page=1 pageSize等于10 详见 Page类(所有bean都继承改类)
      * @return
      */
     default BuildJavaMethod foreignSelect(RelationConfig relationConfig){
