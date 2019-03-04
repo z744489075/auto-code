@@ -4,24 +4,24 @@
 ### 项目介绍 
 #### 项目的优势在哪里
 
-> 1.目前市面上的代码生成工具绝大多数紧紧支持生成单表,该项目支持 `单表`, `一对一`, `一对多` ,`多对多` 
+> 1.目前市面上的代码生成工具绝大多数仅仅支持生成单表,该项目支持 `单表`, `一对一`, `一对多` ,`多对多` 
 代码生成.大大简化了开发的工作量
 
-> 2.只要目前你的项目采用 springMVC+spring+mybatis架构的项目都适用(传统工程和springBoot工程都适用).不管新老项目.该项目紧紧只是帮你生成
+> 2.只要目前你的项目采用 springMVC+spring+mybatis架构的项目都适用(传统工程和springBoot工程都适用).不管一次开发还是二次开发.该项目仅仅只是帮你生成
 `增删改查`,不做任何底层的改动.
 
 #### 什么情况选择该项目
-> 1.该项目紧紧生成接口(controller,server,serverImpl,dao,xml),
-不生成页面.所以如果目前是前后台分离,只需要后台提供接口的可以采用该项目
+> 1.该项目只生成接口(controller,service,serviceImpl,dao,xml),
+不生成页面.所以如果项目是采用前后台分离,不需要写页面.该项目会适合你
 
-> 2.如果还想生成页面请看该项目 [源码地址](https://gitee.com/ztp/auto-code-admin) 
+> 2.如果还想生成页面请看该项目,这个项目基于本项目.扩展了页面生成.适合后台使用 [源码地址](https://gitee.com/ztp/auto-code-admin) 
  [演示地址](http://www.zengtengpeng.com/login/gotoLogin) 账号 `ztp`  密码 `111111`
  
 #### 为何会发起该项目? 
 
-> 绝大多数时候我们都是在做表的`增删改查`.每次创建一张表.然后我们需要重新写一次增删改查,
+> 绝大多数时候我们都是在做`增删改查`.每次创建一张表.然后我们需要重新写一次增删改查,
 写虽然简单,不过极度耗时(controller,server,serverImpl,dao,xml) 
-    所以才有了该项目,该项目能帮助你减少80%的工作量,让你专注于业务的实现.
+    所以才有了该项目,该项目能帮助你减少70%的工作量,让你专注于业务的实现.
 
 #### 如果您觉得项目还行.请点赞.您的支持是我最大的动力[项目地址](https://gitee.com/ztp/auto-code)
 
@@ -29,7 +29,7 @@
 
 #### 集成教程
 
->集成jar包  pom.xml 引入
+> 集成非常简单只需要引入jar包即可  pom.xml 引入
 ```
     <dependency>
         <groupId>com.zengtengpeng</groupId>
@@ -40,7 +40,7 @@
 
 ### 使用教程
 
-#### 单表生成
+##### 单表生成
 
 >假设我们要生成一张表
 ```sql
@@ -53,10 +53,10 @@ CREATE TABLE `test_code` (
   `remarks` text COMMENT '备注',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='测试生成代码'
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='测试生成代码';
 ```
 
->1.在资源根路径(src/main/resources)创建 auto-code.yaml 文件,具体内容如下
+>1.先在资源根路径(src/main/resources)创建 auto-code.yaml 文件,具体内容如下
 ```yaml
 datasourceConfig:
     #驱动名称
@@ -114,9 +114,8 @@ public class Demo1 {
 }
 ```
 
->3.生成完毕
+>3.生成完毕 主要生成五个接口
 
-    主要生成五个接口
     //根据id删除记录
     deleteByPrimaryKey
     
@@ -137,9 +136,9 @@ public class Demo1 {
 生成的文件如下:
 ![simple](http://images.zengtengpeng.com/auto-code/simple.png)
 
-#### 一对一 one-to-one
+##### 一对一代码生成 one-to-one
 
->假如一个用户  test_user 一个用户 对应 test_class 一个班级
+>假如 一个用户  test_user 一个用户 对应 test_class 一个班级
 ```sql
     CREATE TABLE `test_user` (
       `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -152,7 +151,7 @@ public class Demo1 {
       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
       `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
       PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 COMMENT='测试用户'
+    ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 COMMENT='测试用户';
 
     CREATE TABLE `test_class` (
       `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '班级id',
@@ -167,8 +166,9 @@ public class Demo1 {
 
 >1.同理先在 资源根路径(src/main/resources)创建 auto-code.yaml 文件,具体内容如下
 
-    请注意 relationConfig 这里描述的是关系配置 这里 注意 generate和existParentPackage字段.
-    如果该表已经生成了.请将 generate置为 false 同时填写 existParentPackage 表所对应的父包
+    请注意relationConfig这里描述的是关系配置, 注意generate和existParentPackage字段.
+    如果该表已经生成了.请将 generate置为 false 同时填写 existParentPackage 
+    表所对应的父包(一对多,多对多有实例)
     
 ```yaml
 datasourceConfig:
@@ -257,9 +257,7 @@ public class Demo2OneToOne {
 }
 ```
 
-> 3. 生成完毕
-
-> 一对多会在单表的基础上再增加6个接口 主表3个 外表3个
+> 3. 生成完毕 一对多会在单表的基础上再增加6个接口 主表3个 外表3个
 
 ClazzController 新增
 
@@ -326,7 +324,7 @@ UserController 增加
 
 ![one-to-one](http://images.zengtengpeng.com/auto-code/one-to-one.png)
 
-#### 一对多
+#### 一对多 代码生成 one-to-Many
 
 > 假如 test_user 一个用户 对应 test_addr 多个收货地址
 
@@ -342,7 +340,7 @@ UserController 增加
       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
       `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
       PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 COMMENT='测试用户'
+    ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 COMMENT='测试用户';
 
     CREATE TABLE `test_addr` (
       `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '用户收货地址id',
@@ -359,7 +357,8 @@ UserController 增加
 
 >1.同理先在 资源根路径(src/main/resources)创建 auto-code.yaml 文件,具体内容如下
     
-    由于TestUser已经在一对一生成过代码了.所以 generate: false 同时写上已经存在的父包 existParentPackage: com.zengtengpeng.test
+    由于TestUser已经在一对一生成过代码了.所以 generate: false
+    同时写上已经存在的父包 existParentPackage: com.zengtengpeng.test
 ```yaml
     datasourceConfig:
         #驱动名称
@@ -447,11 +446,10 @@ UserController 增加
     }
 ```
 
-> 3.生成完毕
-    接口和一对一一样
+> 3.生成完毕 接口和一对一一样
 
 
-#### 多对多
+#### 多对多 代码生成 many-to-many
     
 > 假如 test_user 多个用户 对应 test_role 多个角色
 
@@ -482,7 +480,7 @@ UserController 增加
     ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='测试角色';
     
     CREATE TABLE `test_user_role` (
-      `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '测试用户角色',
+      `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '用户角色关系表',
       `user_id` int(11) DEFAULT NULL COMMENT '用户id',
       `role_id` int(11) DEFAULT NULL COMMENT '角色id',
       `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -492,9 +490,11 @@ UserController 增加
 
 >1.同理先在 资源根路径(src/main/resources)创建 auto-code.yaml 文件,具体内容如下
       
-      1.由于TestUser已经在一对一生成过代码了.所以 generate: false 同时写上已经存在的父包 existParentPackage: com.zengtengpeng.test
+      1.由于TestUser已经在一对一生成过代码了.所以 generate: false 同时写上
+      TestUser存在的父包 existParentPackage: com.zengtengpeng.test
       2.注意多对多的外表的 foreignKey 同样是该表的主键
-      3.thirdparty 为 多对多的第三表 primaryKey对应 primary的 primaryKey. foreignKey 对应foreign 的foreignKey
+      3.thirdparty为多对多的第三表primaryKey对应主表(primary)的primaryKey. 
+      foreignKey对应外表(foreign)的foreignKey
 
 ```yaml
     datasourceConfig:
@@ -555,8 +555,7 @@ UserController 增加
                 remark: "用户角色"
 ```
 
-> 3.生成完毕
-    接口和一对一一样
+> 3.生成完毕 新增接口和一对一一样
 ### 生成代码注意事项
 
     1.创建表结构时如果写上表与字段的注释将大大增加程序的可读性.我会将注释写到bean上面.
@@ -575,15 +574,44 @@ UserController 增加
     	}
 
 
-#### spring-boot [实例地址](https://gitee.com/ztp/auto-code-springboot-demo)
+#### spring-boot如何使用 [实例地址](https://gitee.com/ztp/auto-code-springboot-demo)
+
+> 1.集成mybatis-spring-boot-starter,spring-boot-starter-web 这里就不再阐述
+
+>2.由于分页插件使用了 pageHelper 所以需要集成下,不集成将导致分页失效,集成非常简单 
+ [官方SpringBoot集成地址](https://github.com/abel533/MyBatis-Spring-Boot) 
+
+    1.加入pom.xml jar包
+    <dependency>
+        <groupId>com.github.pagehelper</groupId>
+        <artifactId>pagehelper-spring-boot-starter</artifactId>
+        <version>1.2.10</version>
+    </dependency>
+    
+    2.在application.properties加入配置
+    #pagehelper插件
+    #logging.level.com.example.demo.dao=DEBUG
+    pagehelper.helperDialect=mysql
+    pagehelper.reasonable=true
+    pagehelper.supportMethodsArguments=true
+    pagehelper.params=count=countSql
+    pagehelper.page-size-zero=true
+    
+    3.至此集成完毕
 
 #### java-web [实例地址](https://gitee.com/ztp/auto-code-web-demo)
 
-> 由于分页插件使用了 pageHelper 所以需要集成下,不集成将导致分页失效 
- [SpringBoot集成地址](https://github.com/abel533/MyBatis-Spring-Boot) 
- [传统web工程集成地址](https://github.com/abel533/Mybatis-Spring)
+> 由于分页插件使用了 pageHelper 所以需要集成下,不集成将导致分页失效
+ [官方传统web工程集成地址](https://github.com/abel533/Mybatis-Spring)
 
+    1.由于工程中以及引入pageHelper的jar包所以直接在
+    MyBatis-Configuration.xml中加入
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+        </plugin>
+    </plugins>
+    
+    2.集成完毕
+    
 
-## 进阶篇
-#### 单表如果增加自定义方法
-
+## 进阶篇 如何自定义方法 [代码地址](https://gitee.com/ztp/auto-code-springboot-demo)
