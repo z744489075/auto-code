@@ -75,7 +75,6 @@ public interface BuildController {
         StringBuffer content = buildJavaConfig.getContent();
         Bean bean = autoCodeConfig.getBean();
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
-        StringBuffer extendsb = new StringBuffer();
         StringBuffer isb = new StringBuffer();
         List<String> extend = buildJavaConfig.getExtend();
         if (extend == null) {
@@ -105,13 +104,11 @@ public interface BuildController {
             annotations.add("@Controller");
 
         }
-        extend.forEach(t -> extendsb.append(t + ","));
-
         implement.forEach(t -> isb.append(t + ","));
 
         String s1 = "";
-        if (extendsb.length() > 0) {
-            s1 = " extends " + extendsb.substring(0, extendsb.length() - 1);
+        if (extend.size() > 0) {
+            s1 = " extends " + extend.get(0);
         }
 
         String s2 = "";
@@ -214,7 +211,7 @@ public interface BuildController {
         MyStringUtils.append(content,"}",2);
         MyStringUtils.append(content,"return DataRes.success(%s%s.update(%s));",2,bean.getTableValue(),globalConfig.getPackageServiceUp(),bean.getTableValue());
         save.setContent(content.toString());
-        save.setRemark(" 保存-> "+buildJavaConfig.getRemark());
+        save.setRemark(" 保存 (主键为空则增加 否则 修改)-> "+buildJavaConfig.getRemark());
         return save;
     }
     /**
@@ -294,7 +291,7 @@ public interface BuildController {
         params.add("HttpServletRequest request");
         params.add("HttpServletResponse response");
         selectAllByPaging.setParams(params);
-        selectAllByPaging.setRemark("分页查询->"+buildJavaConfig.getRemark());
+        selectAllByPaging.setRemark("分页查询 (详见Page类.所以的实体都继承该类 默认 page=1 pageSize=10)->"+buildJavaConfig.getRemark());
         selectAllByPaging.setContent(String.format("return DataRes.success(%s%s.selectAllByPaging(%s));",bean.getTableValue(),globalConfig.getPackageServiceUp(),bean.getTableValue()));
         return selectAllByPaging;
     }

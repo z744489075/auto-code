@@ -66,7 +66,6 @@ public interface BuildBean {
     default BuildBean buildClass(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig) {
 
         Bean bean = autoCodeConfig.getBean();
-        StringBuffer extendsb = new StringBuffer();
         StringBuffer isb = new StringBuffer();
         List<String> extend = buildJavaConfig.getExtend();
         if (extend == null) {
@@ -94,13 +93,12 @@ public interface BuildBean {
         if (buildJavaConfig.getDefaultRealize()) {
             extend.add("Page");
         }
-        extend.forEach(t -> extendsb.append(t + ","));
 
         implement.forEach(t -> isb.append(t + ","));
 
         String s1 = "";
-        if (extendsb.length() > 0) {
-            s1 = "extends " + extendsb.substring(0, extendsb.length() - 1);
+        if (extend.size() > 0) {
+            s1 = " extends " + extend.get(0);
         }
 
         String s2 = "";

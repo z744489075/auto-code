@@ -63,7 +63,6 @@ public interface BuildServiceImpl {
         StringBuffer content = buildJavaConfig.getContent();
         Bean bean = autoCodeConfig.getBean();
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
-        StringBuffer extendsb = new StringBuffer();
         StringBuffer isb = new StringBuffer();
         List<String> extend = buildJavaConfig.getExtend();
         if (extend == null) {
@@ -97,13 +96,12 @@ public interface BuildServiceImpl {
 
 
         }
-        extend.forEach(t -> extendsb.append(t + ","));
 
         implement.forEach(t -> isb.append(t + ","));
 
         String s1 = "";
-        if (extendsb.length() > 0) {
-            s1 = "extends " + extendsb.substring(0, extendsb.length() - 1);
+        if (extend.size() > 0) {
+            s1 = " extends " + extend.get(0);
         }
 
         String s2 = "";

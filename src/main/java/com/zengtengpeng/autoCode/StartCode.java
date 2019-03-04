@@ -11,6 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -29,6 +32,28 @@ public interface StartCode {
     static AutoCodeConfig saxYaml() {
         Yaml yaml = new Yaml();
         return yaml.loadAs(StartCode.class.getClassLoader().getResourceAsStream("auto-code.yaml"), AutoCodeConfig.class);
+    }
+
+    /**
+     * 解析yaml文件
+     * @param fileName 文件名称
+     */
+    static AutoCodeConfig saxYaml(String fileName) {
+        Yaml yaml = new Yaml();
+        return yaml.loadAs(StartCode.class.getClassLoader().getResourceAsStream(fileName), AutoCodeConfig.class);
+    }
+
+    /**
+     * 解析yaml文件
+     * @param file 文件
+     */
+    static AutoCodeConfig saxYaml(File file) {
+        Yaml yaml = new Yaml();
+        try {
+            return yaml.loadAs(new FileInputStream(file), AutoCodeConfig.class);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

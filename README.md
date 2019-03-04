@@ -1,47 +1,589 @@
 # auto-code
-    欢迎使用auto-code代码生成引擎
-### 介绍
-此分支正在重写底层实现
-auto-code 可以生成controller,server,dao,xml以及view代码
+欢迎使用auto-code代码自动生成引擎 [源码地址](https://gitee.com/ztp/auto-code)
 
-#### 软件架构
+### 项目介绍 
+#### 项目的优势在哪里
 
-基于mybatis-generator定制的代码生成器.使用 pagehelper进行分页.已jar包的形式引入进去
+> 1.目前市面上的代码生成工具绝大多数紧紧支持生成单表,该项目支持 `单表`, `一对一`, `一对多` ,`多对多` 
+代码生成.大大简化了开发的工作量
 
+> 2.只要目前你的项目采用 springMVC+spring+mybatis架构的项目都适用(传统工程和springBoot工程都适用).不管新老项目.该项目紧紧只是帮你生成
+`增删改查`,不做任何底层的改动.
 
-#### 安装教程 (已经上传maven公共仓库所以不再需要私服)
+#### 什么情况选择该项目
+> 1.该项目紧紧生成接口(controller,server,serverImpl,dao,xml),
+不生成页面.所以如果目前是前后台分离,只需要后台提供接口的可以采用该项目
 
-2.引入jar
+> 2.如果还想生成页面请看该项目 [源码地址](https://gitee.com/ztp/auto-code-admin) 
+ [演示地址](http://www.zengtengpeng.com/login/gotoLogin) 账号 `ztp`  密码 `111111`
+ 
+#### 为何会发起该项目? 
+
+> 绝大多数时候我们都是在做表的`增删改查`.每次创建一张表.然后我们需要重新写一次增删改查,
+写虽然简单,不过极度耗时(controller,server,serverImpl,dao,xml) 
+    所以才有了该项目,该项目能帮助你减少80%的工作量,让你专注于业务的实现.
+
+#### 如果您觉得项目还行.请点赞.您的支持是我最大的动力[项目地址](https://gitee.com/ztp/auto-code)
+
+![start](http://images.zengtengpeng.com/auto-code/start.png)
+
+#### 集成教程
+
+>集成jar包  pom.xml 引入
 ```
-        <dependency>
-            <groupId>com.zengtengpeng</groupId>
-            <artifactId>auto-code</artifactId>
-            <version>1.0.1</version>
-        </dependency>
+    <dependency>
+        <groupId>com.zengtengpeng</groupId>
+        <artifactId>auto-code</artifactId>
+        <version>2.0.0</version>
+    </dependency>
 ```
 
+### 使用教程
 
-#### 使用说明
+#### 单表生成
 
-
+>假设我们要生成一张表
+```sql
+CREATE TABLE `test_code` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '测试生成代码',
+  `name` varchar(50) DEFAULT NULL COMMENT '名称',
+  `age` int(3) DEFAULT NULL COMMENT '年龄',
+  `status` int(2) DEFAULT NULL COMMENT '{"name":"状态","1":"启用","0":"禁用"}',
+  `birthday` date DEFAULT NULL COMMENT '生日',
+  `remarks` text COMMENT '备注',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='测试生成代码'
 ```
-    调用
+
+>1.在资源根路径(src/main/resources)创建 auto-code.yaml 文件,具体内容如下
+```yaml
+datasourceConfig:
+    #驱动名称
+    driverClassName: com.mysql.jdbc.Driver
+    #数据库名称
+    name: auto_code
+    #jdbc链接
+    url: jdbc:mysql://127.0.0.1:3306/auto_code?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    #数据库用户名
+    username: root
+    #数据库密码
+    password: 111111
+globalConfig:
+    #数据库表配置
+    tableNames:
+        #表名称
+        - dataName: test_Code
+          #别名 不写默认采用驼峰命名法 test_code->TestCode
+#          aliasName: SysLoginLog
+          #如果用多张表,请按照如下写法,继续往下写.
+#        - dataName: test_code2
+#          aliasName: DDDDDDD
+    #生成代码的项目路径
+    parentPath: f:/core
+    #生成代码的父包 如父包是com.zengtengpeng.test  controller将在com.zengtengpeng.test.controller下 bean 将在com.zengtengpeng.test.bean下 ,service,dao同理
+    parentPack: com.zengtengpeng.test
+    #是否覆盖生成文件 如果为true将会把以前的文件覆盖掉
+    cover: false
+    #xml存放的文件夹默认 mybatisMapper
+    xmlPath: mybatisMapper
+```
+
+> 2.执行代码生成语句
+```java
+import com.zengtengpeng.autoCode.StartCode;
+import com.zengtengpeng.autoCode.config.AutoCodeConfig;
+/**
+ * 单表生成实例
+ */
+public class Demo1 {
+    public static void main(String[] args) {
+        //lambda表达式写法 二选一
+        StartCode startCode=t->{};
+        
+        //普通写法 二选一
+//        StartCode startCode=new StartCode() {
+//            @Override
+//            public void custom(AutoCodeConfig autoCodeConfig) {
+//                
+//            }
+//        };
+
+        startCode.start(null);
+    }
+}
+```
+
+>3.生成完毕
+
+    主要生成五个接口
+    //根据id删除记录
+    deleteByPrimaryKey
     
-    public class AutoCodeTest {
-    	public static void main(String[] args) throws Exception {
+    //保存(主键为空则增加 否则 修改)
+    save 
     
-    		List<String> dataNames= Arrays.asList("test_auto_code2");
-    		StartCode startCode=new StartCode();
-    		startCode.setJdbc("jdbc:mysql://localhost:3306/test_etl_bank");
-    		startCode.setUser("root");
-    		startCode.setPassword("111111");
-    		startCode.setDataNames(dataNames);
-    		startCode.setParentPath("f:/core");
-    		startCode.setParentPack("com.zengtengpeng.newYear");
-    		AutoCodeUtils.startByBaseCode(startCode);
+    //更加主键查询
+    selectByPrimaryKey
+    
+    //根据条件查询
+    selectByCondition
+    
+    //分页查询 详见Page类.所以的实体都继承该类 默认page=1 pageSize=10
+    selectAllByPaging
+    
+    //导出excel
+    export
+生成的文件如下:
+![simple](http://images.zengtengpeng.com/auto-code/simple.png)
+
+#### 一对一 one-to-one
+
+>假如一个用户  test_user 一个用户 对应 test_class 一个班级
+```sql
+    CREATE TABLE `test_user` (
+      `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
+      `name` varchar(50) DEFAULT NULL COMMENT '名称',
+      `age` int(3) DEFAULT NULL COMMENT '年龄',
+      `status` int(2) DEFAULT NULL COMMENT '{"name":"状态","1":"启用","0":"禁用"}',
+      `birthday` date DEFAULT NULL COMMENT '生日',
+      `remarks` text COMMENT '备注',
+      `mun` decimal(20,2) DEFAULT NULL COMMENT '数字',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 COMMENT='测试用户'
+
+    CREATE TABLE `test_class` (
+      `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '班级id',
+      `user_id` int(11) DEFAULT NULL COMMENT '用户id',
+      `class_name` varchar(50) DEFAULT NULL COMMENT '班级名称',
+      `quantity` int(11) DEFAULT NULL COMMENT '班级人数',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='班级'
+
+```
+
+>1.同理先在 资源根路径(src/main/resources)创建 auto-code.yaml 文件,具体内容如下
+
+    请注意 relationConfig 这里描述的是关系配置 这里 注意 generate和existParentPackage字段.
+    如果该表已经生成了.请将 generate置为 false 同时填写 existParentPackage 表所对应的父包
+    
+```yaml
+datasourceConfig:
+    #驱动名称
+    driverClassName: com.mysql.jdbc.Driver
+    #数据库名称
+    name: auto_code
+    #jdbc链接
+    url: jdbc:mysql://127.0.0.1:3306/auto_code?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    #数据库用户名
+    username: root
+    #数据库密码
+    password: 111111
+globalConfig:
+    #生成代码的项目路径
+    parentPath: E:\resource\workspaceJDB\auto-code-springboot-demo
+    #生成代码的父包 如父包是com.zengtengpeng.test  controller将在com.zengtengpeng.test.controller下 bean 将在com.zengtengpeng.test.bean下 ,service,dao同理
+    parentPack: com.zengtengpeng.test
+    #是否覆盖生成文件 如果为true将会把以前的文件覆盖掉
+    cover: false
+    #xml存放的文件夹默认 mybatisMapper
+    xmlPath: mybatisMapper
+    # 表关系配置  一对一 一对多 多对多 代码生成 采用追加的方式
+    relationConfig:
+        #主表
+        primary:
+            #数据库表名
+            dataName: test_user
+            #别名: 如果不设置将采用驼峰命名法 test_user=TestUser
+            beanName: User
+            #主键名称
+            primaryKey: id
+             #是否生成单表代码
+#            generate: false
+#如果单表代码已经生成,请填写代码的父包,没有则generate置为true 如 com.zengtengpeng.test.bean.TestUser  请填写 com.zengtengpeng.test
+#            existParentPackage: com.zengtengpeng.test
+            #备注
+            remark: "用户"
+        #外表
+        foreign:
+            #数据库表名
+            dataName: test_class
+            #别名: 如果不设置将采用驼峰命名法 test_user=TestUser
+            beanName: Clazz
+            #外键名称 就是已哪个字段和主表关联 填写数据库字段名称
+            foreignKey: user_id
+            #是否生成单表代码
+#            generate: false
+#如果单表代码已经生成,请填写代码的父包,没有则generate置为true 如 com.zengtengpeng.test.bean.TestUser  请填写 com.zengtengpeng.test
+#            existParentPackage: com.zengtengpeng.test
+            #备注
+            remark: "班级"
+```
+
+> 2.执行代码
+
+```java
+
+import com.zengtengpeng.autoCode.StartCode;
+import com.zengtengpeng.autoCode.config.AutoCodeConfig;
+import com.zengtengpeng.relation.oneToOne.BuildOneToOne;
+import com.zengtengpeng.relation.utils.RelationUtils;
+
+/**
+ * 一对一生成实例 test_user 一个用户 对应 test_class 一个班级
+ */
+public class Demo2OneToOne {
+    public static void main(String[] args) {
+        
+        //普通写法 二选一
+//        RelationUtils.oneToOne(StartCode.saxYaml(), new StartCode() {
+//            @Override
+//            public void custom(AutoCodeConfig autoCodeConfig) {
+//
+//            }
+//        }, new BuildOneToOne() {
+//            @Override
+//            public void custom(AutoCodeConfig autoCodeConfig) {
+//                
+//            }
+//        });
+
+        //lambda表达式写法 二选一
+        RelationUtils.oneToOne(StartCode.saxYaml(), t->{}, rt -> {});
+    }
+}
+```
+
+> 3. 生成完毕
+
+> 一对多会在单表的基础上再增加6个接口 主表3个 外表3个
+
+ClazzController 新增
+
+        /**
+    	 * 级联查询(带分页) 用户--班级
+    	 */
+    	@ResponseBody
+    	@RequestMapping("clazz/selectUserAndClazz")
+    	public DataRes selectUserAndClazz(Clazz clazz,HttpServletRequest request,HttpServletResponse response){
+    		return DataRes.success(clazzService.selectUserAndClazz(clazz));
     	}
+    	
+    	/**
+        	 * 级联条件查询 用户--班级
+        	 */
+        	@ResponseBody
+        	@RequestMapping("clazz/selectUserAndClazzByCondition")
+        	public DataRes selectUserAndClazzByCondition(Clazz clazz,HttpServletRequest request,HttpServletResponse response){
+        		return DataRes.success(clazzService.selectUserAndClazzByCondition(clazz));
+        	}
+        
+        
+        	/**
+        	 * 级联删除(根据主键删除) 用户--班级
+        	 */
+        	@ResponseBody
+        	@RequestMapping("clazz/deleteUserAndClazz")
+        	public DataRes deleteUserAndClazz(Clazz clazz,HttpServletRequest request,HttpServletResponse response){
+        		return DataRes.success(clazzService.deleteUserAndClazz(clazz));
+        	}
+
+UserController 增加
+
+        	/**
+            	 * 级联查询(带分页) 用户--班级
+            	 */
+            	@ResponseBody
+            	@RequestMapping("user/selectUserAndClazz")
+            	public DataRes selectUserAndClazz(User user,HttpServletRequest request,HttpServletResponse response){
+            		return DataRes.success(userService.selectUserAndClazz(user));
+            	}
+            
+            
+            	/**
+            	 * 级联条件查询 用户--班级
+            	 */
+            	@ResponseBody
+            	@RequestMapping("user/selectUserAndClazzByCondition")
+            	public DataRes selectUserAndClazzByCondition(User user,HttpServletRequest request,HttpServletResponse response){
+            		return DataRes.success(userService.selectUserAndClazzByCondition(user));
+            	}
+            
+            
+            	/**
+            	 * 级联删除(根据主键删除) 用户--班级
+            	 */
+            	@ResponseBody
+            	@RequestMapping("user/deleteUserAndClazz")
+            	public DataRes deleteUserAndClazz(User user,HttpServletRequest request,HttpServletResponse response){
+            		return DataRes.success(userService.deleteUserAndClazz(user));
+            	}
+
+生成的文件如下
+
+![one-to-one](http://images.zengtengpeng.com/auto-code/one-to-one.png)
+
+#### 一对多
+
+> 假如 test_user 一个用户 对应 test_addr 多个收货地址
+
+```sql
+    CREATE TABLE `test_user` (
+      `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
+      `name` varchar(50) DEFAULT NULL COMMENT '名称',
+      `age` int(3) DEFAULT NULL COMMENT '年龄',
+      `status` int(2) DEFAULT NULL COMMENT '{"name":"状态","1":"启用","0":"禁用"}',
+      `birthday` date DEFAULT NULL COMMENT '生日',
+      `remarks` text COMMENT '备注',
+      `mun` decimal(20,2) DEFAULT NULL COMMENT '数字',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 COMMENT='测试用户'
+
+    CREATE TABLE `test_addr` (
+      `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '用户收货地址id',
+      `user_id` int(11) DEFAULT NULL COMMENT '用户id',
+      `addr_name` varchar(10) DEFAULT NULL COMMENT '姓名',
+      `phone` varchar(30) DEFAULT NULL COMMENT '手机号码',
+      `addr` varchar(30) DEFAULT NULL COMMENT '收货地址',
+      `status` int(11) DEFAULT NULL COMMENT '{"name":"状态","1":"启用","2":"删除"}',
+      `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+      `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户收货地址'
+``` 
+
+>1.同理先在 资源根路径(src/main/resources)创建 auto-code.yaml 文件,具体内容如下
+    
+    由于TestUser已经在一对一生成过代码了.所以 generate: false 同时写上已经存在的父包 existParentPackage: com.zengtengpeng.test
+```yaml
+    datasourceConfig:
+        #驱动名称
+        driverClassName: com.mysql.jdbc.Driver
+        #数据库名称
+        name: auto_code
+        #jdbc链接
+        url: jdbc:mysql://127.0.0.1:3306/auto_code?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+        #数据库用户名
+        username: root
+        #数据库密码
+        password: 111111
+    globalConfig:
+        #生成代码的项目路径
+        parentPath: E:\resource\workspaceJDB\auto-code-springboot-demo
+        #生成代码的父包 如父包是com.zengtengpeng.test  controller将在com.zengtengpeng.test.controller下 bean 将在com.zengtengpeng.test.bean下 ,service,dao同理
+        parentPack: com.zengtengpeng.test
+        #是否覆盖生成文件 如果为true将会把以前的文件覆盖掉
+        cover: false
+        #xml存放的文件夹默认 mybatisMapper
+        xmlPath: mybatisMapper
+        # 表关系配置  一对一 一对多 多对多 代码生成 采用追加的方式
+        relationConfig:
+            #主表
+            primary:
+                #数据库表名
+                dataName: test_user
+                #别名: 如果不设置将采用驼峰命名法 test_user=TestUser
+                beanName: User
+                #主键名称
+                primaryKey: id
+                #是否生成单表代码
+                generate: false
+    #如果单表代码已经生成,请填写代码的父包,没有则不填写 如 com.zengtengpeng.test.bean.TestUser  请填写 com.zengtengpeng.test
+                existParentPackage: com.zengtengpeng.test
+                #备注
+                remark: "用户"
+            #外表
+            foreign:
+                #数据库表名
+                dataName: test_addr
+                #别名: 如果不设置将采用驼峰命名法 test_user=TestUser
+                beanName: Addr
+                #外键名称 就是已哪个字段和主表关联 填写数据库字段名
+                foreignKey: user_id
+                #是否生成单表代码 默认是true
+                #            generate: true
+                #如果单表代码已经生成,请填写代码的父包,没有则不填写 如 com.zengtengpeng.test.bean.TestUser  请填写 com.zengtengpeng.test
+                #            existParentPackage: com.zengtengpeng.test
+                #备注
+                remark: "收货地址"
+    
+```
+
+> 2.执行生成代码
+```java
+    import com.zengtengpeng.autoCode.StartCode;
+    import com.zengtengpeng.autoCode.config.AutoCodeConfig;
+    import com.zengtengpeng.relation.oneToMany.BuildOneToMany;
+    import com.zengtengpeng.relation.utils.RelationUtils;
+    
+    /**
+     * 一对多生成实例 test_user 一个用户 对应 test_addr 多个收货地址
+     */
+    public class Demo3OneToMany {
+        public static void main(String[] args) {
+            
+            //普通写法 二选一
+    //        RelationUtils.oneToMany(StartCode.saxYaml(), new StartCode() {
+    //            @Override
+    //            public void custom(AutoCodeConfig autoCodeConfig) {
+    //
+    //            }
+    //        }, new BuildOneToMany() {
+    //            @Override
+    //            public void custom(AutoCodeConfig autoCodeConfig) {
+    //                
+    //            }
+    //        });
+            
+            
+            //lambda表达式写法 二选一
+            RelationUtils.oneToMany(StartCode.saxYaml(), t -> {}, rt -> {});
+        }
     }
 ```
 
-#### demo地址 [传送门](https://gitee.com/ztp/auto-code-demo)
+> 3.生成完毕
+    接口和一对一一样
+
+
+#### 多对多
+    
+> 假如 test_user 多个用户 对应 test_role 多个角色
+
+```sql
+    CREATE TABLE `test_user` (
+      `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
+      `name` varchar(50) DEFAULT NULL COMMENT '名称',
+      `age` int(3) DEFAULT NULL COMMENT '年龄',
+      `status` int(2) DEFAULT NULL COMMENT '{"name":"状态","1":"启用","0":"禁用"}',
+      `birthday` date DEFAULT NULL COMMENT '生日',
+      `remarks` text COMMENT '备注',
+      `mun` decimal(20,2) DEFAULT NULL COMMENT '数字',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 COMMENT='测试用户';
+
+    CREATE TABLE `test_role` (
+      `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '测试角色',
+      `name` varchar(100) NOT NULL COMMENT '角色名称',
+      `status` int(2) DEFAULT '0' COMMENT '{"name":"状态","0":"启用","1":"禁用"}',
+      `create_user_id` int(11) DEFAULT NULL COMMENT '创建者',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      `update_user_id` int(11) DEFAULT NULL COMMENT '更新者',
+      `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+      `dels` int(2) DEFAULT '0' COMMENT '{"name":"是否删除","0":"正常","1":"删除"}',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='测试角色';
+    
+    CREATE TABLE `test_user_role` (
+      `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '测试用户角色',
+      `user_id` int(11) DEFAULT NULL COMMENT '用户id',
+      `role_id` int(11) DEFAULT NULL COMMENT '角色id',
+      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8 COMMENT='测试用户角色';
+```
+
+>1.同理先在 资源根路径(src/main/resources)创建 auto-code.yaml 文件,具体内容如下
+      
+      1.由于TestUser已经在一对一生成过代码了.所以 generate: false 同时写上已经存在的父包 existParentPackage: com.zengtengpeng.test
+      2.注意多对多的外表的 foreignKey 同样是该表的主键
+      3.thirdparty 为 多对多的第三表 primaryKey对应 primary的 primaryKey. foreignKey 对应foreign 的foreignKey
+
+```yaml
+    datasourceConfig:
+        #驱动名称
+        driverClassName: com.mysql.jdbc.Driver
+        #数据库名称
+        name: auto_code
+        #jdbc链接
+        url: jdbc:mysql://127.0.0.1:3306/auto_code?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+        #数据库用户名
+        username: root
+        #数据库密码
+        password: 111111
+    globalConfig:
+        #生成代码的项目路径
+        parentPath: E:\resource\workspaceJDB\auto-code-springboot-demo
+        #生成代码的父包 如父包是com.zengtengpeng.test  controller将在com.zengtengpeng.test.controller下 bean 将在com.zengtengpeng.test.bean下 ,service,dao同理
+        parentPack: com.zengtengpeng.test
+        #是否覆盖生成文件 如果为true将会把以前的文件覆盖掉
+        cover: false
+        #xml存放的文件夹默认 mybatisMapper
+        xmlPath: mybatisMapper
+        # 表关系配置  一对一 一对多 多对多 代码生成 采用追加的方式
+        relationConfig:
+            #主表
+            primary:
+                #数据库表名
+                dataName: test_user
+                #别名: 如果不设置将采用驼峰命名法 test_user=TestUser
+                beanName: User
+                #主键名称
+                primaryKey: id
+                #是否生成 单表 代码
+                generate: false
+                #如果单表代码已经生成,请填写代码的父包 如 com.zengtengpeng.test.bean.TestUser  请填写 com.zengtengpeng.test
+                existParentPackage: com.zengtengpeng.test
+                #备注
+                remark: "用户"
+            #外表
+            foreign:
+                #数据库表名
+                dataName: test_role
+                #别名: 如果不设置将采用驼峰命名法 test_user=TestUser
+                beanName: Role
+                #外键名称 就是已哪个字段和主表关联 填写数据库字段名
+                foreignKey: id
+                #备注
+                remark: "角色"
+            #第三表 -当生成多对多代码时该参数必填.否则会忽略该参数
+            thirdparty:
+                #数据库表名
+                dataName: test_user_role
+                #主键名称 该字段将和主表关联起来
+                primaryKey: user_id
+                #外键名称 该字段将和外表配置关联起来
+                foreignKey: role_id
+                #备注
+                remark: "用户角色"
+```
+
+> 3.生成完毕
+    接口和一对一一样
+### 生成代码注意事项
+
+    1.创建表结构时如果写上表与字段的注释将大大增加程序的可读性.我会将注释写到bean上面.
+    2.如果注释为json键值对字符串我将会在实体类生成一个字典方法
+    如:  {"1":"启用","0":"禁用"} 将会在实体类里面生成:
+        public String getStatus_(){
+    		if(MyStringUtils.isEmpty(status)){
+    			 return "";
+    		}else if(status.equals("1")){
+    			return "启用";
+    		}else if(status.equals("0")){
+    			return "禁用";
+    		}
+    		return "";
+    
+    	}
+
+
+#### spring-boot [实例地址](https://gitee.com/ztp/auto-code-springboot-demo)
+
+#### java-web [实例地址](https://gitee.com/ztp/auto-code-web-demo)
+
+> 由于分页插件使用了 pageHelper 所以需要集成下,不集成将导致分页失效 
+ [SpringBoot集成地址](https://github.com/abel533/MyBatis-Spring-Boot) 
+ [传统web工程集成地址](https://github.com/abel533/Mybatis-Spring)
+
+
+## 进阶篇
+#### 单表如果增加自定义方法
 

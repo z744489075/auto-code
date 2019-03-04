@@ -267,7 +267,7 @@ public interface BuildXml {
                 update(autoCodeConfig,content).selectByPrimaryKey(autoCodeConfig,content).selectAll(autoCodeConfig,content).selectByCondition(autoCodeConfig,content);
         List<BuildXmlBean> custom = buildXml.custom(autoCodeConfig);
         if(custom!=null){
-            custom.forEach(t-> content.append(t).append("\n"));
+            custom.forEach(t-> content.append(BuildUtils.buildXml(t)).append("\n"));
         }
         buildXml.end(autoCodeConfig,content);
         return content.toString();
