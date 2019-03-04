@@ -23,7 +23,7 @@ public interface BuildBaseService {
     Logger logger = LoggerFactory.getLogger(BuildBaseService.class);
     /**
      * 自定义构建
-     * @param relationConfig 关系描述配置
+     * @param autoCodeConfig 关系描述配置
      * @param primaryBuildJavaConfig 主表自定义配置
      * @param foreignBuildJavaConfig 外表自定义配置
      */
@@ -50,6 +50,25 @@ public interface BuildBaseService {
         foreignSelect.setRemark("级联查询(带分页) "+primary.getRemark()+"--"+foreign.getRemark());
         return foreignSelect;
     }
+    /**
+     * 构建外表 级联查询
+     * @return
+     */
+    default BuildJavaMethod foreignSelectByCondition(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
+        RelationTable primary = relationConfig.getPrimary();
+        RelationTable foreign = relationConfig.getForeign();
+        BuildJavaMethod foreignSelect = new BuildJavaMethod();
+        String foreignBeanName = foreign.getBeanName();
+        String primaryKeyBeanName = primary.getBeanName();
+        foreignSelect.setReturnType(String.format("List<%s>",foreignBeanName));
+        foreignSelect.setMethodName(String.format("select%sAnd%sByCondition", primaryKeyBeanName, foreignBeanName));
+        List<String> params=new ArrayList<>();
+        params.add(foreignBeanName +" "+ foreign.getBeanNameLower());
+        foreignSelect.setParams(params);
+        foreignSelect.setRemark("级联条件查询 "+primary.getRemark()+"--"+foreign.getRemark());
+        return foreignSelect;
+    }
 
 
 
@@ -66,6 +85,25 @@ public interface BuildBaseService {
         String primaryKeyBeanName = primary.getBeanName();
         foreignSelect.setReturnType(primaryKeyBeanName);
         foreignSelect.setMethodName(String.format("select%sAnd%s", primaryKeyBeanName, foreignBeanName));
+        List<String> params=new ArrayList<>();
+        params.add(primary.getBeanName() +" "+ primary.getBeanNameLower());
+        foreignSelect.setParams(params);
+        foreignSelect.setRemark("级联查询(带分页) "+primary.getRemark()+"--"+foreign.getRemark());
+        return foreignSelect;
+    }
+    /**
+     * 构建主表 级联条件查询
+     * @return
+     */
+    default BuildJavaMethod primarySelectByCondition(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
+        RelationTable primary = relationConfig.getPrimary();
+        RelationTable foreign = relationConfig.getForeign();
+        BuildJavaMethod foreignSelect = new BuildJavaMethod();
+        String foreignBeanName = foreign.getBeanName();
+        String primaryKeyBeanName = primary.getBeanName();
+        foreignSelect.setReturnType(String.format("List<%s>",primaryKeyBeanName));
+        foreignSelect.setMethodName(String.format("select%sAnd%sByCondition", primaryKeyBeanName, foreignBeanName));
         List<String> params=new ArrayList<>();
         params.add(primary.getBeanName() +" "+ primary.getBeanNameLower());
         foreignSelect.setParams(params);
@@ -122,6 +160,7 @@ public interface BuildBaseService {
         List<BuildJavaMethod> buildJavaMethods =buildJavaConfig.getBuildJavaMethods();
         RelationTable primary = relationConfig.getPrimary();
         buildJavaMethods.add(primarySelect(autoCodeConfig));
+        buildJavaMethods.add(primarySelectByCondition(autoCodeConfig));
         buildJavaMethods.add(primaryDelete(autoCodeConfig));
 
         List<String> imports = buildJavaConfig.getImports();
@@ -140,6 +179,7 @@ public interface BuildBaseService {
         List<BuildJavaMethod> buildJavaMethods = buildJavaConfig.getBuildJavaMethods();
         RelationTable foreign = relationConfig.getForeign();
         buildJavaMethods.add(foreignSelect(autoCodeConfig));
+        buildJavaMethods.add(foreignSelectByCondition(autoCodeConfig));
         buildJavaMethods.add(foreignDelete(autoCodeConfig));
         List<String> imports = buildJavaConfig.getImports();
 

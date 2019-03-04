@@ -214,7 +214,7 @@ public interface BuildController {
         MyStringUtils.append(content,"}",2);
         MyStringUtils.append(content,"return DataRes.success(%s%s.update(%s));",2,bean.getTableValue(),globalConfig.getPackageServiceUp(),bean.getTableValue());
         save.setContent(content.toString());
-        save.setRemark("保存-"+buildJavaConfig.getRemark()+" ");
+        save.setRemark(" 保存-> "+buildJavaConfig.getRemark());
         return save;
     }
     /**

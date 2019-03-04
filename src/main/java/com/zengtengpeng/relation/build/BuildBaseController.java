@@ -33,7 +33,7 @@ public interface BuildBaseController {
 
 
     /**
-     * 构建外表 级联查询(带分页) 默认 page=1 pageSize等于10 详见 Page类(所有bean都继承改类)
+     * 构建外表 级联查询(带分页) 默认 page=1 pageSize等于10 详见 Page类(所有bean都继承该类)
      * @return
      */
     default BuildJavaMethod foreignSelect(AutoCodeConfig autoCodeConfig){
@@ -61,9 +61,39 @@ public interface BuildBaseController {
         return foreignSelect;
     }
 
+    /**
+     * 外表级联条件查询
+     * @param autoCodeConfig
+     * @return
+     */
+    default BuildJavaMethod foreignSelectByCondition(AutoCodeConfig autoCodeConfig){
+
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
+        RelationTable primary = relationConfig.getPrimary();
+        RelationTable foreign = relationConfig.getForeign();
+        BuildJavaMethod foreignSelect = new BuildJavaMethod();
+        List<String> an = new ArrayList<>();
+        an.add("@ResponseBody");
+        String foreignBeanName = foreign.getBeanName();
+        String primaryKeyBeanName = primary.getBeanName();
+        an.add(String.format("@RequestMapping(\"%s/select%sAnd%sByCondition\")", foreign.getBeanNameLower(), primaryKeyBeanName, foreignBeanName));
+        foreignSelect.setAnnotation(an);
+        foreignSelect.setReturnType("DataRes");
+        foreignSelect.setMethodType("public");
+        foreignSelect.setMethodName(String.format("select%sAnd%sByCondition", primaryKeyBeanName, foreignBeanName));
+        List<String> params=new ArrayList<>();
+        params.add(foreignBeanName +" "+ foreign.getBeanNameLower());
+        params.add("HttpServletRequest request");
+        params.add("HttpServletResponse response");
+        foreignSelect.setParams(params);
+        foreignSelect.setContent(String.format("return DataRes.success(%sService.select%sAnd%sByCondition(%s));", foreign.getBeanNameLower(), primaryKeyBeanName, foreignBeanName, foreign.getBeanNameLower()));
+        foreignSelect.setRemark("级联条件查询 "+primary.getRemark()+"--"+foreign.getRemark());
+        return foreignSelect;
+    }
+
 
     /**
-     * 构建主表 级联查询(带分页)
+     * 构建主表 级联查询(带分页)  默认 page=1 pageSize等于10 详见 Page类(所有bean都继承该类)
      * @return
      */
     default BuildJavaMethod primarySelect(AutoCodeConfig autoCodeConfig){
@@ -88,6 +118,34 @@ public interface BuildBaseController {
         foreignSelect.setParams(params);
         foreignSelect.setContent(String.format("return DataRes.success(%sService.select%sAnd%s(%s));", primaryKeyBeanName_, primaryKeyBeanName, foreignBeanName, primaryKeyBeanName_));
         foreignSelect.setRemark("级联查询(带分页) "+primary.getRemark()+"--"+foreign.getRemark());
+        return foreignSelect;
+    }
+    /**
+     * 构建主表 级联条件查询
+     * @return
+     */
+    default BuildJavaMethod primarySelectByCondition(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
+        RelationTable primary = relationConfig.getPrimary();
+        RelationTable foreign = relationConfig.getForeign();
+        BuildJavaMethod foreignSelect = new BuildJavaMethod();
+        List<String> an = new ArrayList<>();
+        an.add("@ResponseBody");
+        String primaryKeyBeanName_ =primary.getBeanNameLower();
+        String foreignBeanName = foreign.getBeanName();
+        String primaryKeyBeanName = primary.getBeanName();
+        an.add(String.format("@RequestMapping(\"%s/select%sAnd%sByCondition\")", primaryKeyBeanName_, primaryKeyBeanName, foreignBeanName));
+        foreignSelect.setAnnotation(an);
+        foreignSelect.setReturnType("DataRes");
+        foreignSelect.setMethodType("public");
+        foreignSelect.setMethodName(String.format("select%sAnd%sByCondition", primaryKeyBeanName, foreignBeanName));
+        List<String> params=new ArrayList<>();
+        params.add(primaryKeyBeanName +" "+ primaryKeyBeanName_);
+        params.add("HttpServletRequest request");
+        params.add("HttpServletResponse response");
+        foreignSelect.setParams(params);
+        foreignSelect.setContent(String.format("return DataRes.success(%sService.select%sAnd%sByCondition(%s));", primaryKeyBeanName_, primaryKeyBeanName, foreignBeanName, primaryKeyBeanName_));
+        foreignSelect.setRemark("级联条件查询 "+primary.getRemark()+"--"+foreign.getRemark());
         return foreignSelect;
     }
 
@@ -159,6 +217,7 @@ public interface BuildBaseController {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         buildJavaMethods.add(primarySelect(autoCodeConfig));
+        buildJavaMethods.add(primarySelectByCondition(autoCodeConfig));
         buildJavaMethods.add(primaryDelete(autoCodeConfig));
 
         List<String> imports = buildJavaConfig.getImports();
@@ -177,6 +236,7 @@ public interface BuildBaseController {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
         buildJavaMethods.add(foreignSelect(autoCodeConfig));
+        buildJavaMethods.add(foreignSelectByCondition(autoCodeConfig));
         buildJavaMethods.add(foreignDelete(autoCodeConfig));
         List<String> imports = buildJavaConfig.getImports();
 

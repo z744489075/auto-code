@@ -56,4 +56,45 @@ public interface BuildOneToManyServiceImpl extends BuildBaseServiceImpl {
         return javaMethod;
     }
 
+    /**
+     * 构建主表 级联条件查询
+     * @param autoCodeConfig
+     * @return
+     */
+    @Override
+    default BuildJavaMethod primarySelectByCondition(AutoCodeConfig autoCodeConfig) {
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
+        RelationTable primary = relationConfig.getPrimary();
+        RelationTable foreign = relationConfig.getForeign();
+        BuildJavaMethod javaMethod = new BuildJavaMethod();
+        List<String> an = new ArrayList<>();
+        an.add("@Override");
+        String primaryKeyBeanName_ =primary.getBeanNameLower();
+        String foreignBeanName = foreign.getBeanName();
+        String foreignBeanNameLower = foreign.getBeanNameLower();
+        String primaryKeyBeanName = primary.getBeanName();
+        javaMethod.setAnnotation(an);
+        javaMethod.setReturnType(String.format("List<%s>",primaryKeyBeanName));
+        javaMethod.setMethodType("public");
+        javaMethod.setMethodName(String.format("select%sAnd%sByCondition", primaryKeyBeanName, foreignBeanName));
+        List<String> params=new ArrayList<>();
+        params.add(primaryKeyBeanName +" "+ primaryKeyBeanName_);
+        javaMethod.setParams(params);
+        StringBuffer content=new StringBuffer();
+        MyStringUtils.append(content,"List<%s> datas = this.selectByCondition(%s);",primaryKeyBeanName,primaryKeyBeanName_);
+        MyStringUtils.append(content,"if(datas!=null){",2);
+        MyStringUtils.append(content,"datas.forEach(t->{",3);
+        MyStringUtils.append(content,"%s %s=new %s();",4,foreignBeanName,foreignBeanNameLower,foreignBeanName);
+        MyStringUtils.append(content,"%s.set%s(t.get%s());",4,foreignBeanNameLower,
+                foreign.getForeignKeyUp(true),
+                primary.getPrimaryKeyUp(true));
+        MyStringUtils.append(content,"List<%s> lists = %s%s.selectByCondition(%s);",4,foreignBeanName,foreignBeanNameLower,autoCodeConfig.getGlobalConfig().getPackageDaoUp(),foreignBeanNameLower);
+        MyStringUtils.append(content,"t.set%sList(lists);",4,foreignBeanName);
+        MyStringUtils.append(content,"});",3);
+        MyStringUtils.append(content,"}",2);
+        MyStringUtils.append(content,"return datas;",2);
+        javaMethod.setContent(content.toString());
+        javaMethod.setRemark("构建主表 级联条件查询 "+primary.getRemark()+"--"+foreign.getRemark());
+        return javaMethod;
+    }
 }
