@@ -26,6 +26,8 @@ globalConfig:
     parentPack: com.zengtengpeng.de
     #是否覆盖生成文件 如果为true将会把以前的文件覆盖掉
     cover: false
+    #xml存放的文件夹默认 mybatisMapper
+    xmlPath: mybatisMapper
     # 表关系配置  一对一 一对多 多对多 代码生成 采用追加的方式
     relationConfig:
         #主表

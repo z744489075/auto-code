@@ -151,6 +151,24 @@ public interface BuildBaseService {
         return deleteTestUserAndTestClass;
     }
 
+    /**
+     * 外表导入
+     * @return
+     */
+    default List<String> foreignImports(AutoCodeConfig autoCodeConfig){
+        List<String> im=new ArrayList<>();
+        im.add("java.util.List");
+        return im;
+    }
+    /**
+     * 主表导入
+     * @return
+     */
+    default List<String> primaryImports(AutoCodeConfig autoCodeConfig){
+        List<String> im=new ArrayList<>();
+        im.add("java.util.List");
+        return im;
+    }
 
     /**
      * 构建主表的service
@@ -164,6 +182,7 @@ public interface BuildBaseService {
         buildJavaMethods.add(primaryDelete(autoCodeConfig));
 
         List<String> imports = buildJavaConfig.getImports();
+        imports.addAll(primaryImports(autoCodeConfig));
 
         List<BuildJavaField> buildJavaFields = buildJavaConfig.getBuildJavaFields();
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
@@ -182,6 +201,7 @@ public interface BuildBaseService {
         buildJavaMethods.add(foreignSelectByCondition(autoCodeConfig));
         buildJavaMethods.add(foreignDelete(autoCodeConfig));
         List<String> imports = buildJavaConfig.getImports();
+        imports.addAll(foreignImports(autoCodeConfig));
 
         List<BuildJavaField> buildJavaFields = buildJavaConfig.getBuildJavaFields();
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();

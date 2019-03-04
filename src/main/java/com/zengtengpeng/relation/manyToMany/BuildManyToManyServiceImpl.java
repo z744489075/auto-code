@@ -76,7 +76,7 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
         MyStringUtils.append(content,"datas.forEach(t->{",3);
         MyStringUtils.append(content,"%s %s=new %s();",4,foreignBeanName,foreignBeanNameLower,foreignBeanName);
         MyStringUtils.append(content,"%s.set%s(t.get%s().toString());",4,foreignBeanNameLower,
-                foreign.getForeignKeyUp(true),
+                relationConfig.getThirdparty().getPrimaryKeyUp(true),
                 primary.getPrimaryKeyUp(true));
         MyStringUtils.append(content,"List<%s> lists=%s%s.select%sBy%s(%s);",4,foreignBeanName,foreignBeanNameLower,
                 autoCodeConfig.getGlobalConfig().getPackageDaoUp(),foreignBeanName,primaryKeyBeanName,foreignBeanNameLower);
@@ -124,8 +124,8 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
         MyStringUtils.append(content,"if(datas!=null){",2);
         MyStringUtils.append(content,"datas.forEach(t->{",3);
         MyStringUtils.append(content,"%s %s=new %s();",4,primaryKeyBeanName, primaryKeyBeanNameLower,primaryKeyBeanName);
-        MyStringUtils.append(content,"%s.set%s(t.get%s().toString());",4,primaryKeyBeanNameLower,primary.getPrimaryKeyUp(true),foreign.getForeignKeyUp(true));
-        MyStringUtils.append(content,"List<%s> lists=%s%s.select%sBy%s(%s);",4,primaryKeyBeanName,primaryKeyBeanName,
+        MyStringUtils.append(content,"%s.set%s(t.get%s().toString());",4,primaryKeyBeanNameLower,relationConfig.getThirdparty().getForeignKeyUp(true),foreign.getForeignKeyUp(true));
+        MyStringUtils.append(content,"List<%s> lists=%s%s.select%sBy%s(%s);",4,primaryKeyBeanName,primaryKeyBeanNameLower,
                 autoCodeConfig.getGlobalConfig().getPackageDaoUp(),primaryKeyBeanName,foreignBeanName,primaryKeyBeanNameLower);
         MyStringUtils.append(content,"t.set%sList(lists);",4,primaryKeyBeanName);
         MyStringUtils.append(content,"});",3);
