@@ -9,6 +9,7 @@
 
     <name>auto-code</name>
     <url>http://maven.apache.org</url>
+    <description>auto-code代码生成器</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
