@@ -1,5 +1,5 @@
 # auto-code
-欢迎使用auto-code代码自动生成引擎 [源码地址](https://gitee.com/ztp/auto-code)
+欢迎使用auto-code代码自动生成引擎,2.0重大升级.支持`单表`, `一对一`, `一对多` ,`多对多`  [源码地址](https://gitee.com/ztp/auto-code)
 
 ### 项目介绍 
 #### 项目的优势在哪里
