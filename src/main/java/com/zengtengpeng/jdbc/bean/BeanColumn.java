@@ -34,9 +34,20 @@ public class BeanColumn {
     //默认值
     private String defaultValue;
 
+    //是否是json
+    private Boolean json=false;
+
     //是否是主键
     private Boolean key = false;
 
+
+    public Boolean getJson() {
+        return json;
+    }
+
+    public void setJson(Boolean json) {
+        this.json = json;
+    }
 
     public String getJdbcName() {
         return jdbcName;

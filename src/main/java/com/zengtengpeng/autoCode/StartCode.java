@@ -201,7 +201,7 @@ public interface StartCode {
     }
 
     /**
-     * 构建文件成功后执行方法
+     * 构建文件成功后执行方法(每构建一张表该方法就会执行一次.)
      *
      * @param autoCodeConfig
      */

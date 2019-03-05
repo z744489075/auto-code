@@ -190,6 +190,7 @@ public interface BuildBean {
                     Map<Object,Object> map = objectMapper.readValue(remarks, Map.class);
 
                     logger.info("字段成功转成json->"+t.getBeanName()+"注释->"+t.getRemarks()+"");
+                    t.setJson(true);
                     List<String> an=new ArrayList<>();
                     an.add("@JsonIgnore");
                     get.setAnnotation(an);
