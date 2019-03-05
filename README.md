@@ -636,8 +636,8 @@ public class Demo4ManyToMany {
 ## 进阶篇 如何自定义方法 [代码地址](https://gitee.com/ztp/auto-code-springboot-demo)
 
 ### 单表如何自定义
-> 目前单表的主要是生成代码是由6个接口组成 BuildBean,BuildController,BuildDao,BuildService,BuildServiceImpl,BuildXml,
-在 `com.zengtengpeng.autoCode.create`包下.每个接口底下都有个未实现的 `custom` 方法. 实现custom就可以,如下代码就是自定义Controller代码,其他的接口同理
+> 在 `com.zengtengpeng.autoCode.create`包下,有6个接口类 `BuildBean`,`BuildController`,`BuildDao`,`BuildService`,
+`BuildServiceImpl`,`BuildXml`.每个接口底下都有个未实现的 `custom` 方法. 实现custom就可以,如下代码就是自定义Controller代码,其他的接口同理
 ```java
 import com.zengtengpeng.autoCode.bean.BuildJavaField;
 import com.zengtengpeng.autoCode.bean.BuildJavaMethod; import com.zengtengpeng.autoCode.config.AutoCodeConfig;
@@ -711,8 +711,8 @@ public class TestBuildController implements BuildController {
     }
 }
 ```
-> StartCode 为生成单表的总开关,里面有 BuildBean,BuildController,BuildDao,BuildService,
-BuildServiceImpl,BuildXml 几个接口的具体实现.默认已经初始化.如需自定义,将近自定义好的类重写进来.
+> StartCode 为生成单表的总开关,里面有 `BuildBean`,`BuildController`,`BuildDao`,`BuildService`,
+`BuildServiceImpl`,`BuildXml` 几个接口的默认实现.如需自定义,重写默认实现的方法.
 ```java
 /**
  * 自定义单表方法
@@ -736,10 +736,10 @@ public class CustomSimple {
     }
 }
 ```
-### 多表关系自定义
+### 表关系自定义
 
-> 多表关系在单表的基础上扩展了 主表,外表 代码在 `com.zengtengpeng.relation` 下的 `manyToMany`(多对多),`oneToMany`(一对多),
-`oneToOne`(一对一)包,里面分别有对应于关系描述的接口类.重写也是只需要实现对应的接口的
+> 表关系在单表的基础上扩展了 主表,外表 代码在 `com.zengtengpeng.relation` 下的 `manyToMany`(多对多),`oneToMany`(一对多),
+`oneToOne`(一对一)子包,每个子包有六个生成类的接口.重写也是只需要实现对应的接口的
 `custom` 方法就行.下面举例重写一对一的controller方法
 ```java
 import com.zengtengpeng.autoCode.bean.BuildJavaField;
@@ -811,8 +811,8 @@ public class TestBuildOneToOneController implements BuildOneToOneController {
     }
 }
 ```
-> `BuildManyToMany`(构建多对多),`BuildOneToMany`(构建一对多),`BuildOneToOne`(构建一对一) 是各个多表关系实现的总开关.
-里面有 `Build...Controller` `Build...Bean` 六个相关接口的具体实现.我们也是只要重写对应的方法就行
+> `BuildManyToMany`(构建多对多),`BuildOneToMany`(构建一对多),`BuildOneToOne`(构建一对一) 是各个表关系实现的总开关.
+里面有 `Build...Controller` `Build...Bean` 等六个相关接口的具体实现.我们也是只要重写对应的方法就行
 如下重写一对一的controller.只需要重写 `BuildOneToOne`下的 `buildOneToOneController`具体实现即可.其他的同理
 
 ```java
