@@ -635,13 +635,12 @@ public class Demo4ManyToMany {
 
 ## 进阶篇 如何自定义方法 [代码地址](https://gitee.com/ztp/auto-code-springboot-demo)
 
-###单表如何自定义
+### 单表如何自定义
 > 目前单表的主要是生成代码是由6个接口组成 BuildBean,BuildController,BuildDao,BuildService,BuildServiceImpl,BuildXml,
 在 `com.zengtengpeng.autoCode.create`包下.每个接口底下都有个未实现的 `custom` 方法. 实现custom就可以,如下代码就是自定义Controller代码,其他的接口同理
 ```java
 import com.zengtengpeng.autoCode.bean.BuildJavaField;
-import com.zengtengpeng.autoCode.bean.BuildJavaMethod;
-import com.zengtengpeng.autoCode.config.AutoCodeConfig;
+import com.zengtengpeng.autoCode.bean.BuildJavaMethod; import com.zengtengpeng.autoCode.config.AutoCodeConfig;
 import com.zengtengpeng.autoCode.config.BuildJavaConfig;
 import com.zengtengpeng.autoCode.create.BuildController;
 
