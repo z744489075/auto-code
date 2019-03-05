@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -160,6 +161,9 @@ public interface BuildBean {
         if (buildJavaConfig.getDefaultRealize()) {
             Bean bean = autoCodeConfig.getBean();
             List<BuildJavaMethod> finalBuildJavaMethods = buildJavaMethods;
+
+            Map cons=new HashMap();
+            bean.setCons(cons);
             bean.getAllColumns().forEach(t->{
                 //get
                 BuildJavaMethod get = new BuildJavaMethod();
@@ -186,6 +190,7 @@ public interface BuildBean {
                 //转换json
                 ObjectMapper objectMapper=new ObjectMapper();
                 String remarks = t.getRemarks();
+
                 try {
                     Map<Object,Object> map = objectMapper.readValue(remarks, Map.class);
 
@@ -214,9 +219,10 @@ public interface BuildBean {
                     MyStringUtils.append(json,"return \"\";",2);
                     get1.setContent(json.toString());
                     finalBuildJavaMethods.add(get1);
+
+                    cons.put(t.getBeanName(),map);
                 } catch (Exception e) {
                 }
-
                 get.setReturnType(t.getBeanType_());
                 get.setMethodType("public");
                 get.setMethodName("get"+t.getBeanName_());

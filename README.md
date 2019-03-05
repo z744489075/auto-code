@@ -56,7 +56,7 @@ CREATE TABLE `test_code` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='测试生成代码';
 ```
 
->1.先在资源根路径(src/main/resources)创建 auto-code.yaml 文件,具体内容如下
+>1.先在资源根路径(src/main/resources)创建 auto-code_simple.yaml 文件,具体内容如下
 ```yaml
 datasourceConfig:
     #驱动名称
@@ -73,7 +73,7 @@ globalConfig:
     #数据库表配置
     tableNames:
         #表名称
-        - dataName: test_Code
+        - dataName: test_code
           #别名 不写默认采用驼峰命名法 test_code->TestCode
 #          aliasName: SysLoginLog
           #如果用多张表,请按照如下写法,继续往下写.
@@ -92,28 +92,27 @@ globalConfig:
 > 2.执行代码生成语句
 ```java
 import com.zengtengpeng.autoCode.StartCode;
-import com.zengtengpeng.autoCode.config.AutoCodeConfig;
+
 /**
  * 单表生成实例
  */
-public class Demo1 {
+public class Demo1simple {
     public static void main(String[] args) {
         //lambda表达式写法 二选一
         StartCode startCode=t->{};
-        
+
         //普通写法 二选一
 //        StartCode startCode=new StartCode() {
 //            @Override
 //            public void custom(AutoCodeConfig autoCodeConfig) {
-//                
+//
 //            }
 //        };
-
-        startCode.start(null);
+        
+        startCode.start(StartCode.saxYaml("auto-code_simple.yaml"));
     }
 }
 ```
-
 >3.生成完毕 主要生成五个接口
 
     //根据id删除记录
@@ -136,7 +135,7 @@ public class Demo1 {
 生成的文件如下:
 ![simple](http://images.zengtengpeng.com/auto-code/simple.png)
 
-##### 一对一代码生成 one-to-one
+##### 一对一代码生成 one-to-one 
 
 >假如 一个用户  test_user 一个用户 对应 test_class 一个班级
 ```sql
@@ -164,11 +163,10 @@ public class Demo1 {
 
 ```
 
->1.同理先在 资源根路径(src/main/resources)创建 auto-code.yaml 文件,具体内容如下
+>1.同理先在 资源根路径(src/main/resources)创建 auto-code_one-to-one.yaml 文件(名字随意定默认使用 auto-code.yaml),具体内容如下
 
     请注意relationConfig这里描述的是关系配置, 注意generate和existParentPackage字段.
-    如果该表已经生成了.请将 generate置为 false 同时填写 existParentPackage 
-    表所对应的父包(一对多,多对多有实例)
+    如果该表已经生成了.请将 generate置为 false 同时填写 existParentPackage 该表所对应的父包(一对多,多对多有实例)
     
 ```yaml
 datasourceConfig:
@@ -232,45 +230,43 @@ import com.zengtengpeng.autoCode.config.AutoCodeConfig;
 import com.zengtengpeng.relation.oneToOne.BuildOneToOne;
 import com.zengtengpeng.relation.utils.RelationUtils;
 
+import com.zengtengpeng.autoCode.StartCode;
+import com.zengtengpeng.relation.utils.RelationUtils;
+
 /**
  * 一对一生成实例 test_user 一个用户 对应 test_class 一个班级
  */
 public class Demo2OneToOne {
     public static void main(String[] args) {
-        
-        //普通写法 二选一
+        //普通写法
 //        RelationUtils.oneToOne(StartCode.saxYaml(), new StartCode() {
 //            @Override
 //            public void custom(AutoCodeConfig autoCodeConfig) {
-//
 //            }
 //        }, new BuildOneToOne() {
 //            @Override
 //            public void custom(AutoCodeConfig autoCodeConfig) {
-//                
 //            }
 //        });
-
         //lambda表达式写法 二选一
-        RelationUtils.oneToOne(StartCode.saxYaml(), t->{}, rt -> {});
+        RelationUtils.oneToOne(StartCode.saxYaml("auto-code_one-to-one.yaml"), t->{}, rt -> {});
     }
 }
 ```
 
-> 3. 生成完毕 一对多会在单表的基础上再增加6个接口 主表3个 外表3个
+> 3. 生成完毕 一对多会在单表的基础上再增加6个接口(采用追加代码的方式,不用担心代码覆盖问题) 主表3个 外表3个
 
 ClazzController 新增
-
-        /**
-    	 * 级联查询(带分页) 用户--班级
-    	 */
-    	@ResponseBody
-    	@RequestMapping("clazz/selectUserAndClazz")
-    	public DataRes selectUserAndClazz(Clazz clazz,HttpServletRequest request,HttpServletResponse response){
-    		return DataRes.success(clazzService.selectUserAndClazz(clazz));
-    	}
-    	
-    	/**
+```
+            /**
+             * 级联查询(带分页) 用户--班级
+             */
+            @ResponseBody
+            @RequestMapping("clazz/selectUserAndClazz")
+            public DataRes selectUserAndClazz(Clazz clazz,HttpServletRequest request,HttpServletResponse response){
+                return DataRes.success(clazzService.selectUserAndClazz(clazz));
+            }
+            /**
         	 * 级联条件查询 用户--班级
         	 */
         	@ResponseBody
@@ -278,8 +274,6 @@ ClazzController 新增
         	public DataRes selectUserAndClazzByCondition(Clazz clazz,HttpServletRequest request,HttpServletResponse response){
         		return DataRes.success(clazzService.selectUserAndClazzByCondition(clazz));
         	}
-        
-        
         	/**
         	 * 级联删除(根据主键删除) 用户--班级
         	 */
@@ -288,10 +282,10 @@ ClazzController 新增
         	public DataRes deleteUserAndClazz(Clazz clazz,HttpServletRequest request,HttpServletResponse response){
         		return DataRes.success(clazzService.deleteUserAndClazz(clazz));
         	}
-
+```
 UserController 增加
-
-        	/**
+```
+                /**
             	 * 级联查询(带分页) 用户--班级
             	 */
             	@ResponseBody
@@ -319,6 +313,8 @@ UserController 增加
             	public DataRes deleteUserAndClazz(User user,HttpServletRequest request,HttpServletResponse response){
             		return DataRes.success(userService.deleteUserAndClazz(user));
             	}
+```
+        	
 
 生成的文件如下
 
@@ -355,7 +351,7 @@ UserController 增加
     ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户收货地址'
 ``` 
 
->1.同理先在 资源根路径(src/main/resources)创建 auto-code.yaml 文件,具体内容如下
+>1.同理先在 资源根路径(src/main/resources)创建 auto-code_one-to-many.yaml 文件,具体内容如下
     
     由于TestUser已经在一对一生成过代码了.所以 generate: false
     同时写上已经存在的父包 existParentPackage: com.zengtengpeng.test
@@ -416,16 +412,12 @@ UserController 增加
 > 2.执行生成代码
 ```java
     import com.zengtengpeng.autoCode.StartCode;
-    import com.zengtengpeng.autoCode.config.AutoCodeConfig;
-    import com.zengtengpeng.relation.oneToMany.BuildOneToMany;
     import com.zengtengpeng.relation.utils.RelationUtils;
-    
     /**
      * 一对多生成实例 test_user 一个用户 对应 test_addr 多个收货地址
      */
     public class Demo3OneToMany {
         public static void main(String[] args) {
-            
             //普通写法 二选一
     //        RelationUtils.oneToMany(StartCode.saxYaml(), new StartCode() {
     //            @Override
@@ -435,13 +427,11 @@ UserController 增加
     //        }, new BuildOneToMany() {
     //            @Override
     //            public void custom(AutoCodeConfig autoCodeConfig) {
-    //                
+    //
     //            }
     //        });
-            
-            
             //lambda表达式写法 二选一
-            RelationUtils.oneToMany(StartCode.saxYaml(), t -> {}, rt -> {});
+            RelationUtils.oneToMany(StartCode.saxYaml("auto-code_one-to-many.yaml"), t -> {}, rt -> {});
         }
     }
 ```
@@ -488,7 +478,7 @@ UserController 增加
     ) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8 COMMENT='测试用户角色';
 ```
 
->1.同理先在 资源根路径(src/main/resources)创建 auto-code.yaml 文件,具体内容如下
+> 1.同理先在 资源根路径(src/main/resources)创建 auto-code.yaml 文件,具体内容如下
       
       1.由于TestUser已经在一对一生成过代码了.所以 generate: false 同时写上
       TestUser存在的父包 existParentPackage: com.zengtengpeng.test
@@ -554,12 +544,41 @@ UserController 增加
                 #备注
                 remark: "用户角色"
 ```
+> 2 .执行代码
+```java
+import com.zengtengpeng.autoCode.StartCode;
+import com.zengtengpeng.relation.utils.RelationUtils;
+
+/**
+ * 多对多生成实例 test_user 多个用户 对应 test_role 多个角色
+ */
+public class Demo4ManyToMany {
+    public static void main(String[] args) {
+        //普通写法
+        /*RelationUtils.manyToMany(StartCode.saxYaml(), new StartCode() {
+            @Override
+            public void custom(AutoCodeConfig autoCodeConfig) {
+
+            }
+        }, new BuildManyToMany() {
+            @Override
+            public void custom(AutoCodeConfig autoCodeConfig) {
+
+            }
+        });*/
+        //lambda表达式写法 二选一
+        RelationUtils.manyToMany(StartCode.saxYaml("auto-code_many-to-many.yaml"), t->{}, rt -> {});
+    }
+}
+```    
 
 > 3.生成完毕 新增接口和一对一一样
 ### 生成代码注意事项
 
     1.创建表结构时如果写上表与字段的注释将大大增加程序的可读性.我会将注释写到bean上面.
-    2.如果注释为json键值对字符串我将会在实体类生成一个字典方法
+    2.配置文件 auto-code.yaml名称随意定.默认使用 auto-code.yaml 当使用 auto-code.yaml时
+    StartCode.saxYaml("auto-code_many-to-many.yaml") 可以直接写成 StartCode.saxYaml().
+    4.如果注释为json键值对字符串我将会在实体类生成一个字典方法
     如:  {"1":"启用","0":"禁用"} 将会在实体类里面生成:
         public String getStatus_(){
     		if(MyStringUtils.isEmpty(status)){
@@ -615,3 +634,217 @@ UserController 增加
     
 
 ## 进阶篇 如何自定义方法 [代码地址](https://gitee.com/ztp/auto-code-springboot-demo)
+
+###单表如何自定义
+> 目前单表的主要是生成代码是由6个接口组成 BuildBean,BuildController,BuildDao,BuildService,BuildServiceImpl,BuildXml,
+在 `com.zengtengpeng.autoCode.create`包下.每个接口底下都有个未实现的 `custom` 方法. 实现custom就可以,如下代码就是自定义Controller代码,其他的接口同理
+```java
+import com.zengtengpeng.autoCode.bean.BuildJavaField;
+import com.zengtengpeng.autoCode.bean.BuildJavaMethod;
+import com.zengtengpeng.autoCode.config.AutoCodeConfig;
+import com.zengtengpeng.autoCode.config.BuildJavaConfig;
+import com.zengtengpeng.autoCode.create.BuildController;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 重写controller 自定义配置
+ */
+public class TestBuildController implements BuildController {
+    @Override
+    public BuildJavaConfig custom(AutoCodeConfig autoCodeConfig) {
+        BuildJavaConfig buildJavaConfig=new BuildJavaConfig();
+        List<String> imports=new ArrayList<>();
+        imports.add("java.util.HashMap");
+        imports.add("java.util.Hashtable");
+        imports.add("java.util.Collections");
+        //自定义需要导入的类
+        buildJavaConfig.setImports(imports);
+
+        List<BuildJavaMethod> methods=new ArrayList<>();
+        BuildJavaMethod method=new BuildJavaMethod();
+        method.setContent("\nSystem.out.println(\"生成完毕\");");
+        method.setMethodName("test");
+        method.setMethodType("public");
+        method.setReturnType("void");
+        List<String> params=new ArrayList<>();
+        params.add("String test");
+        method.setParams(params);
+        method.setRemark("测试生成方法");
+        List<String> ann=new ArrayList<>();
+        ann.add("@SuppressWarnings(\"\")");
+        method.setAnnotation(ann);
+        methods.add(method);
+        //自定义方法 将在类生成如下方法
+        //@SuppressWarnings("")
+        //	public void test(String test){
+        //
+        //System.out.println("生成完毕");
+        //	}
+        buildJavaConfig.setBuildJavaMethods(methods);
+
+        List<BuildJavaField> fileds=new ArrayList<>();
+        BuildJavaField jf=new BuildJavaField();
+        jf.setFiledType("private");
+        jf.setReturnType("String");
+        jf.setFiledName("test");
+        jf.setRemark("测试生成字段");
+        jf.setInit("\"初始化字段\"");
+        ann=new ArrayList<>();
+        ann.add("@SuppressWarnings(\"\")");
+        jf.setAnnotation(ann);
+        fileds.add(jf);
+        //自定义字段 将在类生成如下字段
+        //@SuppressWarnings("")
+        //	private String test ="初始化字段";
+        buildJavaConfig.setBuildJavaFields(fileds);
+
+        //自定义继承 类单继承 接口多继承
+        List<String> ex=new ArrayList<>();
+        ex.add("Object");
+        buildJavaConfig.setExtend(ex);
+
+        //自定义 实现 类多实现, 接口没有实现
+//                    buildJavaConfig.setImplement(null);
+
+        return buildJavaConfig;
+    }
+}
+```
+> StartCode 为生成单表的总开关,里面有 BuildBean,BuildController,BuildDao,BuildService,
+BuildServiceImpl,BuildXml 几个接口的具体实现.默认已经初始化.如需自定义,将近自定义好的类重写进来.
+```java
+/**
+ * 自定义单表方法
+ */
+public class CustomSimple {
+
+    public static void main(String[] args) {
+        StartCode startCode=new StartCode() {
+            @Override
+            public void custom(AutoCodeConfig autoCodeConfig) {
+            }
+            
+            @Override
+            public BuildController BuildController() {
+                //自定义Controller方法
+                return new TestBuildController();
+            }
+
+        };
+        startCode.start(StartCode.saxYaml("auto-code_simple.yaml"));
+    }
+}
+```
+### 多表关系自定义
+
+> 多表关系在单表的基础上扩展了 主表,外表 代码在 `com.zengtengpeng.relation` 下的 `manyToMany`(多对多),`oneToMany`(一对多),
+`oneToOne`(一对一)包,里面分别有对应于关系描述的接口类.重写也是只需要实现对应的接口的
+`custom` 方法就行.下面举例重写一对一的controller方法
+```java
+import com.zengtengpeng.autoCode.bean.BuildJavaField;
+import com.zengtengpeng.autoCode.bean.BuildJavaMethod;
+import com.zengtengpeng.autoCode.config.AutoCodeConfig;
+import com.zengtengpeng.autoCode.config.BuildJavaConfig;
+import com.zengtengpeng.relation.oneToOne.BuildOneToOneController;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 自定义one-to-one controller
+ */
+public class TestBuildOneToOneController implements BuildOneToOneController {
+
+    @Override
+    public void custom(AutoCodeConfig autoCodeConfig, BuildJavaConfig primaryBuildJavaConfig, BuildJavaConfig foreignBuildJavaConfig) {
+        List<String> imports=new ArrayList<>();
+        imports.add("java.util.HashMap");
+        imports.add("java.util.Hashtable");
+        imports.add("java.util.Collections");
+        //自定义需要导入的类
+        primaryBuildJavaConfig.setImports(imports);
+
+        List<BuildJavaMethod> methods=new ArrayList<>();
+        BuildJavaMethod method=new BuildJavaMethod();
+        method.setContent("\nSystem.out.println(\"生成完毕\");");
+        method.setMethodName("test");
+        method.setMethodType("public");
+        method.setReturnType("void");
+        List<String> params=new ArrayList<>();
+        params.add("String test");
+        method.setParams(params);
+        method.setRemark("测试生成方法");
+        List<String> ann=new ArrayList<>();
+        ann.add("@SuppressWarnings(\"\")");
+        method.setAnnotation(ann);
+        methods.add(method);
+        //自定义方法 将在类生成如下方法
+        //@SuppressWarnings("")
+        //	public void test(String test){
+        //
+        //System.out.println("生成完毕");
+        //	}
+        primaryBuildJavaConfig.setBuildJavaMethods(methods);
+
+
+        List<BuildJavaField> fileds=new ArrayList<>();
+        BuildJavaField jf=new BuildJavaField();
+        jf.setFiledType("private");
+        jf.setReturnType("String");
+        jf.setFiledName("test");
+        jf.setRemark("测试生成字段");
+        jf.setInit("\"初始化字段\"");
+        ann=new ArrayList<>();
+        ann.add("@SuppressWarnings(\"\")");
+        jf.setAnnotation(ann);
+        fileds.add(jf);
+        //自定义字段 将在类生成如下字段
+        //@SuppressWarnings("")
+        //	private String test ="初始化字段";
+        primaryBuildJavaConfig.setBuildJavaFields(fileds);
+
+        //自定义继承 类单继承 接口多继承
+        List<String> ex=new ArrayList<>();
+        ex.add("Object");
+        primaryBuildJavaConfig.setExtend(ex);
+    }
+}
+```
+> `BuildManyToMany`(构建多对多),`BuildOneToMany`(构建一对多),`BuildOneToOne`(构建一对一) 是各个多表关系实现的总开关.
+里面有 `Build...Controller` `Build...Bean` 六个相关接口的具体实现.我们也是只要重写对应的方法就行
+如下重写一对一的controller.只需要重写 `BuildOneToOne`下的 `buildOneToOneController`具体实现即可.其他的同理
+
+```java
+    import com.zengtengpeng.autoCode.StartCode;
+    import com.zengtengpeng.autoCode.config.AutoCodeConfig;
+    import com.zengtengpeng.demo.test.TestBuildOneToOneController;
+    import com.zengtengpeng.relation.oneToOne.BuildOneToOne;
+    import com.zengtengpeng.relation.oneToOne.BuildOneToOneController;
+    import com.zengtengpeng.relation.utils.RelationUtils;
+    
+    /**
+     * 多表自定义
+     */
+    public class CustomRelation {
+        public static void main(String[] args) {
+            //如果单表想要自定义请参见 CustomSimple 类. 里面是如果定义单表的
+            StartCode startCode = t -> { };
+    
+            //多表自定义
+            BuildOneToOne buildOneToOne = new BuildOneToOne() {
+                @Override
+                public void custom(AutoCodeConfig autoCodeConfig) {
+    
+                }
+                @Override
+                public BuildOneToOneController buildOneToOneController() {
+                    //Controller autoCodeConfig 全局配置 primaryBuildJavaConfig主表的自定义配置  foreignBuildJavaConfig 外表的自定义配置
+                    return new TestBuildOneToOneController();
+                }
+            };
+            RelationUtils.oneToOne(StartCode.saxYaml("auto-code_one-to-one.yaml"), startCode, buildOneToOne);
+        }
+    }
+```
