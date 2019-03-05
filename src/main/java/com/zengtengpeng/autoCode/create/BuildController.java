@@ -264,7 +264,7 @@ public interface BuildController {
         params.add("HttpServletRequest request");
         params.add("HttpServletResponse response");
         selectByCondition.setParams(params);
-        selectByCondition.setRemark("根据条件查询->"+buildJavaConfig.getRemark());
+        selectByCondition.setRemark("根据条件查询(所有的实体属性都是条件,如果为空则忽略该字段)->"+buildJavaConfig.getRemark());
         selectByCondition.setContent(String.format("return DataRes.success(%s%s.selectByCondition(%s));",bean.getTableValue(),globalConfig.getPackageServiceUp(),bean.getTableValue()));
         return selectByCondition;
     }
@@ -291,7 +291,7 @@ public interface BuildController {
         params.add("HttpServletRequest request");
         params.add("HttpServletResponse response");
         selectAllByPaging.setParams(params);
-        selectAllByPaging.setRemark("分页查询 (详见Page类.所以的实体都继承该类 默认 page=1 pageSize=10)->"+buildJavaConfig.getRemark());
+        selectAllByPaging.setRemark("分页查询 (所有的实体属性都是条件,如果为空则忽略该字段) (详见Page类.所以的实体都继承该类 默认 page=1 pageSize=10)->"+buildJavaConfig.getRemark());
         selectAllByPaging.setContent(String.format("return DataRes.success(%s%s.selectAllByPaging(%s));",bean.getTableValue(),globalConfig.getPackageServiceUp(),bean.getTableValue()));
         return selectAllByPaging;
     }

@@ -125,10 +125,10 @@ public class Demo1 {
     //更加主键查询
     selectByPrimaryKey
     
-    //根据条件查询
+    //根据条件查询(所有的实体属性都是条件,如果为空则忽略该字段)
     selectByCondition
     
-    //分页查询 详见Page类.所以的实体都继承该类 默认page=1 pageSize=10
+    //分页查询 (所有的实体属性都是条件,如果为空则忽略该字段) 详见Page类.所以的实体都继承该类 默认page=1 pageSize=10
     selectAllByPaging
     
     //导出excel

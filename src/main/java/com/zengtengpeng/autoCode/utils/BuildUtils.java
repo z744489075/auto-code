@@ -283,7 +283,7 @@ public class BuildUtils {
                 if(content.indexOf(s)<0){
                     im.append("\n" + s);
                 }else {
-                    logger.info("查找到重复,忽略生成 文件{}\n内容{}",file,s);
+                    logger.info("查找到重复,忽略生成 文件{}\n内容->{}",file,s);
                 }
             });
             content.insert(content.indexOf(";")+1,im);
@@ -298,7 +298,7 @@ public class BuildUtils {
                 if(content.indexOf(c.toString())<0){
                     fields.add(t);
                 }else {
-                    logger.info("查找到重复,忽略生成 文件{}\n内容{}",file,c.toString());
+                    logger.info("查找到重复,忽略生成 文件{}\n内容->{}",file,c.toString());
                 }
             });
             BuildUtils.buildFields(fields,filedsb);
@@ -314,7 +314,7 @@ public class BuildUtils {
                 if(content.indexOf(c.toString())<0){
                     buildJavaMethod.add(t);
                 }else {
-                    logger.info("查找到重复,忽略生成 文件{}\n内容{}",file,c.toString());
+                    logger.info("查找到重复,忽略生成 文件{}\n内容->{}",file,c.toString());
                 }
             });
             BuildUtils.buildMethods(buildJavaMethod,me);
