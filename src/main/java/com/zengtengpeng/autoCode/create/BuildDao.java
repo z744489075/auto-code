@@ -37,6 +37,7 @@ public interface BuildDao {
         }
         if(buildJavaConfig.getDefaultRealize()){
             imports.add("com.zengtengpeng.common.dao.BaseDao");
+            imports.add("org.apache.ibatis.annotations.Mapper");
             GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
             imports.add(globalConfig.getParentPack()+"."+globalConfig.getPackageBean()+"."+bean.getTableName());
         }
@@ -73,10 +74,12 @@ public interface BuildDao {
                 "\n */\n");
         extend.forEach(t-> s.append(t+","));
         List<String> annotations = buildJavaConfig.getAnnotations();
-
-        if(annotations!=null){
-            annotations.forEach(t->content.append(t+"\n"));
+        if(annotations==null){
+            annotations=new ArrayList<>();
         }
+        annotations.add("@Mapper");
+
+        annotations.forEach(t->content.append(t+"\n"));
         String s1="";
         if(s.length()>0){
             s1=" extends "+s.substring(0,s.length()-1);

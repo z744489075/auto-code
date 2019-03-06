@@ -50,7 +50,7 @@
 
 ## <a name="2">集成教程</a>
 
-> 集成非常简单只需要引入jar包到自己的工程即可.maven引入如下
+> 集成非常简单,只需要在自己的web工程或者spring-boot工程引入jar包即可. 请在pom写上
 ```
     <dependency>
         <groupId>com.zengtengpeng</groupId>
