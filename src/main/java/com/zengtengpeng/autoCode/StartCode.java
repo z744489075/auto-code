@@ -30,15 +30,14 @@ public interface StartCode {
      * 解析yaml文件
      */
     static AutoCodeConfig saxYaml() {
-        Yaml yaml = new Yaml();
-        return yaml.loadAs(StartCode.class.getClassLoader().getResourceAsStream("auto-code.yaml"), AutoCodeConfig.class);
+        return StartCode.saxYaml("auto-code.yaml");
     }
 
     /**
      * 解析yaml文件
      * @param fileName 文件名称
      */
-    static AutoCodeConfig saxYaml(String fileName) {
+    static  AutoCodeConfig saxYaml(String fileName) {
         Yaml yaml = new Yaml();
         return yaml.loadAs(StartCode.class.getClassLoader().getResourceAsStream(fileName), AutoCodeConfig.class);
     }

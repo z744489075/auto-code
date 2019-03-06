@@ -27,9 +27,9 @@
 
 ![start](http://images.zengtengpeng.com/auto-code/start.png)
 
-#### 集成教程
+### 集成教程
 
-> 集成非常简单只需要引入jar包即可  pom.xml 引入
+> 集成非常简单只需要引入jar包到自己的工程即可.maven引入如下
 ```
     <dependency>
         <groupId>com.zengtengpeng</groupId>
