@@ -1,12 +1,26 @@
 
 package com.zengtengpeng.common.bean;
 
-
+/**
+ * 返回数据包装类
+ * @param <T>
+ */
 public class DataRes<T> {
-
+	/**
+	 * 返回码 详见 ResponseCode
+	 */
 	private String code;
+	/**
+	 * 提示消息
+	 */
 	private String message;
+	/**
+	 * 返回时间
+	 */
 	private String time;
+	/**
+	 * 具体的数据
+	 */
 	private T data;
 
 	public String getCode() {

@@ -1,6 +1,8 @@
 # auto-code
 欢迎使用auto-code代码自动生成引擎, 2.0重大升级.支持`单表`, `一对一`, `一对多` ,`多对多`代码生成  [源码地址](https://gitee.com/ztp/auto-code)
 
+[toc]
+
 ### 项目介绍 
 #### 项目的优势在哪里
 
@@ -38,11 +40,23 @@
     </dependency>
 ```
 
+> spring-boot代码实例 [实例地址](https://gitee.com/ztp/auto-code-springboot-demo)
+
+> 传统java-web代码实例 [实例地址](https://gitee.com/ztp/auto-code-web-demo)
+
 ### 使用教程
+##### 准备工作
+
+>1 首先先准备数据库(理论上支持所有关系型数据库,目前只做了mysql的测试)
+
+>2 创建数据库 auto_code (可以随意取名称,只要和下面yaml里面的数据库名称对应上就行)
+
+>3 准备完毕,开始进入正题
 
 ##### 单表生成
 
->假设我们要生成一张表
+
+>假设我们要生成一张单表
 ```sql
 CREATE TABLE `test_code` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '测试生成代码',
@@ -64,7 +78,7 @@ datasourceConfig:
     #数据库名称
     name: auto_code
     #jdbc链接
-    url: jdbc:mysql://127.0.0.1:3306/auto_code?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3306/auto_code
     #数据库用户名
     username: root
     #数据库密码
@@ -175,7 +189,7 @@ datasourceConfig:
     #数据库名称
     name: auto_code
     #jdbc链接
-    url: jdbc:mysql://127.0.0.1:3306/auto_code?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3306/auto_code
     #数据库用户名
     username: root
     #数据库密码
@@ -362,7 +376,7 @@ UserController 增加
         #数据库名称
         name: auto_code
         #jdbc链接
-        url: jdbc:mysql://127.0.0.1:3306/auto_code?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+        url: jdbc:mysql://127.0.0.1:3306/auto_code
         #数据库用户名
         username: root
         #数据库密码
@@ -493,7 +507,7 @@ UserController 增加
         #数据库名称
         name: auto_code
         #jdbc链接
-        url: jdbc:mysql://127.0.0.1:3306/auto_code?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+        url: jdbc:mysql://127.0.0.1:3306/auto_code
         #数据库用户名
         username: root
         #数据库密码
