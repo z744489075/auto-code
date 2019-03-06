@@ -3,27 +3,27 @@
 
 # 目录
 1. <a href="#1">项目介绍</a>
-    1. 项目的优势在哪里
-    2. 什么情况选择该项目
-    3. 为何会发起该项目
-    4. 如果您觉得项目还行.请点赞.您的支持是我最大的动力项目地址
-2. 集成教程
-    1. 使用教程
-        1. 准备工作
-        2. 单表生成
-        3. 一对一代码生成 one-to-one
-        4. 一对多 代码生成 one-to-Many
-        5.  多对多 代码生成 many-to-many
-    2.  生成代码注意事项
-        1.  spring-boot如何使用
-        2.  java-web
-3. 进阶篇 如何自定义方法
-    1. 单表如何自定义
-    2. 表关系自定义
+    1. <a href="#1.1">项目的优势在哪里</a>
+    2. <a href="#1.2">什么情况选择该项目</a>
+    3. <a href="#1.3">为何会发起该项目</a>
+    4. <a href="#1.4">如果您觉得项目还行.请点赞.您的支持是我最大的动力项目地址</a>
+2. <a href="#2">集成教程</a>
+    1. <a href="#2.1">使用教程</a>
+        1. <a href="#2.1.1">准备工作</a>
+        2. <a href="#2.1.2">单表生成</a>
+        3. <a href="#2.1.3">一对一代码生成 one-to-one</a>
+        4. <a href="#2.1.4">一对多 代码生成 one-to-Many</a>
+        5.  <a href="#2.1.5">多对多 代码生成 many-to-many</a>
+    2.  <a href="#2.2">生成代码注意事项</a>
+        1.  <a href="#2.2.1">spring-boot如何使用</a>
+        2.  <a href="#2.2.2">java-web</a>
+3. <a href="#3">进阶篇 如何自定义方法</a>
+    1. <a href="#3.1">单表如何自定义</a>
+    2. <a href="#3.2">表关系自定义</a>
 
 
-## 项目介绍
-### 项目的优势在哪里
+## <a name="1">项目介绍</a>
+### <a name="1.1">项目的优势在哪里</a>
 
 > 1.目前市面上的代码生成工具绝大多数仅仅支持生成单表,该项目支持 `单表`, `一对一`, `一对多` ,`多对多` 
 代码生成.大大简化了开发的工作量
@@ -31,24 +31,24 @@
 > 2.只要目前你的项目采用 springMVC+spring+mybatis架构的项目都适用(传统工程和springBoot工程都适用).不管一次开发还是二次开发.该项目仅仅只是帮你生成
 `增删改查`,不做任何底层的改动.
 
-### 什么情况选择该项目
+### <a name="1.2">什么情况选择该项目</a>
 > 1.该项目只生成接口(controller,service,serviceImpl,dao,xml),
 不生成页面.所以如果项目是采用前后台分离,不需要写页面.该项目会适合你
 
 > 2.如果还想生成页面请看该项目,这个项目基于本项目.扩展了页面生成.适合后台使用 [源码地址](https://gitee.com/ztp/auto-code-admin) 
  [演示地址](http://www.zengtengpeng.com/login/gotoLogin) 账号 `ztp`  密码 `111111`
  
-### 为何会发起该项目? 
+### <a name="1.3">为何会发起该项目? </a>
 
 > 绝大多数时候我们都是在做`增删改查`.每次创建一张表.然后我们需要重新写一次增删改查,
 写虽然简单,不过极度耗时(controller,server,serverImpl,dao,xml) 
     所以才有了该项目,该项目能帮助你减少70%的工作量,让你专注于业务的实现.
 
-### 如果您觉得项目还行.请点赞.您的支持是我最大的动力[项目地址](https://gitee.com/ztp/auto-code)
+### <a name="1.4">如果您觉得项目还行.请点赞.您的支持是我最大的动力[项目地址](https://gitee.com/ztp/auto-code)</a>
 
 ![start](http://images.zengtengpeng.com/auto-code/start.png)
 
-## 集成教程
+## <a name="2">集成教程</a>
 
 > 集成非常简单只需要引入jar包到自己的工程即可.maven引入如下
 ```
@@ -63,8 +63,8 @@
 
 > 传统java-web代码实例 [实例地址](https://gitee.com/ztp/auto-code-web-demo)
 
-### 使用教程
-#### 准备工作
+### <a name="2.1">使用教程</a>
+#### <a name="2.1.1">准备工作</a>
 
 >1 首先先准备数据库(理论上支持所有关系型数据库,目前只做了mysql的测试)
 
@@ -72,8 +72,7 @@
 
 >3 准备完毕,开始进入正题
 
-#### 单表生成
-
+#### <a name="2.1.2">单表生成</a>
 
 >假设我们要生成一张单表
 ```sql
@@ -122,7 +121,7 @@ globalConfig:
     xmlPath: mybatisMapper
 ```
 
-> <a name="1">2.执行代码生成语句</a>
+> 2.执行代码生成语句
 ```java
 import com.zengtengpeng.autoCode.StartCode;
 
@@ -168,7 +167,7 @@ public class Demo1simple {
 生成的文件如下:
 ![simple](http://images.zengtengpeng.com/auto-code/simple.png)
 
-#### 一对一代码生成 one-to-one 
+#### <a name="2.1.3">一对一代码生成 one-to-one </a>
 
 >假如 一个用户  test_user 一个用户 对应 test_class 一个班级
 ```sql
@@ -353,7 +352,7 @@ UserController 增加
 
 ![one-to-one](http://images.zengtengpeng.com/auto-code/one-to-one.png)
 
-#### 一对多 代码生成 one-to-Many
+#### <a name="2.1.4">一对多 代码生成 one-to-Many</a>
 
 > 假如 test_user 一个用户 对应 test_addr 多个收货地址
 
@@ -472,7 +471,7 @@ UserController 增加
 > 3.生成完毕 接口和一对一一样
 
 
-#### 多对多 代码生成 many-to-many
+#### <a name="2.1.5">多对多 代码生成 many-to-many</a>
     
 > 假如 test_user 多个用户 对应 test_role 多个角色
 
@@ -606,7 +605,7 @@ public class Demo4ManyToMany {
 ```    
 
 > 3.生成完毕 新增接口和一对一一样
-### 生成代码注意事项
+### <a name="2.2">生成代码注意事项 </a>
 
     1.创建表结构时如果写上表与字段的注释将大大增加程序的可读性.我会将注释写到bean上面.
     2.配置文件 auto-code.yaml名称随意定.默认使用 auto-code.yaml 当使用 auto-code.yaml时
@@ -626,7 +625,7 @@ public class Demo4ManyToMany {
     	}
 
 
-#### spring-boot如何使用 [实例地址](https://gitee.com/ztp/auto-code-springboot-demo)
+#### <a name="2.2.1">spring-boot如何使用</a> [实例地址](https://gitee.com/ztp/auto-code-springboot-demo)
 
 > 1.集成mybatis-spring-boot-starter,spring-boot-starter-web 这里就不再阐述
 
@@ -651,7 +650,7 @@ public class Demo4ManyToMany {
     
     3.至此集成完毕
 
-#### java-web [实例地址](https://gitee.com/ztp/auto-code-web-demo)
+#### <a name="2.2.2">java-web</a> [实例地址](https://gitee.com/ztp/auto-code-web-demo)
 
 > 由于分页插件使用了 pageHelper 所以需要集成下,不集成将导致分页失效
  [官方传统web工程集成地址](https://github.com/abel533/Mybatis-Spring)
@@ -666,9 +665,9 @@ public class Demo4ManyToMany {
     2.集成完毕
     
 
-## 进阶篇 如何自定义方法 [代码地址](https://gitee.com/ztp/auto-code-springboot-demo)
+## <a name="3">进阶篇 如何自定义方法</a> [代码地址](https://gitee.com/ztp/auto-code-springboot-demo)
 
-### 单表如何自定义
+### <a name="3.1">单表如何自定义</a>
 > 在 `com.zengtengpeng.autoCode.create`包下,有6个接口类 `BuildBean`,`BuildController`,`BuildDao`,`BuildService`,
 `BuildServiceImpl`,`BuildXml`.每个接口底下都有个未实现的 `custom` 方法. 实现custom就可以,如下代码就是自定义Controller代码,其他的接口同理
 ```java
@@ -769,7 +768,7 @@ public class CustomSimple {
     }
 }
 ```
-### 表关系自定义
+### <a name="3.2">表关系自定义</a>
 
 > 表关系在单表的基础上扩展了 主表,外表 代码在 `com.zengtengpeng.relation` 下的 `manyToMany`(多对多),`oneToMany`(一对多),
 `oneToOne`(一对一)子包,每个子包有六个生成类的接口.重写也是只需要实现对应的接口的
