@@ -1,10 +1,29 @@
 # auto-code
 欢迎使用auto-code代码自动生成引擎, 2.0重大升级.支持`单表`, `一对一`, `一对多` ,`多对多`代码生成  [源码地址](https://gitee.com/ztp/auto-code)
 
-[toc]
+# 目录
+1. <a href="#1">项目介绍</a>
+    1. 项目的优势在哪里
+    2. 什么情况选择该项目
+    3. 为何会发起该项目
+    4. 如果您觉得项目还行.请点赞.您的支持是我最大的动力项目地址
+2. 集成教程
+    1. 使用教程
+        1. 准备工作
+        2. 单表生成
+        3. 一对一代码生成 one-to-one
+        4. 一对多 代码生成 one-to-Many
+        5.  多对多 代码生成 many-to-many
+    2.  生成代码注意事项
+        1.  spring-boot如何使用
+        2.  java-web
+3. 进阶篇 如何自定义方法
+    1. 单表如何自定义
+    2. 表关系自定义
 
-### 项目介绍 
-#### 项目的优势在哪里
+
+## 项目介绍
+### 项目的优势在哪里
 
 > 1.目前市面上的代码生成工具绝大多数仅仅支持生成单表,该项目支持 `单表`, `一对一`, `一对多` ,`多对多` 
 代码生成.大大简化了开发的工作量
@@ -12,24 +31,24 @@
 > 2.只要目前你的项目采用 springMVC+spring+mybatis架构的项目都适用(传统工程和springBoot工程都适用).不管一次开发还是二次开发.该项目仅仅只是帮你生成
 `增删改查`,不做任何底层的改动.
 
-#### 什么情况选择该项目
+### 什么情况选择该项目
 > 1.该项目只生成接口(controller,service,serviceImpl,dao,xml),
 不生成页面.所以如果项目是采用前后台分离,不需要写页面.该项目会适合你
 
 > 2.如果还想生成页面请看该项目,这个项目基于本项目.扩展了页面生成.适合后台使用 [源码地址](https://gitee.com/ztp/auto-code-admin) 
  [演示地址](http://www.zengtengpeng.com/login/gotoLogin) 账号 `ztp`  密码 `111111`
  
-#### 为何会发起该项目? 
+### 为何会发起该项目? 
 
 > 绝大多数时候我们都是在做`增删改查`.每次创建一张表.然后我们需要重新写一次增删改查,
 写虽然简单,不过极度耗时(controller,server,serverImpl,dao,xml) 
     所以才有了该项目,该项目能帮助你减少70%的工作量,让你专注于业务的实现.
 
-#### 如果您觉得项目还行.请点赞.您的支持是我最大的动力[项目地址](https://gitee.com/ztp/auto-code)
+### 如果您觉得项目还行.请点赞.您的支持是我最大的动力[项目地址](https://gitee.com/ztp/auto-code)
 
 ![start](http://images.zengtengpeng.com/auto-code/start.png)
 
-### 集成教程
+## 集成教程
 
 > 集成非常简单只需要引入jar包到自己的工程即可.maven引入如下
 ```
@@ -45,7 +64,7 @@
 > 传统java-web代码实例 [实例地址](https://gitee.com/ztp/auto-code-web-demo)
 
 ### 使用教程
-##### 准备工作
+#### 准备工作
 
 >1 首先先准备数据库(理论上支持所有关系型数据库,目前只做了mysql的测试)
 
@@ -53,7 +72,7 @@
 
 >3 准备完毕,开始进入正题
 
-##### 单表生成
+#### 单表生成
 
 
 >假设我们要生成一张单表
@@ -103,7 +122,7 @@ globalConfig:
     xmlPath: mybatisMapper
 ```
 
-> 2.执行代码生成语句
+> <a name="1">2.执行代码生成语句</a>
 ```java
 import com.zengtengpeng.autoCode.StartCode;
 
@@ -149,7 +168,7 @@ public class Demo1simple {
 生成的文件如下:
 ![simple](http://images.zengtengpeng.com/auto-code/simple.png)
 
-##### 一对一代码生成 one-to-one 
+#### 一对一代码生成 one-to-one 
 
 >假如 一个用户  test_user 一个用户 对应 test_class 一个班级
 ```sql

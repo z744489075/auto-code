@@ -22,6 +22,6 @@ public class Demo4ManyToMany {
             }
         });*/
         //lambda表达式写法 二选一
-        RelationUtils.manyToMany(StartCode.saxYaml(), t->{}, rt -> {});
+        RelationUtils.manyToMany(StartCode.saxYaml("auto-code_many-to-many.yaml"), t->{}, rt -> {});
     }
 }
