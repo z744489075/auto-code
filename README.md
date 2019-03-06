@@ -113,7 +113,7 @@ public class Demo1simple {
     }
 }
 ```
->3.生成完毕 主要生成五个接口
+>3.生成完毕 主要生成六个接口
 
     //根据id删除记录
     deleteByPrimaryKey
@@ -121,7 +121,7 @@ public class Demo1simple {
     //保存(主键为空则增加 否则 修改)
     save 
     
-    //更加主键查询
+    //根据主键查询
     selectByPrimaryKey
     
     //根据条件查询(所有的实体属性都是条件,如果为空则忽略该字段)
