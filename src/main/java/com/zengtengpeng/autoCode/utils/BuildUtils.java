@@ -44,7 +44,7 @@ public class BuildUtils {
             } else {
                 init = "";
             }
-            stringBuffer.append(String.format("\t%s %s %s %s;\n\n",t.getFiledType(), t.getReturnType(), t.getFiledName(), init));
+            stringBuffer.append(String.format("\t%s %s %s%s;\n",t.getFiledType(), t.getReturnType(), t.getFiledName(), init));
         }
     }
 

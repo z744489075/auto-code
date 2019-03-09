@@ -104,6 +104,12 @@ public class RelationTable {
     public String getExistParentPackage() {
         return existParentPackage;
     }
+    public String getExistParentPackage_() {
+        if(!MyStringUtils.isEmpty(existParentPackage)){
+            return existParentPackage.substring(existParentPackage.lastIndexOf(".")+1);
+        }
+        return "";
+    }
 
     public void setExistParentPackage(String existParentPackage) {
         this.existParentPackage = existParentPackage;

@@ -212,7 +212,7 @@ public interface BuildBean {
                         if("name".equals(me.getKey())){
                             continue;
                         }
-                        MyStringUtils.append(json,"}else if(%s.equals(\"%s\")){",2,t.getBeanName(),me.getKey().toString());
+                        MyStringUtils.append(json,"}else if(%s.toString().equals(\"%s\")){",2,t.getBeanName(),me.getKey().toString());
                         MyStringUtils.append(json,"return \"%s\";",3,me.getValue().toString());
                     }
                     MyStringUtils.append(json,"}",2);

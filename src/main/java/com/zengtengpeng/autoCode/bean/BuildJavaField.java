@@ -48,7 +48,6 @@ public class BuildJavaField {
     public void setAnnotation(List<String> annotation) {
         this.annotation = annotation;
     }
-
     public String getReturnType() {
         return returnType;
     }

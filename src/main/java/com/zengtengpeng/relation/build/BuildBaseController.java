@@ -11,6 +11,7 @@ import com.zengtengpeng.relation.config.RelationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -207,7 +208,76 @@ public interface BuildBaseController {
         return deleteTestUserAndTestClass;
     }
 
+    /**
+     * 外表的引入
+     * @param autoCodeConfig
+     * @return
+     */
+    default List<String> foreignImports(AutoCodeConfig autoCodeConfig){
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+        RelationConfig relationConfig = globalConfig.getRelationConfig();
+        RelationTable primary = relationConfig.getPrimary();
+        List<String> imports=new ArrayList<>();
+        imports.add(primary.getExistParentPackage()+"."+globalConfig.getPackageService()+"."+primary.getBeanName()+globalConfig.getPackageServiceUp());
+        return imports;
+    }
 
+    /**
+     * 外表的字段
+     * @param autoCodeConfig
+     * @return
+     */
+    default List<BuildJavaField> foreignFields(AutoCodeConfig autoCodeConfig) {
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+        RelationConfig relationConfig = globalConfig.getRelationConfig();
+        RelationTable primary = relationConfig.getPrimary();
+        List<BuildJavaField> list = new ArrayList<>();
+        BuildJavaField buildJavaField = new BuildJavaField();
+        List<String> an = new ArrayList<>();
+        an.add("@Resource");
+        buildJavaField.setAnnotation(an);
+        buildJavaField.setRemark(primary.getRemark());
+        buildJavaField.setFiledName(primary.getBeanNameLower() + globalConfig.getPackageServiceUp());
+        buildJavaField.setReturnType(primary.getBeanName() + globalConfig.getPackageServiceUp());
+        buildJavaField.setFiledType("private");
+        list.add(buildJavaField);
+        return list;
+    }
+    /**
+     * 主表的引入
+     * @param autoCodeConfig
+     * @return
+     */
+    default List<BuildJavaField> primaryFields(AutoCodeConfig autoCodeConfig){
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+        RelationConfig relationConfig = globalConfig.getRelationConfig();
+        RelationTable foreign = relationConfig.getForeign();
+        List<BuildJavaField> list = new ArrayList<>();
+        BuildJavaField buildJavaField = new BuildJavaField();
+        List<String> an = new ArrayList<>();
+        an.add("@Resource");
+        buildJavaField.setAnnotation(an);
+        buildJavaField.setRemark(foreign.getRemark());
+        buildJavaField.setFiledName(foreign.getBeanNameLower() + globalConfig.getPackageServiceUp());
+        buildJavaField.setReturnType(foreign.getBeanName() + globalConfig.getPackageServiceUp());
+        buildJavaField.setFiledType("private");
+        list.add(buildJavaField);
+        return list;
+    }
+
+    /**
+     * 主表的引入
+     * @param autoCodeConfig
+     * @return
+     */
+    default List<String> primaryImports(AutoCodeConfig autoCodeConfig){
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+        RelationConfig relationConfig = globalConfig.getRelationConfig();
+        RelationTable foreign = relationConfig.getForeign();
+        List<String> imports=new ArrayList<>();
+        imports.add(foreign.getExistParentPackage()+"."+globalConfig.getPackageService()+"."+foreign.getBeanName()+globalConfig.getPackageServiceUp());
+        return imports;
+    }
 
     /**
      * 构建主表的controller
@@ -221,8 +291,17 @@ public interface BuildBaseController {
         buildJavaMethods.add(primaryDelete(autoCodeConfig));
 
         List<String> imports = buildJavaConfig.getImports();
+        if(imports==null){
+            imports=new ArrayList<>();
+        }
+        imports.addAll(primaryImports(autoCodeConfig));
 
         List<BuildJavaField> buildJavaFields = buildJavaConfig.getBuildJavaFields();
+        if(buildJavaFields==null){
+            buildJavaFields=new ArrayList<>();
+        }
+        buildJavaFields.addAll(primaryFields(autoCodeConfig));
+
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         String filePath = BuildUtils.packageJavaPath(globalConfig.getParentPathJavaSource(), primary.getExistParentPackage(),
                 globalConfig.getPackageController())+"/"+primary.getBeanName()+globalConfig.getPackageControllerUp()+".java";
@@ -239,8 +318,16 @@ public interface BuildBaseController {
         buildJavaMethods.add(foreignSelectByCondition(autoCodeConfig));
         buildJavaMethods.add(foreignDelete(autoCodeConfig));
         List<String> imports = buildJavaConfig.getImports();
+        if(imports==null){
+            imports=new ArrayList<>();
+        }
+        imports.addAll(foreignImports(autoCodeConfig));
 
         List<BuildJavaField> buildJavaFields = buildJavaConfig.getBuildJavaFields();
+        if(buildJavaFields==null){
+            buildJavaFields=new ArrayList<>();
+        }
+        buildJavaFields.addAll(foreignFields(autoCodeConfig));
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         String filePath = BuildUtils.packageJavaPath(globalConfig.getParentPathJavaSource(), foreign.getExistParentPackage(),
                 globalConfig.getPackageController())+"/"+foreign.getBeanName()+globalConfig.getPackageControllerUp()+".java";
