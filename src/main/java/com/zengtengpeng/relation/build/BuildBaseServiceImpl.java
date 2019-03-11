@@ -34,7 +34,7 @@ public interface BuildBaseServiceImpl {
      * 构建主表 级联查询(带分页)
      * @return
      */
-    default BuildJavaMethod primarySelect(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod primarySelectPrimaryAndForeign(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         BuildJavaMethod javaMethod = new BuildJavaMethod();
         RelationTable primary = relationConfig.getPrimary();
@@ -76,7 +76,7 @@ public interface BuildBaseServiceImpl {
      * 构建主表 级联条件查询
      * @return
      */
-    default BuildJavaMethod primarySelectByCondition(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod primarySelectPrimaryAndForeignByCondition(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         BuildJavaMethod javaMethod = new BuildJavaMethod();
         RelationTable primary = relationConfig.getPrimary();
@@ -118,7 +118,7 @@ public interface BuildBaseServiceImpl {
      * 主表级联删除(根据主表删除)
      * @return
      */
-    default BuildJavaMethod primaryDelete(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod primaryDeletePrimaryAndForeign(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -162,6 +162,8 @@ public interface BuildBaseServiceImpl {
         im.add(primary.getExistParentPackage()+"."+ packageBean+"."+primary.getBeanName());
         im.add(foreign.getExistParentPackage()+"."+ packageBean+"."+foreign.getBeanName());
         im.add("java.util.List");
+        im.add("com.github.pagehelper.PageHelper");
+        im.add("com.github.pagehelper.PageInfo");
         return im;
     }
 
@@ -190,7 +192,7 @@ public interface BuildBaseServiceImpl {
      * 构建外表 级联查询(带分页)
      * @return
      */
-    default BuildJavaMethod foreignSelect(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod foreignSelectPrimaryAndForeign(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -229,7 +231,7 @@ public interface BuildBaseServiceImpl {
      * 构建外表 级联条件查询
      * @return
      */
-    default BuildJavaMethod foreignSelectByCondition(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod foreignSelectPrimaryAndForeignByCondition(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -267,7 +269,7 @@ public interface BuildBaseServiceImpl {
      * 外表级联删除(根据主表删除)
      * @return
      */
-    default BuildJavaMethod foreignDelete(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod foreignDeletePrimaryAndForeign(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -321,6 +323,8 @@ public interface BuildBaseServiceImpl {
         im.add(primary.getExistParentPackage()+"."+ packageBean+"."+primary.getBeanName());
         im.add(foreign.getExistParentPackage()+"."+ packageBean+"."+foreign.getBeanName());
         im.add("java.util.List");
+        im.add("com.github.pagehelper.PageHelper");
+        im.add("com.github.pagehelper.PageInfo");
         return im;
     }
 
@@ -356,9 +360,9 @@ public interface BuildBaseServiceImpl {
         List<BuildJavaMethod> buildJavaMethods =buildJavaConfig.getBuildJavaMethods();
 
         RelationTable primary = relationConfig.getPrimary();
-        buildJavaMethods.add(primarySelect(autoCodeConfig));
-        buildJavaMethods.add(primarySelectByCondition(autoCodeConfig));
-        buildJavaMethods.add(primaryDelete(autoCodeConfig));
+        buildJavaMethods.add(primarySelectPrimaryAndForeign(autoCodeConfig));
+        buildJavaMethods.add(primarySelectPrimaryAndForeignByCondition(autoCodeConfig));
+        buildJavaMethods.add(primaryDeletePrimaryAndForeign(autoCodeConfig));
 
         List<String> imports = buildJavaConfig.getImports();
         imports.addAll(primaryImports(autoCodeConfig));
@@ -378,9 +382,9 @@ public interface BuildBaseServiceImpl {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         List<BuildJavaMethod> buildJavaMethods = buildJavaConfig.getBuildJavaMethods();
         RelationTable foreign = relationConfig.getForeign();
-        buildJavaMethods.add(foreignSelect(autoCodeConfig));
-        buildJavaMethods.add(foreignSelectByCondition(autoCodeConfig));
-        buildJavaMethods.add(foreignDelete(autoCodeConfig));
+        buildJavaMethods.add(foreignSelectPrimaryAndForeign(autoCodeConfig));
+        buildJavaMethods.add(foreignSelectPrimaryAndForeignByCondition(autoCodeConfig));
+        buildJavaMethods.add(foreignDeletePrimaryAndForeign(autoCodeConfig));
         List<String> imports = buildJavaConfig.getImports();
         imports.addAll(foreignImports(autoCodeConfig));
 

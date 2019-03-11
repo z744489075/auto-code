@@ -1,8 +1,11 @@
 package com.zengtengpeng.relation.manyToMany;
 
+import com.zengtengpeng.autoCode.bean.BuildJavaField;
 import com.zengtengpeng.autoCode.bean.BuildJavaMethod;
 import com.zengtengpeng.autoCode.config.AutoCodeConfig;
+import com.zengtengpeng.autoCode.config.BuildJavaConfig;
 import com.zengtengpeng.autoCode.config.GlobalConfig;
+import com.zengtengpeng.autoCode.utils.BuildUtils;
 import com.zengtengpeng.autoCode.utils.MyStringUtils;
 import com.zengtengpeng.relation.bean.RelationTable;
 import com.zengtengpeng.relation.build.BuildBaseServiceImpl;
@@ -12,13 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 构建一对多serviceImpl
+ * 构建多对多serviceImpl
  */
 @FunctionalInterface
 public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
 
     @Override
-    default BuildJavaMethod foreignSelect(AutoCodeConfig autoCodeConfig) {
+    default BuildJavaMethod foreignSelectPrimaryAndForeign(AutoCodeConfig autoCodeConfig) {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -28,7 +31,7 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
     }
 
     @Override
-    default BuildJavaMethod foreignDelete(AutoCodeConfig autoCodeConfig) {
+    default BuildJavaMethod foreignDeletePrimaryAndForeign(AutoCodeConfig autoCodeConfig) {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -38,10 +41,83 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
     }
 
     /**
+     * 重写insert
+     * @param autoCodeConfig
+     * @return
+     */
+    default BuildJavaMethod primaryInsert(AutoCodeConfig autoCodeConfig){
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+        RelationConfig relationConfig = globalConfig.getRelationConfig();
+        RelationTable foreign = relationConfig.getForeign();
+        RelationTable primary = relationConfig.getPrimary();
+        RelationTable thirdparty = relationConfig.getThirdparty();
+        BuildJavaMethod buildJavaMethod=new BuildJavaMethod();
+        buildJavaMethod.setRemark("多对多重写insert");
+        List<String> an=new ArrayList<>();
+        an.add("@Override");
+        buildJavaMethod.setAnnotation(an);
+        List<String> params=new ArrayList<>();
+        params.add(primary.getBeanName()+" "+primary.getBeanNameLower());
+        buildJavaMethod.setParams(params);
+        buildJavaMethod.setMethodName("insert");
+        buildJavaMethod.setMethodType("public");
+        buildJavaMethod.setReturnType("int");
+        StringBuffer text=new StringBuffer();
+        MyStringUtils.append(text,"int insert = %s%s.insert(%s);",2,primary.getBeanNameLower(),globalConfig.getPackageDaoUp(),primary.getBeanNameLower());
+        MyStringUtils.append(text,"String id = %s.get%s();",2,thirdparty.getForeignKeyUp(true));
+        MyStringUtils.append(text,"if(id !=null && !\"\".equals(id)){",2);
+        MyStringUtils.append(text,"String[] split = id.split(\",\");",3);
+        MyStringUtils.append(text,"%s%s.insertRelation(%s.get%s(),split);",3,primary.getBeanNameLower(),
+                globalConfig.getPackageDaoUp(),primary.getBeanNameLower(),primary.getForeignKeyUp(true));
+        MyStringUtils.append(text,"}",2);
+        MyStringUtils.append(text,"return insert;",2);
+
+        return buildJavaMethod;
+    }
+    /**
+     * 重写update
+     * @param autoCodeConfig
+     * @return
+     */
+    default BuildJavaMethod primaryUpdate(AutoCodeConfig autoCodeConfig){
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+        RelationConfig relationConfig = globalConfig.getRelationConfig();
+        RelationTable foreign = relationConfig.getForeign();
+        RelationTable primary = relationConfig.getPrimary();
+        RelationTable thirdparty = relationConfig.getThirdparty();
+        BuildJavaMethod buildJavaMethod=new BuildJavaMethod();
+        buildJavaMethod.setRemark("多对多重写Update");
+        List<String> an=new ArrayList<>();
+        an.add("@Override");
+        buildJavaMethod.setAnnotation(an);
+        List<String> params=new ArrayList<>();
+        params.add(primary.getBeanName()+" "+primary.getBeanNameLower());
+        buildJavaMethod.setParams(params);
+        buildJavaMethod.setMethodName("update");
+        buildJavaMethod.setMethodType("public");
+        buildJavaMethod.setReturnType("int");
+        StringBuffer text=new StringBuffer();
+        MyStringUtils.append(text,"Integer update = %s%s.update(%s);",2,primary.getBeanNameLower(),globalConfig.getPackageDaoUp(),primary.getBeanNameLower());
+        MyStringUtils.append(text,"String id = %s.get%s();",2,thirdparty.getForeignKeyUp(true));
+        MyStringUtils.append(text,"if(id !=null && !\"\".equals(id)){",2);
+        MyStringUtils.append(text,"%s d=new %s();",3,foreign.getBeanName(),foreign.getBeanName());
+        MyStringUtils.append(text,"d.set%s(%s.get%s().toString());",3,thirdparty.getPrimaryKeyUp(true),primary.getBeanNameLower(),primary.getForeignKeyUp(true));
+        MyStringUtils.append(text,"%s%s.delete%sBy%s(d);",3,foreign.getForeignKeyUp(false),
+                globalConfig.getPackageDaoUp(),foreign.getForeignKeyUp(true),primary.getPrimaryKeyUp(true));
+        MyStringUtils.append(text,"String[] split = id.split(\",\");",3);
+        MyStringUtils.append(text,"%s%s.insertRelation(%s.get%s(),split);",3,primary.getBeanNameLower(),
+                globalConfig.getPackageDaoUp(),primary.getBeanNameLower(),primary.getForeignKeyUp(true));
+        MyStringUtils.append(text,"}",2);
+        MyStringUtils.append(text,"return update;",2);
+
+        return buildJavaMethod;
+    }
+
+    /**
      * 构建主表 级联查询(带分页)
      * @return
      */
-    default BuildJavaMethod primarySelect(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod primarySelectPrimaryAndForeign(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -51,8 +127,70 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
                 foreign, primaryKeyUp,primary.getPrimaryKeyUp(true));
     }
 
+    /**
+     *  根据主表id查询外表所有数据(带分页)
+     * @return
+     */
+    default BuildJavaMethod foreignSelectByPrimary(AutoCodeConfig autoCodeConfig){
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+        RelationConfig relationConfig = globalConfig.getRelationConfig();
+        RelationTable primary = relationConfig.getPrimary();
+        RelationTable foreign = relationConfig.getForeign();
+        BuildJavaMethod buildJavaMethod=new BuildJavaMethod();
+        buildJavaMethod.setRemark("根据主表id查询外表所有数据(带分页)");
+        buildJavaMethod.setReturnType(foreign.getBeanName());
+        buildJavaMethod.setMethodType("public");
+        buildJavaMethod.setMethodName(String.format("select%sBy%s",foreign.getBeanName(),primary.getBeanName()));
+        List<String> params=new ArrayList<>();
+        params.add(foreign.getBeanName()+" t");
+        buildJavaMethod.setParams(params);
+        List<String> an=new ArrayList<>();
+        an.add("@Override");
+        buildJavaMethod.setAnnotation(an);
+        StringBuffer content=new StringBuffer();
+        MyStringUtils.append(content,"PageHelper.startPage(t.getPage(), t.getPageSize());");
+        MyStringUtils.append(content,"List<%s> lists = %s%s.select%sBy%s(t);",2,foreign.getBeanName(),foreign.getBeanNameLower(),globalConfig.getPackageDaoUp(),foreign.getBeanName(),primary.getBeanName());
+        MyStringUtils.append(content,"PageInfo pageInfo = new PageInfo(lists);",2);
+        MyStringUtils.append(content,"t.setRows(lists);",2);
+        MyStringUtils.append(content,"t.setTotal((new Long(pageInfo.getTotal())).intValue());",2);
+        MyStringUtils.append(content,"return t;",2);
+        buildJavaMethod.setContent(content.toString());
+        return buildJavaMethod;
+    }
+
+    /**
+     *  根据外表id查询主表表所有数据(带分页)
+     * @return
+     */
+    default BuildJavaMethod primarySelectByForeign(AutoCodeConfig autoCodeConfig){
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+        RelationConfig relationConfig = globalConfig.getRelationConfig();
+        RelationTable foreign = relationConfig.getForeign();
+        RelationTable primary = relationConfig.getPrimary();
+        BuildJavaMethod buildJavaMethod=new BuildJavaMethod();
+        buildJavaMethod.setRemark("根据外表id查询主表所有数据(带分页)");
+        buildJavaMethod.setReturnType(primary.getBeanName());
+        buildJavaMethod.setMethodType("public");
+        buildJavaMethod.setMethodName(String.format("select%sBy%s",primary.getBeanName(),foreign.getBeanName()));
+        List<String> params=new ArrayList<>();
+        params.add(primary.getBeanName()+" t");
+        buildJavaMethod.setParams(params);
+        List<String> an=new ArrayList<>();
+        an.add("@Override");
+        buildJavaMethod.setAnnotation(an);
+        StringBuffer content=new StringBuffer();
+        MyStringUtils.append(content,"PageHelper.startPage(t.getPage(), t.getPageSize());");
+        MyStringUtils.append(content,"List<%s> lists = %s%s.select%sBy%s(t);",2,primary.getBeanName(),primary.getBeanNameLower(),globalConfig.getPackageDaoUp(),primary.getBeanName(),foreign.getBeanName());
+        MyStringUtils.append(content,"PageInfo pageInfo = new PageInfo(lists);",2);
+        MyStringUtils.append(content,"t.setRows(lists);",2);
+        MyStringUtils.append(content,"t.setTotal((new Long(pageInfo.getTotal())).intValue());",2);
+        MyStringUtils.append(content,"return t;",2);
+        buildJavaMethod.setContent(content.toString());
+        return buildJavaMethod;
+    }
+
     @Override
-    default BuildJavaMethod primarySelectByCondition(AutoCodeConfig autoCodeConfig) {
+    default BuildJavaMethod primarySelectPrimaryAndForeignByCondition(AutoCodeConfig autoCodeConfig) {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         BuildJavaMethod javaMethod = new BuildJavaMethod();
         RelationTable primary = relationConfig.getPrimary();
@@ -90,7 +228,7 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
     }
 
     @Override
-    default BuildJavaMethod foreignSelectByCondition(AutoCodeConfig autoCodeConfig) {
+    default BuildJavaMethod foreignSelectPrimaryAndForeignByCondition(AutoCodeConfig autoCodeConfig) {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -110,16 +248,6 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
         params.add(foreignBeanName +" "+ foreignBeanNameLower);
         foreignSelect.setParams(params);
         StringBuffer content=new StringBuffer();
-        //List<Clazz> datas = this.selectByCondition(clazz);
-        //		if(datas!=null){
-        //			datas.forEach(t->{
-        //				User user=new User();
-        //				user.setRoleId(t.getUserId().toString());
-        //				List<User> lists=userDao.selectUserByClazz(user);
-        //				t.setUserList(lists);
-        //			});
-        //		}
-        //		return clazz;
         MyStringUtils.append(content,"List<%s> datas = this.selectByCondition(%s);",foreignBeanName,foreignBeanNameLower);
         MyStringUtils.append(content,"if(datas!=null){",2);
         MyStringUtils.append(content,"datas.forEach(t->{",3);
@@ -177,13 +305,15 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
      * @return
      */
     @Override
-    default BuildJavaMethod primaryDelete(AutoCodeConfig autoCodeConfig) {
+    default BuildJavaMethod primaryDeletePrimaryAndForeign(AutoCodeConfig autoCodeConfig) {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         String primaryKeyUp = relationConfig.getThirdparty().getPrimaryKeyUp(true);
         return delete(String.format("delete%sAnd%s", primary.getBeanName(), foreign.getBeanName()),autoCodeConfig, primary, foreign,primaryKeyUp,primary.getPrimaryKeyUp(true));
     }
+
+
 
     default BuildJavaMethod delete(String methodName, AutoCodeConfig autoCodeConfig, RelationTable primary,
                                    RelationTable foreign, String primaryKeyUp, String keyUp) {
@@ -214,5 +344,55 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
         deleteTestUserAndTestClass.setContent(content.toString());
         deleteTestUserAndTestClass.setRemark("级联删除(根据主表删除) "+primary.getRemark()+"--"+foreign.getRemark());
         return deleteTestUserAndTestClass;
+    }
+
+    /**
+     * 构建主表的serverimpl
+     */
+    default void buildPrimary(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
+        List<BuildJavaMethod> buildJavaMethods =buildJavaConfig.getBuildJavaMethods();
+
+        RelationTable primary = relationConfig.getPrimary();
+        buildJavaMethods.add(primaryInsert(autoCodeConfig));
+        buildJavaMethods.add(primaryUpdate(autoCodeConfig));
+        buildJavaMethods.add(primarySelectPrimaryAndForeign(autoCodeConfig));
+        buildJavaMethods.add(primarySelectPrimaryAndForeignByCondition(autoCodeConfig));
+        buildJavaMethods.add(primaryDeletePrimaryAndForeign(autoCodeConfig));
+        buildJavaMethods.add(primarySelectByForeign(autoCodeConfig));
+
+        List<String> imports = buildJavaConfig.getImports();
+        imports.addAll(primaryImports(autoCodeConfig));
+
+        List<BuildJavaField> buildJavaFields = buildJavaConfig.getBuildJavaFields();
+        buildJavaFields.addAll(primaryFields(autoCodeConfig));
+
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+        String filePath = BuildUtils.packageJavaPath(globalConfig.getParentPathJavaSource(), primary.getExistParentPackage(),
+                globalConfig.getPackageService())+"/impl"+"/"+primary.getBeanName()+globalConfig.getPackageServiceUp()+"Impl"+".java";
+        BuildUtils.addJavaCode(filePath,buildJavaMethods,buildJavaFields,imports);
+    }
+
+    /**
+     * 构建外表的ServiceImpl
+     */
+    default void buildForeign(AutoCodeConfig autoCodeConfig, BuildJavaConfig buildJavaConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
+        List<BuildJavaMethod> buildJavaMethods = buildJavaConfig.getBuildJavaMethods();
+        RelationTable foreign = relationConfig.getForeign();
+        buildJavaMethods.add(foreignSelectPrimaryAndForeign(autoCodeConfig));
+        buildJavaMethods.add(foreignSelectPrimaryAndForeignByCondition(autoCodeConfig));
+        buildJavaMethods.add(foreignDeletePrimaryAndForeign(autoCodeConfig));
+        buildJavaMethods.add(foreignSelectByPrimary(autoCodeConfig));
+        List<String> imports = buildJavaConfig.getImports();
+        imports.addAll(foreignImports(autoCodeConfig));
+
+        List<BuildJavaField> buildJavaFields = buildJavaConfig.getBuildJavaFields();
+        buildJavaFields.addAll(foreignFields(autoCodeConfig));
+
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+        String filePath = BuildUtils.packageJavaPath(globalConfig.getParentPathJavaSource(), foreign.getExistParentPackage(),
+                globalConfig.getPackageService()+"/impl")+"/"+foreign.getBeanName()+globalConfig.getPackageServiceUp()+"Impl"+".java";
+        BuildUtils.addJavaCode(filePath,buildJavaMethods,buildJavaFields,imports);
     }
 }

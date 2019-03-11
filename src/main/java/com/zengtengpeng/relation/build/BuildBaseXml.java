@@ -3,7 +3,6 @@ package com.zengtengpeng.relation.build;
 import com.zengtengpeng.autoCode.bean.BuildXmlBean;
 import com.zengtengpeng.autoCode.config.AutoCodeConfig;
 import com.zengtengpeng.autoCode.config.GlobalConfig;
-import com.zengtengpeng.autoCode.enums.XmlElementType;
 import com.zengtengpeng.autoCode.utils.BuildUtils;
 import com.zengtengpeng.relation.bean.RelationTable;
 import com.zengtengpeng.relation.config.RelationConfig;
@@ -12,9 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 构建一对一Xml
@@ -38,7 +35,7 @@ public interface BuildBaseXml {
      * 外表级联删除(根据主键删除)
      * @return
      */
-    default BuildXmlBean foreignDelete(AutoCodeConfig autoCodeConfig){
+    default BuildXmlBean foreignDeleteForeignByPrimary(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         return RelationBuilUtils.getXmlBaseDelete(relationConfig.getPrimary(),relationConfig.getForeign());
     }
@@ -60,7 +57,7 @@ public interface BuildBaseXml {
     default void buildForeign(AutoCodeConfig autoCodeConfig, List<BuildXmlBean> buildXmlBeans){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
-        buildXmlBeans.add(foreignDelete(autoCodeConfig));
+        buildXmlBeans.add(foreignDeleteForeignByPrimary(autoCodeConfig));
 
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         String filePath = BuildUtils.packageXmlPath(globalConfig.getParentPathResources(),globalConfig.getXmlPath())+"/"+foreign.getBeanName()+globalConfig.getPackageDaoUp()+".xml";

@@ -3,6 +3,7 @@ package com.zengtengpeng.autoCode.utils;
 import com.zengtengpeng.autoCode.bean.BuildJavaField;
 import com.zengtengpeng.autoCode.bean.BuildJavaMethod;
 import com.zengtengpeng.autoCode.bean.BuildXmlBean;
+import com.zengtengpeng.jdbc.bean.Bean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -311,7 +312,7 @@ public class BuildUtils {
             buildJavaMethods.forEach(t->{
                 StringBuffer c=new StringBuffer();
                 BuildUtils.buildMethod(c,t);
-                if(content.indexOf(c.toString())<0){
+                if(content.indexOf(t.getMethodName()+"(")<0){
                     buildJavaMethod.add(t);
                 }else {
                     logger.info("查找到重复,忽略生成 文件{}\n内容->{}",file,c.toString());
@@ -326,6 +327,32 @@ public class BuildUtils {
         }finally {
             colse(fileInputStream, fileOutputStream);
         }
+    }
+
+    /**
+     * 构建where语句
+     * @param bean
+     * @param sql
+     */
+    public static void xmlWhere(Bean bean, StringBuffer sql) {
+
+        bean.getAllColumns().forEach(t -> {
+            String javaProperty = t.getBeanName();
+            if ("java.lang.String".equalsIgnoreCase(t.getBeanType())) {
+                MyStringUtils.append(sql, "<if test=\"%s!=null and %s!=''\"> and %s.%s = #{%s,jdbcType=%s}</if>",2,
+                        javaProperty, javaProperty,bean.getDataName(), t.getJdbcName(), javaProperty, t.getJdbcType_());
+            } else {
+                MyStringUtils.append(sql, "<if test=\"%s!=null \"> and %s.%s = #{%s,jdbcType=%s}</if>",2,
+                        javaProperty,bean.getDataName(), t.getJdbcName(), javaProperty, t.getJdbcType_());
+            }
+
+            //增加创建时间
+            if (javaProperty.equals("createDate") || javaProperty.equals("createTime") || javaProperty.equals("addtime") || javaProperty.equals("addTime")) {
+                MyStringUtils.append(sql, "<if test=\" startDate!=null and startDate!='' and endDate!=null and endDate!='' \"> " +
+                                "and %s.%s BETWEEN #{startDate} and #{endDate}</if>",2,
+                        bean.getDataName(),t.getJdbcName());
+            }
+        });
     }
 
 }

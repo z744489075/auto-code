@@ -11,7 +11,6 @@ import com.zengtengpeng.relation.config.RelationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,17 +36,17 @@ public interface BuildBaseController {
      * 构建外表 级联查询(带分页) 默认 page=1 pageSize等于10 详见 Page类(所有bean都继承该类)
      * @return
      */
-    default BuildJavaMethod foreignSelect(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod foreignSelectForeignAndPrimary(AutoCodeConfig autoCodeConfig){
 
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         BuildJavaMethod foreignSelect = new BuildJavaMethod();
         List<String> an = new ArrayList<>();
-        an.add("@ResponseBody");
         String foreignBeanName = foreign.getBeanName();
         String primaryKeyBeanName = primary.getBeanName();
         an.add(String.format("@RequestMapping(\"%s/select%sAnd%s\")", foreign.getBeanNameLower(), primaryKeyBeanName, foreignBeanName));
+        an.add("@ResponseBody");
         foreignSelect.setAnnotation(an);
         foreignSelect.setReturnType("DataRes");
         foreignSelect.setMethodType("public");
@@ -67,17 +66,17 @@ public interface BuildBaseController {
      * @param autoCodeConfig
      * @return
      */
-    default BuildJavaMethod foreignSelectByCondition(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod foreignSelectForeignAndPrimaryByCondition(AutoCodeConfig autoCodeConfig){
 
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         BuildJavaMethod foreignSelect = new BuildJavaMethod();
         List<String> an = new ArrayList<>();
-        an.add("@ResponseBody");
         String foreignBeanName = foreign.getBeanName();
         String primaryKeyBeanName = primary.getBeanName();
         an.add(String.format("@RequestMapping(\"%s/select%sAnd%sByCondition\")", foreign.getBeanNameLower(), primaryKeyBeanName, foreignBeanName));
+        an.add("@ResponseBody");
         foreignSelect.setAnnotation(an);
         foreignSelect.setReturnType("DataRes");
         foreignSelect.setMethodType("public");
@@ -97,17 +96,17 @@ public interface BuildBaseController {
      * 构建主表 级联查询(带分页)  默认 page=1 pageSize等于10 详见 Page类(所有bean都继承该类)
      * @return
      */
-    default BuildJavaMethod primarySelect(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod primarySelectPrimaryAndForeign(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         BuildJavaMethod foreignSelect = new BuildJavaMethod();
         List<String> an = new ArrayList<>();
-        an.add("@ResponseBody");
         String primaryKeyBeanName_ =primary.getBeanNameLower();
         String foreignBeanName = foreign.getBeanName();
         String primaryKeyBeanName = primary.getBeanName();
         an.add(String.format("@RequestMapping(\"%s/select%sAnd%s\")", primaryKeyBeanName_, primaryKeyBeanName, foreignBeanName));
+        an.add("@ResponseBody");
         foreignSelect.setAnnotation(an);
         foreignSelect.setReturnType("DataRes");
         foreignSelect.setMethodType("public");
@@ -125,17 +124,17 @@ public interface BuildBaseController {
      * 构建主表 级联条件查询
      * @return
      */
-    default BuildJavaMethod primarySelectByCondition(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod primarySelectPrimaryAndForeignByCondition(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
         BuildJavaMethod foreignSelect = new BuildJavaMethod();
         List<String> an = new ArrayList<>();
-        an.add("@ResponseBody");
         String primaryKeyBeanName_ =primary.getBeanNameLower();
         String foreignBeanName = foreign.getBeanName();
         String primaryKeyBeanName = primary.getBeanName();
         an.add(String.format("@RequestMapping(\"%s/select%sAnd%sByCondition\")", primaryKeyBeanName_, primaryKeyBeanName, foreignBeanName));
+        an.add("@ResponseBody");
         foreignSelect.setAnnotation(an);
         foreignSelect.setReturnType("DataRes");
         foreignSelect.setMethodType("public");
@@ -156,7 +155,7 @@ public interface BuildBaseController {
      * 主表级联删除(根据主键删除)
      * @return
      */
-    default BuildJavaMethod primaryDelete(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod primaryDeletePrimaryAndForeign(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -165,8 +164,8 @@ public interface BuildBaseController {
         String primaryKeyBeanName = primary.getBeanName();
         BuildJavaMethod deleteTestUserAndTestClass = new BuildJavaMethod();
         List<String> an = new ArrayList<>();
-        an.add("@ResponseBody");
         an.add(String.format("@RequestMapping(\"%s/delete%sAnd%s\")", primaryKeyBeanName_, primaryKeyBeanName, foreignBeanName));
+        an.add("@ResponseBody");
         deleteTestUserAndTestClass.setAnnotation(an);
         deleteTestUserAndTestClass.setReturnType("DataRes");
         deleteTestUserAndTestClass.setMethodType("public");
@@ -184,7 +183,7 @@ public interface BuildBaseController {
      * 外表级联删除(根据主键删除)
      * @return
      */
-    default BuildJavaMethod foreignDelete(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod foreignDeleteForeignAndPrimary(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -192,8 +191,8 @@ public interface BuildBaseController {
         String primaryKeyBeanName = primary.getBeanName();
         BuildJavaMethod deleteTestUserAndTestClass = new BuildJavaMethod();
         List<String> an = new ArrayList<>();
-        an.add("@ResponseBody");
         an.add(String.format("@RequestMapping(\"%s/delete%sAnd%s\")", foreign.getBeanNameLower(), primaryKeyBeanName, foreignBeanName));
+        an.add("@ResponseBody");
         deleteTestUserAndTestClass.setAnnotation(an);
         deleteTestUserAndTestClass.setReturnType("DataRes");
         deleteTestUserAndTestClass.setMethodType("public");
@@ -219,6 +218,7 @@ public interface BuildBaseController {
         RelationTable primary = relationConfig.getPrimary();
         List<String> imports=new ArrayList<>();
         imports.add(primary.getExistParentPackage()+"."+globalConfig.getPackageService()+"."+primary.getBeanName()+globalConfig.getPackageServiceUp());
+        imports.add(primary.getExistParentPackage()+"."+globalConfig.getPackageBean()+"."+primary.getBeanName());
         return imports;
     }
 
@@ -276,6 +276,7 @@ public interface BuildBaseController {
         RelationTable foreign = relationConfig.getForeign();
         List<String> imports=new ArrayList<>();
         imports.add(foreign.getExistParentPackage()+"."+globalConfig.getPackageService()+"."+foreign.getBeanName()+globalConfig.getPackageServiceUp());
+        imports.add(foreign.getExistParentPackage()+"."+globalConfig.getPackageBean()+"."+foreign.getBeanName());
         return imports;
     }
 
@@ -286,9 +287,9 @@ public interface BuildBaseController {
         List<BuildJavaMethod> buildJavaMethods =buildJavaConfig.getBuildJavaMethods();
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
-        buildJavaMethods.add(primarySelect(autoCodeConfig));
-        buildJavaMethods.add(primarySelectByCondition(autoCodeConfig));
-        buildJavaMethods.add(primaryDelete(autoCodeConfig));
+        buildJavaMethods.add(primarySelectPrimaryAndForeign(autoCodeConfig));
+        buildJavaMethods.add(primarySelectPrimaryAndForeignByCondition(autoCodeConfig));
+        buildJavaMethods.add(primaryDeletePrimaryAndForeign(autoCodeConfig));
 
         List<String> imports = buildJavaConfig.getImports();
         if(imports==null){
@@ -314,9 +315,9 @@ public interface BuildBaseController {
         List<BuildJavaMethod> buildJavaMethods = buildJavaConfig.getBuildJavaMethods();
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
-        buildJavaMethods.add(foreignSelect(autoCodeConfig));
-        buildJavaMethods.add(foreignSelectByCondition(autoCodeConfig));
-        buildJavaMethods.add(foreignDelete(autoCodeConfig));
+        buildJavaMethods.add(foreignSelectForeignAndPrimary(autoCodeConfig));
+        buildJavaMethods.add(foreignSelectForeignAndPrimaryByCondition(autoCodeConfig));
+        buildJavaMethods.add(foreignDeleteForeignAndPrimary(autoCodeConfig));
         List<String> imports = buildJavaConfig.getImports();
         if(imports==null){
             imports=new ArrayList<>();

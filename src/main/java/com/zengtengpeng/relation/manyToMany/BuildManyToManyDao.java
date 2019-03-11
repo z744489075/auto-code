@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 构建一对多dao
+ * 构建多对多dao
  */
 @FunctionalInterface
 public interface BuildManyToManyDao extends BuildBaseDao {
@@ -32,11 +32,11 @@ public interface BuildManyToManyDao extends BuildBaseDao {
     }
 
     /**
-     * 主表查询
+     * 根据外表id查询主表所有数据(带分页)
      * @param autoCodeConfig
      * @return
      */
-    default BuildJavaMethod primarySelect(AutoCodeConfig autoCodeConfig) {
+    default BuildJavaMethod primarySelectPrimaryAndForeign(AutoCodeConfig autoCodeConfig) {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -59,7 +59,7 @@ public interface BuildManyToManyDao extends BuildBaseDao {
      * 主表删除
      * @return
      */
-    default BuildJavaMethod primaryDelete(AutoCodeConfig autoCodeConfig) {
+    default BuildJavaMethod primaryDeletePrimaryAndForeign(AutoCodeConfig autoCodeConfig) {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -69,10 +69,10 @@ public interface BuildManyToManyDao extends BuildBaseDao {
 
 
     /**
-     * 外表查询
+     * 根据主表id查询外表所有数据(带分页)
      * @return
      */
-    default BuildJavaMethod foreignSelect(AutoCodeConfig autoCodeConfig) {
+    default BuildJavaMethod foreignSelectForeignAndPrimary(AutoCodeConfig autoCodeConfig) {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable  primary= relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -98,8 +98,8 @@ public interface BuildManyToManyDao extends BuildBaseDao {
         RelationTable primary = relationConfig.getPrimary();
 
         List<BuildJavaMethod> buildJavaMethods =buildJavaConfig.getBuildJavaMethods();
-        buildJavaMethods.add(primarySelect(autoCodeConfig));
-        buildJavaMethods.add(primaryDelete(autoCodeConfig));
+        buildJavaMethods.add(primarySelectPrimaryAndForeign(autoCodeConfig));
+        buildJavaMethods.add(primaryDeletePrimaryAndForeign(autoCodeConfig));
 
         List<String> imports = buildJavaConfig.getImports();
         imports.addAll(primaryImports(autoCodeConfig));
@@ -117,8 +117,8 @@ public interface BuildManyToManyDao extends BuildBaseDao {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
         List<BuildJavaMethod> buildJavaMethods = buildJavaConfig.getBuildJavaMethods();
-        buildJavaMethods.add(foreignSelect(autoCodeConfig));
-        buildJavaMethods.add(foreignDelete(autoCodeConfig));
+        buildJavaMethods.add(foreignSelectForeignAndPrimary(autoCodeConfig));
+        buildJavaMethods.add(foreignDeletePrimaryByForeign(autoCodeConfig));
 
         List<String> imports = buildJavaConfig.getImports();
         imports.addAll(foreignImports(autoCodeConfig));

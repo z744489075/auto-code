@@ -35,7 +35,7 @@ public interface BuildBaseService {
      * 构建外表 级联查询(带分页)
      * @return
      */
-    default BuildJavaMethod foreignSelect(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod foreignSelectPrimaryAndForeign(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -54,7 +54,7 @@ public interface BuildBaseService {
      * 构建外表 级联查询
      * @return
      */
-    default BuildJavaMethod foreignSelectByCondition(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod foreignSelectPrimaryAndForeignByCondition(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -76,7 +76,7 @@ public interface BuildBaseService {
      * 构建主表 级联查询(带分页)
      * @return
      */
-    default BuildJavaMethod primarySelect(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod primarySelectPrimaryAndForeign(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -95,7 +95,7 @@ public interface BuildBaseService {
      * 构建主表 级联条件查询
      * @return
      */
-    default BuildJavaMethod primarySelectByCondition(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod primarySelectPrimaryAndForeignByCondition(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -115,7 +115,7 @@ public interface BuildBaseService {
      * 主表级联删除(根据主键删除)
      * @return
      */
-    default BuildJavaMethod primaryDelete(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod primaryDeletePrimaryAndForeign(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -177,9 +177,9 @@ public interface BuildBaseService {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         List<BuildJavaMethod> buildJavaMethods =buildJavaConfig.getBuildJavaMethods();
         RelationTable primary = relationConfig.getPrimary();
-        buildJavaMethods.add(primarySelect(autoCodeConfig));
-        buildJavaMethods.add(primarySelectByCondition(autoCodeConfig));
-        buildJavaMethods.add(primaryDelete(autoCodeConfig));
+        buildJavaMethods.add(primarySelectPrimaryAndForeign(autoCodeConfig));
+        buildJavaMethods.add(primarySelectPrimaryAndForeignByCondition(autoCodeConfig));
+        buildJavaMethods.add(primaryDeletePrimaryAndForeign(autoCodeConfig));
 
         List<String> imports = buildJavaConfig.getImports();
         imports.addAll(primaryImports(autoCodeConfig));
@@ -197,8 +197,8 @@ public interface BuildBaseService {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         List<BuildJavaMethod> buildJavaMethods = buildJavaConfig.getBuildJavaMethods();
         RelationTable foreign = relationConfig.getForeign();
-        buildJavaMethods.add(foreignSelect(autoCodeConfig));
-        buildJavaMethods.add(foreignSelectByCondition(autoCodeConfig));
+        buildJavaMethods.add(foreignSelectPrimaryAndForeign(autoCodeConfig));
+        buildJavaMethods.add(foreignSelectPrimaryAndForeignByCondition(autoCodeConfig));
         buildJavaMethods.add(foreignDelete(autoCodeConfig));
         List<String> imports = buildJavaConfig.getImports();
         imports.addAll(foreignImports(autoCodeConfig));

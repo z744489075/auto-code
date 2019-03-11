@@ -19,7 +19,7 @@ public interface BuildOneToManyServiceImpl extends BuildBaseServiceImpl {
      * 构建主表 级联查询(带分页)
      * @return
      */
-    default BuildJavaMethod primarySelect(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod primarySelectPrimaryAndForeign(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -62,7 +62,7 @@ public interface BuildOneToManyServiceImpl extends BuildBaseServiceImpl {
      * @return
      */
     @Override
-    default BuildJavaMethod primarySelectByCondition(AutoCodeConfig autoCodeConfig) {
+    default BuildJavaMethod primarySelectPrimaryAndForeignByCondition(AutoCodeConfig autoCodeConfig) {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();

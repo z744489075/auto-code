@@ -184,26 +184,11 @@ public interface BuildXml {
         bean.getAllColumns().forEach(t -> MyStringUtils.append(sql, "%s,",2, t.getJdbcName()));
         sql.deleteCharAt(sql.length() - 2);
 
-        MyStringUtils.append(sql, "from %s",2, bean.getDataName());
-        MyStringUtils.append(sql, "<where>",2);
+        MyStringUtils.append(sql, "from %s",2, bean.getDataName(),bean.getDataName());
         BeanColumn beanColumn = bean.getPrimaryKey().get(0);
-        bean.getAllColumns().forEach(t -> {
-                String javaProperty = t.getBeanName();
-                if ("java.lang.String".equalsIgnoreCase(t.getBeanType())) {
-                    MyStringUtils.append(sql, "<if test=\"%s!=null and %s!=''\"> and %s = #{%s,jdbcType=%s}</if>",2,
-                            javaProperty, javaProperty, t.getJdbcName(), javaProperty, t.getJdbcType_());
-                } else {
-                    MyStringUtils.append(sql, "<if test=\"%s!=null \"> and %s = #{%s,jdbcType=%s}</if>",2,
-                            javaProperty, t.getJdbcName(), javaProperty, t.getJdbcType_());
-                }
 
-                //增加创建时间
-                if (javaProperty.equals("createDate") || javaProperty.equals("createTime") || javaProperty.equals("addtime") || javaProperty.equals("addTime")) {
-                    MyStringUtils.append(sql, "<if test=\" startDate!=null and startDate!='' and endDate!=null and endDate!='' \"> " +
-                                    "and %s BETWEEN #{startDate} and #{endDate}</if>",2,
-                            t.getJdbcName());
-                }
-        });
+        MyStringUtils.append(sql, "<where>",2);
+        BuildUtils.xmlWhere(bean, sql);
         MyStringUtils.append(sql, "</where>",2);
         MyStringUtils.append(sql, "<choose>\n" +
                 "          <when test=\"orderByString!=null and orderByString!=''\">\n" +
@@ -217,6 +202,8 @@ public interface BuildXml {
         buildXmlBean.setSql(sql.toString());
         content.append(BuildUtils.buildXml(buildXmlBean));
     }
+
+
 
     /**
      * 创建之前的准备工作

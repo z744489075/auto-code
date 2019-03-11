@@ -12,7 +12,6 @@ import com.zengtengpeng.relation.utils.RelationBuilUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,7 +36,7 @@ public interface BuildBaseDao {
      * 外表级联删除(根据主键删除)
      * @return
      */
-    default BuildJavaMethod foreignDelete(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod foreignDeletePrimaryByForeign(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -70,7 +69,7 @@ public interface BuildBaseDao {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
         List<BuildJavaMethod> buildJavaMethods = buildJavaConfig.getBuildJavaMethods();
-        buildJavaMethods.add(foreignDelete(autoCodeConfig));
+        buildJavaMethods.add(foreignDeletePrimaryByForeign(autoCodeConfig));
         List<String> imports = buildJavaConfig.getImports();
 
         List<BuildJavaField> buildJavaFields = buildJavaConfig.getBuildJavaFields();

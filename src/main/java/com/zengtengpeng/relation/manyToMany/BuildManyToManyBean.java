@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 构建一对多Bean
+ * 构建多对多Bean
  */
 @FunctionalInterface
 public interface BuildManyToManyBean extends BuildBaseBean {

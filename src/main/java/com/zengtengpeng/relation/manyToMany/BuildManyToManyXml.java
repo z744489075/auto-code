@@ -11,7 +11,6 @@ import com.zengtengpeng.jdbc.bean.Bean;
 import com.zengtengpeng.relation.bean.RelationTable;
 import com.zengtengpeng.relation.build.BuildBaseXml;
 import com.zengtengpeng.relation.config.RelationConfig;
-import com.zengtengpeng.relation.utils.RelationBuilUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +45,7 @@ public interface BuildManyToManyXml extends BuildBaseXml {
     }
 
     @Override
-    default BuildXmlBean foreignDelete(AutoCodeConfig autoCodeConfig) {
+    default BuildXmlBean foreignDeleteForeignByPrimary(AutoCodeConfig autoCodeConfig) {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
         RelationTable primary = relationConfig.getPrimary();
@@ -97,6 +96,8 @@ public interface BuildManyToManyXml extends BuildBaseXml {
                 ,thirdparty.getDataName(), thirdparty.getPrimaryKey());
         MyStringUtils.append(content,"and %s.%s=#{%s}",2,thirdparty.getDataName(), thirdparty.getForeignKey(), thirdparty.getForeignKeyUp(false));
 
+        BuildUtils.xmlWhere(bean, content);
+
         buildXmlBean.setSql(content.toString());
         return buildXmlBean;
     }
@@ -134,6 +135,8 @@ public interface BuildManyToManyXml extends BuildBaseXml {
                 ,thirdparty.getDataName(), thirdparty.getForeignKey());
         MyStringUtils.append(content,"and %s.%s=#{%s}",2,thirdparty.getDataName(), thirdparty.getPrimaryKey(), thirdparty.getPrimaryKeyUp(false));
 
+        BuildUtils.xmlWhere(bean, content);
+
         buildXmlBean.setSql(content.toString());
         return buildXmlBean;
     }
@@ -158,7 +161,7 @@ public interface BuildManyToManyXml extends BuildBaseXml {
         RelationTable foreign = relationConfig.getForeign();
 
         buildXmlBeans.add(foreignSelect(autoCodeConfig));
-        buildXmlBeans.add(foreignDelete(autoCodeConfig));
+        buildXmlBeans.add(foreignDeleteForeignByPrimary(autoCodeConfig));
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         String filePath = BuildUtils.packageXmlPath(globalConfig.getParentPathResources(),globalConfig.getXmlPath())+"/"+foreign.getBeanName()+globalConfig.getPackageDaoUp()+".xml";
         BuildUtils.addXmlSql(filePath,buildXmlBeans);
