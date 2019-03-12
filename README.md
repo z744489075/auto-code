@@ -125,14 +125,10 @@ globalConfig:
 ```java
 import com.zengtengpeng.autoCode.StartCode;
 
-/**
- * 单表生成实例
- */
 public class Demo1simple {
     public static void main(String[] args) {
         //lambda表达式写法 二选一
         StartCode startCode=t->{};
-
         //普通写法 二选一
 //        StartCode startCode=new StartCode() {
 //            @Override
@@ -140,7 +136,6 @@ public class Demo1simple {
 //
 //            }
 //        };
-        
         startCode.start(StartCode.saxYaml("auto-code_simple.yaml"));
     }
 }
@@ -265,9 +260,6 @@ import com.zengtengpeng.relation.utils.RelationUtils;
 import com.zengtengpeng.autoCode.StartCode;
 import com.zengtengpeng.relation.utils.RelationUtils;
 
-/**
- * 一对一生成实例 test_user 一个用户 对应 test_class 一个班级
- */
 public class Demo2OneToOne {
     public static void main(String[] args) {
         //普通写法
@@ -285,9 +277,7 @@ public class Demo2OneToOne {
     }
 }
 ```
-
 > 3. 生成完毕 一对多会在单表的基础上再增加6个接口(采用追加代码的方式,不用担心代码覆盖问题) 主表3个 外表3个
-
 ClazzController 新增
 ```
             /**
