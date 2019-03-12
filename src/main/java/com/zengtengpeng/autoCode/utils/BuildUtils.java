@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -187,14 +188,20 @@ public class BuildUtils {
 
     public static void create(String context, File file) {
         FileOutputStream fileOutputStream = null;
+        OutputStreamWriter outputStreamWriter=null;
         try {
             fileOutputStream = new FileOutputStream(file);
-
-            fileOutputStream.write(context.getBytes(StandardCharsets.UTF_8));
+            outputStreamWriter=new OutputStreamWriter(fileOutputStream);
+            outputStreamWriter.write(context);
+            outputStreamWriter.flush();
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
             try {
+                if(outputStreamWriter!=null){
+                    outputStreamWriter.close();
+                }
+
                 if (fileOutputStream != null) {
                     fileOutputStream.close();
                 }
@@ -214,6 +221,7 @@ public class BuildUtils {
         }
         FileInputStream fileInputStream=null;
         FileOutputStream fileOutputStream=null;
+        OutputStreamWriter outputStreamWriter=null;
         try {
             fileInputStream=new FileInputStream(file);
             StringBuffer content=new StringBuffer();
@@ -236,19 +244,24 @@ public class BuildUtils {
             content.insert(content.lastIndexOf("</mapper>")-1,sql);
 
             fileOutputStream=new FileOutputStream(file);
-            fileOutputStream.write(content.toString().getBytes(StandardCharsets.UTF_8));
+            outputStreamWriter=new OutputStreamWriter(fileOutputStream);
+            outputStreamWriter.write(content.toString());
+            outputStreamWriter.flush();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }finally {
-            colse(fileInputStream, fileOutputStream);
+            colse(fileInputStream, fileOutputStream,outputStreamWriter);
         }
 
     }
 
-    public static void colse(FileInputStream fileInputStream, FileOutputStream fileOutputStream) {
+    public static void colse(FileInputStream fileInputStream, FileOutputStream fileOutputStream,OutputStreamWriter outputStreamWriter) {
         try {
             if (fileInputStream != null) {
                 fileInputStream.close();
+            }
+            if(outputStreamWriter!=null){
+                outputStreamWriter.close();
             }
             if (fileOutputStream != null) {
                 fileOutputStream.close();
@@ -270,6 +283,7 @@ public class BuildUtils {
         }
         FileInputStream fileInputStream=null;
         FileOutputStream fileOutputStream=null;
+        OutputStreamWriter outputStreamWriter=null;
         try {
             fileInputStream=new FileInputStream(file);
             StringBuffer content=new StringBuffer();
@@ -323,11 +337,13 @@ public class BuildUtils {
             BuildUtils.buildMethods(buildJavaMethod,me);
             content.insert(content.lastIndexOf("}")-1,me);
             fileOutputStream=new FileOutputStream(file);
-            fileOutputStream.write(content.toString().getBytes(StandardCharsets.UTF_8));
+            outputStreamWriter=new OutputStreamWriter(fileOutputStream);
+            outputStreamWriter.write(content.toString());
+            outputStreamWriter.flush();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }finally {
-            colse(fileInputStream, fileOutputStream);
+            colse(fileInputStream, fileOutputStream,outputStreamWriter);
         }
     }
 
