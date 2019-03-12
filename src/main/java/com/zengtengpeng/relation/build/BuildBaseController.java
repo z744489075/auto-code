@@ -219,6 +219,7 @@ public interface BuildBaseController {
         List<String> imports=new ArrayList<>();
         imports.add(primary.getExistParentPackage()+"."+globalConfig.getPackageService()+"."+primary.getBeanName()+globalConfig.getPackageServiceUp());
         imports.add(primary.getExistParentPackage()+"."+globalConfig.getPackageBean()+"."+primary.getBeanName());
+        imports.add("java.util.ArrayList");
         return imports;
     }
 
@@ -277,6 +278,7 @@ public interface BuildBaseController {
         List<String> imports=new ArrayList<>();
         imports.add(foreign.getExistParentPackage()+"."+globalConfig.getPackageService()+"."+foreign.getBeanName()+globalConfig.getPackageServiceUp());
         imports.add(foreign.getExistParentPackage()+"."+globalConfig.getPackageBean()+"."+foreign.getBeanName());
+        imports.add("java.util.ArrayList");
         return imports;
     }
 

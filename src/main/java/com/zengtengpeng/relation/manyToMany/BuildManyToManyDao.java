@@ -28,6 +28,7 @@ public interface BuildManyToManyDao extends BuildBaseDao {
     default List<String> primaryImports(AutoCodeConfig autoCodeConfig){
         List list=new ArrayList();
         list.add("java.util.List");
+        list.add("org.apache.ibatis.annotations.Param");
         return list;
     }
 
@@ -87,7 +88,47 @@ public interface BuildManyToManyDao extends BuildBaseDao {
     default List<String> foreignImports(AutoCodeConfig autoCodeConfig){
         List list=new ArrayList();
         list.add("java.util.List");
+        list.add("org.apache.ibatis.annotations.Param");
         return list;
+    }
+
+    /**
+     * 外表级联新增
+     * @return
+     */
+    default BuildJavaMethod foreignInsertRelation(AutoCodeConfig autoCodeConfig) {
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
+        RelationTable  primary= relationConfig.getPrimary();
+        RelationTable foreign = relationConfig.getForeign();
+        RelationTable thirdparty = relationConfig.getThirdparty();
+        BuildJavaMethod buildJavaMethod=new BuildJavaMethod();
+        buildJavaMethod.setRemark("级联新增");
+        buildJavaMethod.setReturnType("Integer");
+        buildJavaMethod.setMethodName("insertRelation");
+        List<String> params=new ArrayList<>();
+        params.add("@Param(\"id\") String id");
+        params.add("@Param(\""+thirdparty.getPrimaryKeyUp(false)+"\") String[] "+thirdparty.getPrimaryKeyUp(false));
+        buildJavaMethod.setParams(params);
+        return buildJavaMethod;
+    }
+    /**
+     * 主表级联新增
+     * @return
+     */
+    default BuildJavaMethod primaryInsertRelation(AutoCodeConfig autoCodeConfig) {
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
+        RelationTable  primary= relationConfig.getPrimary();
+        RelationTable foreign = relationConfig.getForeign();
+        RelationTable thirdparty = relationConfig.getThirdparty();
+        BuildJavaMethod buildJavaMethod=new BuildJavaMethod();
+        buildJavaMethod.setRemark("级联新增");
+        buildJavaMethod.setReturnType("Integer");
+        buildJavaMethod.setMethodName("insertRelation");
+        List<String> params=new ArrayList<>();
+        params.add("@Param(\"id\") String id");
+        params.add("@Param(\""+thirdparty.getForeignKeyUp(false)+"\") String[] "+thirdparty.getForeignKeyUp(false));
+        buildJavaMethod.setParams(params);
+        return buildJavaMethod;
     }
 
     /**
@@ -100,6 +141,7 @@ public interface BuildManyToManyDao extends BuildBaseDao {
         List<BuildJavaMethod> buildJavaMethods =buildJavaConfig.getBuildJavaMethods();
         buildJavaMethods.add(primarySelectPrimaryAndForeign(autoCodeConfig));
         buildJavaMethods.add(primaryDeletePrimaryAndForeign(autoCodeConfig));
+        buildJavaMethods.add(primaryInsertRelation(autoCodeConfig));
 
         List<String> imports = buildJavaConfig.getImports();
         imports.addAll(primaryImports(autoCodeConfig));
@@ -119,6 +161,7 @@ public interface BuildManyToManyDao extends BuildBaseDao {
         List<BuildJavaMethod> buildJavaMethods = buildJavaConfig.getBuildJavaMethods();
         buildJavaMethods.add(foreignSelectForeignAndPrimary(autoCodeConfig));
         buildJavaMethods.add(foreignDeletePrimaryByForeign(autoCodeConfig));
+        buildJavaMethods.add(foreignInsertRelation(autoCodeConfig));
 
         List<String> imports = buildJavaConfig.getImports();
         imports.addAll(foreignImports(autoCodeConfig));

@@ -29,7 +29,7 @@ public interface BuildManyToManyService extends BuildBaseService {
         RelationTable foreign = relationConfig.getForeign();
         BuildJavaMethod buildJavaMethod=new BuildJavaMethod();
         buildJavaMethod.setRemark("根据主表id查询外表所有数据(带分页)");
-        buildJavaMethod.setReturnType("TestRole");
+        buildJavaMethod.setReturnType(foreign.getBeanName());
         buildJavaMethod.setMethodType("public");
         buildJavaMethod.setMethodName(String.format("select%sBy%s",foreign.getBeanName(),primary.getBeanName()));
         List<String> params=new ArrayList<>();
@@ -49,7 +49,7 @@ public interface BuildManyToManyService extends BuildBaseService {
         RelationTable primary = relationConfig.getPrimary();
         BuildJavaMethod buildJavaMethod=new BuildJavaMethod();
         buildJavaMethod.setRemark("根据外表id查询主表表所有数据(带分页)");
-        buildJavaMethod.setReturnType("User");
+        buildJavaMethod.setReturnType(primary.getBeanName());
         buildJavaMethod.setMethodType("public");
         buildJavaMethod.setMethodName(String.format("select%sBy%s",primary.getBeanName(),foreign.getBeanName()));
         List<String> params=new ArrayList<>();

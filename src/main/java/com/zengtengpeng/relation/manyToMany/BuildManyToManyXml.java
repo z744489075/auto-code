@@ -27,7 +27,7 @@ public interface BuildManyToManyXml extends BuildBaseXml {
      * 主表级联删除(根据主键删除)
      * @return
      */
-    default BuildXmlBean primaryDelete(AutoCodeConfig autoCodeConfig){
+    default BuildXmlBean primaryDeletePrimaryAndForeign(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
         RelationTable primary = relationConfig.getPrimary();
@@ -65,7 +65,7 @@ public interface BuildManyToManyXml extends BuildBaseXml {
      * 主表级联查询
      * @return
      */
-    default BuildXmlBean primarySelect(AutoCodeConfig autoCodeConfig){
+    default BuildXmlBean primarySelectPrimaryByForeign(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -102,10 +102,10 @@ public interface BuildManyToManyXml extends BuildBaseXml {
         return buildXmlBean;
     }
     /**
-     * 主表级联查询
+     * 外表级联查询
      * @return
      */
-    default BuildXmlBean foreignSelect(AutoCodeConfig autoCodeConfig){
+    default BuildXmlBean foreignSelectForeignByPrimary(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
         RelationTable foreign = relationConfig.getForeign();
@@ -140,6 +140,61 @@ public interface BuildManyToManyXml extends BuildBaseXml {
         buildXmlBean.setSql(content.toString());
         return buildXmlBean;
     }
+    /**
+     * 外表级联新增
+     * @return
+     */
+    default BuildXmlBean foreignInsertRelation(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
+        RelationTable primary = relationConfig.getPrimary();
+        RelationTable foreign = relationConfig.getForeign();
+        RelationTable thirdparty = relationConfig.getThirdparty();
+
+        BuildXmlBean buildXmlBean=new BuildXmlBean();
+        buildXmlBean.setXmlElementType(XmlElementType.insert);
+        Map<String, String> attrs=new HashMap<>();
+        attrs.put("id","insertRelation");
+        buildXmlBean.setAttributes(attrs);
+        StringBuffer content=new StringBuffer();
+        MyStringUtils.append(content,"INSERT INTO %s(",2,thirdparty.getDataName());
+        MyStringUtils.append(content,"%s,%s",3,thirdparty.getPrimaryKey(),thirdparty.getForeignKey());
+        MyStringUtils.append(content,") VALUES",2);
+        MyStringUtils.append(content,"<foreach collection =\"%s\" item=\"row\"  separator =\",\">",2,thirdparty.getPrimaryKeyUp(false));
+        MyStringUtils.append(content,"(",3);
+        MyStringUtils.append(content,"#{row},#{%s}",3,foreign.getForeignKeyUp(false));
+        MyStringUtils.append(content,")",3);
+        MyStringUtils.append(content,"</foreach>",2);
+
+        buildXmlBean.setSql(content.toString());
+        return buildXmlBean;
+    }
+    /**
+     * 主表表级联新增
+     * @return
+     */
+    default BuildXmlBean primaryInsertRelation(AutoCodeConfig autoCodeConfig){
+        RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
+        RelationTable primary = relationConfig.getPrimary();
+        RelationTable foreign = relationConfig.getForeign();
+        RelationTable thirdparty = relationConfig.getThirdparty();
+        BuildXmlBean buildXmlBean=new BuildXmlBean();
+        buildXmlBean.setXmlElementType(XmlElementType.insert);
+        Map<String, String> attrs=new HashMap<>();
+        attrs.put("id","insertRelation");
+        buildXmlBean.setAttributes(attrs);
+        StringBuffer content=new StringBuffer();
+        MyStringUtils.append(content,"INSERT INTO %s(",2,thirdparty.getDataName());
+        MyStringUtils.append(content,"%s,%s",3,thirdparty.getPrimaryKey(),thirdparty.getForeignKey());
+        MyStringUtils.append(content,") VALUES",2);
+        MyStringUtils.append(content,"<foreach collection =\"%s\" item=\"row\"  separator =\",\">",2,thirdparty.getForeignKeyUp(false));
+        MyStringUtils.append(content,"(",3);
+        MyStringUtils.append(content,"#{%s},#{row}",3,foreign.getForeignKeyUp(false));
+        MyStringUtils.append(content,")",3);
+        MyStringUtils.append(content,"</foreach>",2);
+
+        buildXmlBean.setSql(content.toString());
+        return buildXmlBean;
+    }
 
 
 
@@ -148,8 +203,9 @@ public interface BuildManyToManyXml extends BuildBaseXml {
     default void buildPrimary(AutoCodeConfig autoCodeConfig, List<BuildXmlBean> buildXmlBeans) {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
-        buildXmlBeans.add(primarySelect(autoCodeConfig));
-        buildXmlBeans.add(primaryDelete(autoCodeConfig));
+        buildXmlBeans.add(primarySelectPrimaryByForeign(autoCodeConfig));
+        buildXmlBeans.add(primaryDeletePrimaryAndForeign(autoCodeConfig));
+        buildXmlBeans.add(primaryInsertRelation(autoCodeConfig));
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         String filePath = BuildUtils.packageXmlPath(globalConfig.getParentPathResources(),globalConfig.getXmlPath())+"/"+primary.getBeanName()+globalConfig.getPackageDaoUp()+".xml";
         BuildUtils.addXmlSql(filePath,buildXmlBeans);
@@ -159,9 +215,9 @@ public interface BuildManyToManyXml extends BuildBaseXml {
     default void buildForeign(AutoCodeConfig autoCodeConfig, List<BuildXmlBean> buildXmlBeans) {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
-
-        buildXmlBeans.add(foreignSelect(autoCodeConfig));
+        buildXmlBeans.add(foreignSelectForeignByPrimary(autoCodeConfig));
         buildXmlBeans.add(foreignDeleteForeignByPrimary(autoCodeConfig));
+        buildXmlBeans.add(foreignInsertRelation(autoCodeConfig));
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         String filePath = BuildUtils.packageXmlPath(globalConfig.getParentPathResources(),globalConfig.getXmlPath())+"/"+foreign.getBeanName()+globalConfig.getPackageDaoUp()+".xml";
         BuildUtils.addXmlSql(filePath,buildXmlBeans);

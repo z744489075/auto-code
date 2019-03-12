@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -188,7 +189,8 @@ public class BuildUtils {
         FileOutputStream fileOutputStream = null;
         try {
             fileOutputStream = new FileOutputStream(file);
-            fileOutputStream.write(context.getBytes());
+
+            fileOutputStream.write(context.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
@@ -234,7 +236,7 @@ public class BuildUtils {
             content.insert(content.lastIndexOf("</mapper>")-1,sql);
 
             fileOutputStream=new FileOutputStream(file);
-            fileOutputStream.write(content.toString().getBytes());
+            fileOutputStream.write(content.toString().getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }finally {
@@ -321,7 +323,7 @@ public class BuildUtils {
             BuildUtils.buildMethods(buildJavaMethod,me);
             content.insert(content.lastIndexOf("}")-1,me);
             fileOutputStream=new FileOutputStream(file);
-            fileOutputStream.write(content.toString().getBytes());
+            fileOutputStream.write(content.toString().getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }finally {

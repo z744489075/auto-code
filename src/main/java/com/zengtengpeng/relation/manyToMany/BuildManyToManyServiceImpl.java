@@ -63,15 +63,15 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
         buildJavaMethod.setMethodType("public");
         buildJavaMethod.setReturnType("int");
         StringBuffer text=new StringBuffer();
-        MyStringUtils.append(text,"int insert = %s%s.insert(%s);",2,primary.getBeanNameLower(),globalConfig.getPackageDaoUp(),primary.getBeanNameLower());
-        MyStringUtils.append(text,"String id = %s.get%s();",2,thirdparty.getForeignKeyUp(true));
+        MyStringUtils.append(text,"int insert = %s%s.insert(%s);",primary.getBeanNameLower(),globalConfig.getPackageDaoUp(),primary.getBeanNameLower());
+        MyStringUtils.append(text,"String id = %s.get%s();",2,primary.getBeanNameLower(),thirdparty.getForeignKeyUp(true));
         MyStringUtils.append(text,"if(id !=null && !\"\".equals(id)){",2);
         MyStringUtils.append(text,"String[] split = id.split(\",\");",3);
-        MyStringUtils.append(text,"%s%s.insertRelation(%s.get%s(),split);",3,primary.getBeanNameLower(),
-                globalConfig.getPackageDaoUp(),primary.getBeanNameLower(),primary.getForeignKeyUp(true));
+        MyStringUtils.append(text,"%s%s.insertRelation(%s.get%s().toString(),split);",3,primary.getBeanNameLower(),
+                globalConfig.getPackageDaoUp(),primary.getBeanNameLower(),primary.getPrimaryKeyUp(true));
         MyStringUtils.append(text,"}",2);
         MyStringUtils.append(text,"return insert;",2);
-
+        buildJavaMethod.setContent(text.toString());
         return buildJavaMethod;
     }
     /**
@@ -97,19 +97,91 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
         buildJavaMethod.setMethodType("public");
         buildJavaMethod.setReturnType("int");
         StringBuffer text=new StringBuffer();
-        MyStringUtils.append(text,"Integer update = %s%s.update(%s);",2,primary.getBeanNameLower(),globalConfig.getPackageDaoUp(),primary.getBeanNameLower());
-        MyStringUtils.append(text,"String id = %s.get%s();",2,thirdparty.getForeignKeyUp(true));
+        MyStringUtils.append(text,"Integer update = %s%s.update(%s);",primary.getBeanNameLower(),globalConfig.getPackageDaoUp(),primary.getBeanNameLower());
+        MyStringUtils.append(text,"String id = %s.get%s();",2,primary.getBeanNameLower(), thirdparty.getForeignKeyUp(true));
         MyStringUtils.append(text,"if(id !=null && !\"\".equals(id)){",2);
         MyStringUtils.append(text,"%s d=new %s();",3,foreign.getBeanName(),foreign.getBeanName());
-        MyStringUtils.append(text,"d.set%s(%s.get%s().toString());",3,thirdparty.getPrimaryKeyUp(true),primary.getBeanNameLower(),primary.getForeignKeyUp(true));
-        MyStringUtils.append(text,"%s%s.delete%sBy%s(d);",3,foreign.getForeignKeyUp(false),
-                globalConfig.getPackageDaoUp(),foreign.getForeignKeyUp(true),primary.getPrimaryKeyUp(true));
+        MyStringUtils.append(text,"d.set%s(%s.get%s().toString());",3,thirdparty.getPrimaryKeyUp(true),primary.getBeanNameLower(),primary.getPrimaryKeyUp(true));
+        MyStringUtils.append(text,"%s%s.delete%sBy%s(d);",3,foreign.getBeanNameLower(),
+                globalConfig.getPackageDaoUp(),foreign.getBeanName(),primary.getBeanName());
         MyStringUtils.append(text,"String[] split = id.split(\",\");",3);
-        MyStringUtils.append(text,"%s%s.insertRelation(%s.get%s(),split);",3,primary.getBeanNameLower(),
-                globalConfig.getPackageDaoUp(),primary.getBeanNameLower(),primary.getForeignKeyUp(true));
+        MyStringUtils.append(text,"%s%s.insertRelation(%s.get%s().toString(),split);",3,primary.getBeanNameLower(),
+                globalConfig.getPackageDaoUp(),primary.getBeanNameLower(),primary.getPrimaryKeyUp(true));
         MyStringUtils.append(text,"}",2);
         MyStringUtils.append(text,"return update;",2);
+        buildJavaMethod.setContent(text.toString());
+        return buildJavaMethod;
+    }
+    /**
+     * 外表重写insert
+     * @param autoCodeConfig
+     * @return
+     */
+    default BuildJavaMethod foreignInsert(AutoCodeConfig autoCodeConfig){
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+        RelationConfig relationConfig = globalConfig.getRelationConfig();
+        RelationTable foreign = relationConfig.getForeign();
+        RelationTable thirdparty = relationConfig.getThirdparty();
+        BuildJavaMethod buildJavaMethod=new BuildJavaMethod();
+        buildJavaMethod.setRemark("多对多重写insert");
+        List<String> an=new ArrayList<>();
+        an.add("@Override");
+        buildJavaMethod.setAnnotation(an);
+        List<String> params=new ArrayList<>();
+        params.add(foreign.getBeanName()+" "+foreign.getBeanNameLower());
+        buildJavaMethod.setParams(params);
+        buildJavaMethod.setMethodName("insert");
+        buildJavaMethod.setMethodType("public");
+        buildJavaMethod.setReturnType("int");
+        StringBuffer text=new StringBuffer();
+        MyStringUtils.append(text,"int insert = %s%s.insert(%s);",foreign.getBeanNameLower(),globalConfig.getPackageDaoUp(),foreign.getBeanNameLower());
+        MyStringUtils.append(text,"String id = %s.get%s();",2,foreign.getBeanNameLower(),thirdparty.getPrimaryKeyUp(true));
+        MyStringUtils.append(text,"if(id !=null && !\"\".equals(id)){",2);
+        MyStringUtils.append(text,"String[] split = id.split(\",\");",3);
+        MyStringUtils.append(text,"%s%s.insertRelation(%s.get%s().toString(),split);",3,foreign.getBeanNameLower(),
+                globalConfig.getPackageDaoUp(),foreign.getBeanNameLower(),foreign.getForeignKeyUp(true));
+        MyStringUtils.append(text,"}",2);
+        MyStringUtils.append(text,"return insert;",2);
 
+        buildJavaMethod.setContent(text.toString());
+        return buildJavaMethod;
+    }
+    /**
+     * 外表重写update
+     * @param autoCodeConfig
+     * @return
+     */
+    default BuildJavaMethod foreignUpdate(AutoCodeConfig autoCodeConfig){
+        GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
+        RelationConfig relationConfig = globalConfig.getRelationConfig();
+        RelationTable foreign = relationConfig.getForeign();
+        RelationTable primary = relationConfig.getPrimary();
+        RelationTable thirdparty = relationConfig.getThirdparty();
+        BuildJavaMethod buildJavaMethod=new BuildJavaMethod();
+        buildJavaMethod.setRemark("多对多重写Update");
+        List<String> an=new ArrayList<>();
+        an.add("@Override");
+        buildJavaMethod.setAnnotation(an);
+        List<String> params=new ArrayList<>();
+        params.add(foreign.getBeanName()+" "+foreign.getBeanNameLower());
+        buildJavaMethod.setParams(params);
+        buildJavaMethod.setMethodName("update");
+        buildJavaMethod.setMethodType("public");
+        buildJavaMethod.setReturnType("int");
+        StringBuffer text=new StringBuffer();
+        MyStringUtils.append(text,"Integer update = %s%s.update(%s);",2,foreign.getBeanNameLower(),globalConfig.getPackageDaoUp(),foreign.getBeanNameLower());
+        MyStringUtils.append(text,"String id = %s.get%s();",2,foreign.getBeanNameLower(),thirdparty.getPrimaryKeyUp(true));
+        MyStringUtils.append(text,"if(id !=null && !\"\".equals(id)){",2);
+        MyStringUtils.append(text,"%s d=new %s();",3,primary.getBeanName(),primary.getBeanName());
+        MyStringUtils.append(text,"d.set%s(%s.get%s().toString());",3,thirdparty.getForeignKeyUp(true),foreign.getBeanNameLower(),foreign.getForeignKeyUp(true));
+        MyStringUtils.append(text,"%s%s.delete%sBy%s(d);",3,primary.getBeanNameLower(),
+                globalConfig.getPackageDaoUp(),primary.getBeanName(),foreign.getBeanName());
+        MyStringUtils.append(text,"String[] split = id.split(\",\");",3);
+        MyStringUtils.append(text,"%s%s.insertRelation(%s.get%s().toString(),split);",3,foreign.getBeanNameLower(),
+                globalConfig.getPackageDaoUp(),foreign.getBeanNameLower(),foreign.getForeignKeyUp(true));
+        MyStringUtils.append(text,"}",2);
+        MyStringUtils.append(text,"return update;",2);
+        buildJavaMethod.setContent(text.toString());
         return buildJavaMethod;
     }
 
@@ -131,7 +203,7 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
      *  根据主表id查询外表所有数据(带分页)
      * @return
      */
-    default BuildJavaMethod foreignSelectByPrimary(AutoCodeConfig autoCodeConfig){
+    default BuildJavaMethod foreignSelectForeignByPrimary(AutoCodeConfig autoCodeConfig){
         GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
         RelationConfig relationConfig = globalConfig.getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
@@ -380,10 +452,12 @@ public interface BuildManyToManyServiceImpl extends BuildBaseServiceImpl {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         List<BuildJavaMethod> buildJavaMethods = buildJavaConfig.getBuildJavaMethods();
         RelationTable foreign = relationConfig.getForeign();
+        buildJavaMethods.add(foreignInsert(autoCodeConfig));
+        buildJavaMethods.add(foreignUpdate(autoCodeConfig));
         buildJavaMethods.add(foreignSelectPrimaryAndForeign(autoCodeConfig));
         buildJavaMethods.add(foreignSelectPrimaryAndForeignByCondition(autoCodeConfig));
         buildJavaMethods.add(foreignDeletePrimaryAndForeign(autoCodeConfig));
-        buildJavaMethods.add(foreignSelectByPrimary(autoCodeConfig));
+        buildJavaMethods.add(foreignSelectForeignByPrimary(autoCodeConfig));
         List<String> imports = buildJavaConfig.getImports();
         imports.addAll(foreignImports(autoCodeConfig));
 

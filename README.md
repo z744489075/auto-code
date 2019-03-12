@@ -167,7 +167,7 @@ public class Demo1simple {
 生成的文件如下:
 ![simple](http://images.zengtengpeng.com/auto-code/simple.png)
 
-#### <a name="2.1.3">一对一代码生成 one-to-one </a>
+#### <a name="2.1.3">一对一代码生成 one-to-one (代码采用追加的方式.无需担心代码被覆盖) </a>
 
 >假如 一个用户  test_user 一个用户 对应 test_class 一个班级
 ```sql
@@ -352,7 +352,7 @@ UserController 增加
 
 ![one-to-one](http://images.zengtengpeng.com/auto-code/one-to-one.png)
 
-#### <a name="2.1.4">一对多 代码生成 one-to-Many</a>
+#### <a name="2.1.4">一对多 代码生成 one-to-Many (代码采用追加的方式.无需担心代码被覆盖)</a>
 
 > 假如 test_user 一个用户 对应 test_addr 多个收货地址
 
@@ -471,7 +471,7 @@ UserController 增加
 > 3.生成完毕 接口和一对一一样
 
 
-#### <a name="2.1.5">多对多 代码生成 many-to-many</a>
+#### <a name="2.1.5">多对多 代码生成 many-to-many (代码采用追加的方式.无需担心代码被覆盖)</a>
     
 > 假如 test_user 多个用户 对应 test_role 多个角色
 
@@ -604,7 +604,28 @@ public class Demo4ManyToMany {
 }
 ```    
 
-> 3.生成完毕 新增接口和一对一一样
+> 3.生成完毕 接口在一对一的基础上增加了2个方法
+主表
+```
+//根据外表id查询主表表所有数据(带分页)
+@RequestMapping("testUs/selectTestUsByTestRo")
+	@ResponseBody
+	public DataRes selectTestUsByTestRo(HttpServletRequest request,HttpServletResponse response,TestUs testUs){
+		return DataRes.success(testUsService.selectTestUsByTestRo(testUs));
+	}
+```
+外表
+```
+    /**
+    	 * 根据主表id查询外表所有数据(带分页)
+    	 */
+    	@Auth("testRo/selectAllByPaging")
+    	@RequestMapping("testRo/selectTestRoByTestUs")
+    	@ResponseBody
+    	public DataRes selectTestRoByTestUs(HttpServletRequest request,HttpServletResponse response,TestRo testRo){
+    		return DataRes.success(testRoService.selectTestRoByTestUs(testRo));
+    	}
+```
 ### <a name="2.2">生成代码注意事项 </a>
 
     1.创建表结构时如果写上表与字段的注释将大大增加程序的可读性.我会将注释写到bean上面.
