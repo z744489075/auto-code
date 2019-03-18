@@ -23,9 +23,9 @@
 
 ## 更新日志
 
-> 2019-03-18 增加swagger api配置
+> 2019-03-18: 版本:2.0.2 增加swagger api配置
 
-    1.globalConfig 增加 swagger:true 
+    1.yaml 文件 globalConfig 增加 swagger:true 
     2.集成swagger(具体请看实例代码.或者百度),访问 http://localhost:8080/swagger-ui.html#/
 
 
