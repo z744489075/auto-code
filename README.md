@@ -21,6 +21,14 @@
     1. <a href="#3.1">单表如何自定义</a>
     2. <a href="#3.2">表关系自定义</a>
 
+## 更新日志
+
+> 2019-03-18 增加swagger api配置
+
+1.globalConfig 增加 swagger参数 默认将生成
+
+2.集成 swagger 后访问 http://localhost:8080/swagger-ui.html#/
+
 
 ## <a name="1">项目介绍</a>
 ### <a name="1.1">项目的优势在哪里</a>
@@ -119,6 +127,8 @@ globalConfig:
     cover: false
     #xml存放的文件夹默认 mybatisMapper
     xmlPath: mybatisMapper
+    #是否生成swagger文档 默认true
+    swagger: true
 ```
 
 > 2.执行代码生成语句
@@ -142,23 +152,9 @@ public class Demo1simple {
 ```
 >3.生成完毕 主要生成六个接口
 
-    //根据id删除记录
-    deleteByPrimaryKey
     
-    //保存(主键为空则增加 否则 修改)
-    save 
-    
-    //根据主键查询
-    selectByPrimaryKey
-    
-    //根据条件查询(所有的实体属性都是条件,如果为空则忽略该字段)
-    selectByCondition
-    
-    //分页查询 (所有的实体属性都是条件,如果为空则忽略该字段) 详见Page类.所以的实体都继承该类 默认page=1 pageSize=10
-    selectAllByPaging
-    
-    //导出excel
-    export
+![simple](http://images.zengtengpeng.com/auto-code/simple_code.png)
+
 生成的文件如下:
 ![simple](http://images.zengtengpeng.com/auto-code/simple.png)
 
@@ -216,6 +212,8 @@ globalConfig:
     cover: false
     #xml存放的文件夹默认 mybatisMapper
     xmlPath: mybatisMapper
+    #是否生成swagger文档 默认true
+    swagger: true
     # 表关系配置  一对一 一对多 多对多 代码生成 采用追加的方式
     relationConfig:
         #主表
@@ -316,7 +314,6 @@ UserController 增加
             		return DataRes.success(userService.selectUserAndClazz(user));
             	}
             
-            
             	/**
             	 * 级联条件查询 用户--班级
             	 */
@@ -325,7 +322,6 @@ UserController 增加
             	public DataRes selectUserAndClazzByCondition(User user,HttpServletRequest request,HttpServletResponse response){
             		return DataRes.success(userService.selectUserAndClazzByCondition(user));
             	}
-            
             
             	/**
             	 * 级联删除(根据主键删除) 用户--班级
@@ -398,6 +394,8 @@ UserController 增加
         cover: false
         #xml存放的文件夹默认 mybatisMapper
         xmlPath: mybatisMapper
+        #是否生成swagger文档 默认true
+        swagger: true
         # 表关系配置  一对一 一对多 多对多 代码生成 采用追加的方式
         relationConfig:
             #主表
@@ -529,6 +527,8 @@ UserController 增加
         cover: false
         #xml存放的文件夹默认 mybatisMapper
         xmlPath: mybatisMapper
+        #是否生成swagger文档 默认true
+        swagger: true
         # 表关系配置  一对一 一对多 多对多 代码生成 采用追加的方式
         relationConfig:
             #主表
