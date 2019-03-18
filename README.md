@@ -25,9 +25,8 @@
 
 > 2019-03-18 增加swagger api配置
 
-1.globalConfig 增加 swagger参数 默认将生成
-
-2.集成 swagger 后访问 http://localhost:8080/swagger-ui.html#/
+    1.globalConfig 增加 swagger:true 
+    2.集成swagger(具体请看实例代码.或者百度),访问 http://localhost:8080/swagger-ui.html#/
 
 
 ## <a name="1">项目介绍</a>
