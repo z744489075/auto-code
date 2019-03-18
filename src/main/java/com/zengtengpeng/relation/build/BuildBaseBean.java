@@ -51,7 +51,7 @@ public interface BuildBaseBean {
      */
     default List<BuildJavaField> primaryFields(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
-        return RelationBuilUtils.getBaseBeanJavaFields(relationConfig.getForeign());
+        return RelationBuilUtils.getBaseBeanJavaFields(relationConfig.getForeign(),autoCodeConfig.getGlobalConfig());
     }
 
     /**
@@ -85,7 +85,7 @@ public interface BuildBaseBean {
      */
     default List<BuildJavaField> foreignFields(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
-        return RelationBuilUtils.getBaseBeanJavaFields(relationConfig.getPrimary());
+        return RelationBuilUtils.getBaseBeanJavaFields(relationConfig.getPrimary(), autoCodeConfig.getGlobalConfig());
     }
 
 

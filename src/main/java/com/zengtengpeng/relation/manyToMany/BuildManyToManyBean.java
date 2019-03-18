@@ -25,7 +25,7 @@ public interface BuildManyToManyBean extends BuildBaseBean {
     default List<BuildJavaField> primaryFields(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
-        List<BuildJavaField> beanListJavaFields = RelationBuilUtils.getBeanListJavaFields(foreign);
+        List<BuildJavaField> beanListJavaFields = RelationBuilUtils.getBeanListJavaFields(foreign, autoCodeConfig.getGlobalConfig());
         RelationTable thirdparty = relationConfig.getThirdparty();
 
         BuildJavaField buildJavaField=new BuildJavaField();
@@ -33,6 +33,11 @@ public interface BuildManyToManyBean extends BuildBaseBean {
         buildJavaField.setFiledName(thirdparty.getForeignKeyUp(false));
         buildJavaField.setReturnType("String");
         buildJavaField.setFiledType("private");
+        if (autoCodeConfig.getGlobalConfig().getSwagger()){
+            List<String> ans=new ArrayList<>();
+            ans.add("@ApiModelProperty(value = \""+buildJavaField.getRemark()+"\")");
+            buildJavaField.setAnnotation(ans);
+        }
         beanListJavaFields.add(buildJavaField);
 
         return beanListJavaFields;
@@ -72,7 +77,7 @@ public interface BuildManyToManyBean extends BuildBaseBean {
     default List<BuildJavaField> foreignFields(AutoCodeConfig autoCodeConfig) {
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable primary = relationConfig.getPrimary();
-        List<BuildJavaField> beanListJavaFields = RelationBuilUtils.getBeanListJavaFields(primary);
+        List<BuildJavaField> beanListJavaFields = RelationBuilUtils.getBeanListJavaFields(primary, autoCodeConfig.getGlobalConfig());
         RelationTable thirdparty = relationConfig.getThirdparty();
 
         BuildJavaField buildJavaField=new BuildJavaField();
@@ -80,6 +85,11 @@ public interface BuildManyToManyBean extends BuildBaseBean {
         buildJavaField.setFiledName(thirdparty.getPrimaryKeyUp(false));
         buildJavaField.setReturnType("String");
         buildJavaField.setFiledType("private");
+        if (autoCodeConfig.getGlobalConfig().getSwagger()){
+            List<String> ans=new ArrayList<>();
+            ans.add("@ApiModelProperty(value = \""+buildJavaField.getRemark()+"\")");
+            buildJavaField.setAnnotation(ans);
+        }
         beanListJavaFields.add(buildJavaField);
         return beanListJavaFields;
     }

@@ -26,7 +26,7 @@ public interface BuildOneToManyBean extends BuildBaseBean {
     default List<BuildJavaField> primaryFields(AutoCodeConfig autoCodeConfig){
         RelationConfig relationConfig = autoCodeConfig.getGlobalConfig().getRelationConfig();
         RelationTable foreign = relationConfig.getForeign();
-        return RelationBuilUtils.getBeanListJavaFields(foreign);
+        return RelationBuilUtils.getBeanListJavaFields(foreign,autoCodeConfig.getGlobalConfig());
     }
 
 

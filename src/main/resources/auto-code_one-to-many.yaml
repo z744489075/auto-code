@@ -18,6 +18,8 @@ globalConfig:
     cover: false
     #xml存放的文件夹默认 mybatisMapper
     xmlPath: mybatisMapper
+    #是否生成swagger注解
+    swagger: true
     # 表关系配置  一对一 一对多 多对多 代码生成 采用追加的方式
     relationConfig:
         #主表

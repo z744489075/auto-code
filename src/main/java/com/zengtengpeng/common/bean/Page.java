@@ -21,8 +21,12 @@ public class Page implements Serializable {
 	@ApiModelProperty(hidden = true)
 	private List rows; // 返回页面的数据
 
+
+	@ApiModelProperty(value = "页码,默认1")
 	private Integer page = 1;
 
+
+	@ApiModelProperty(value = "页大小,默认10")
 	private Integer pageSize = 10;
 
 

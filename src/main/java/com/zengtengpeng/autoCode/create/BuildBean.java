@@ -139,9 +139,9 @@ public interface BuildBean {
                 BuildJavaField buildJavaField = new BuildJavaField();
                 List<String> an=new ArrayList<>();
                 if(autoCodeConfig.getGlobalConfig().getSwagger()){
-                    an.add("@ApiModelProperty(value = \""+t.getRemarks()+"\")");
+                    an.add("@ApiModelProperty(value = \""+t.getRemarks().replace("\"","\\\"")+"\")");
                 }
-                buildJavaConfig.setAnnotations(an);
+                buildJavaField.setAnnotation(an);
                 buildJavaField.setReturnType(t.getBeanType_());
                 buildJavaField.setFiledType("private");
                 buildJavaField.setFiledName(t.getBeanName());

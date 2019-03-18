@@ -17,13 +17,13 @@ public class GlobalConfig {
      */
     private RelationConfig relationConfig;
     /**
-     * 生成代码的项目路径
-     */
-    private String parentPath;
-    /**
      * 生成代码的父包 如父包是com.zengtengpeng.test  controller将在com.zengtengpeng.test.controller下 bean 将在com.zengtengpeng.test.bean下 ,service,dao同理
      */
     private String parentPack;
+    /**
+     * 生成代码的项目路径
+     */
+    private String parentPath;
 
     /**
      * 是否覆盖生成 默认不覆盖

@@ -3,6 +3,7 @@ package com.zengtengpeng.relation.utils;
 import com.zengtengpeng.autoCode.bean.BuildJavaField;
 import com.zengtengpeng.autoCode.bean.BuildJavaMethod;
 import com.zengtengpeng.autoCode.bean.BuildXmlBean;
+import com.zengtengpeng.autoCode.config.GlobalConfig;
 import com.zengtengpeng.autoCode.enums.XmlElementType;
 import com.zengtengpeng.relation.bean.RelationTable;
 
@@ -19,14 +20,20 @@ public class RelationBuilUtils {
     /**
      * 获取bean的java字段
      * @param relationTable
+     * @param globalConfig
      * @return
      */
-    public static List<BuildJavaField> getBaseBeanJavaFields(RelationTable relationTable) {
+    public static List<BuildJavaField> getBaseBeanJavaFields(RelationTable relationTable, GlobalConfig globalConfig) {
         List<BuildJavaField> buildJavaFields=new ArrayList<>();
         BuildJavaField buildJavaField=new BuildJavaField();
         buildJavaField.setRemark(relationTable.getRemark());
         buildJavaField.setFiledName(relationTable.getBeanNameLower());
         buildJavaField.setReturnType(relationTable.getBeanName());
+        if (globalConfig.getSwagger()){
+            List<String> ans=new ArrayList<>();
+            ans.add("@ApiModelProperty(hidden = true)");
+            buildJavaField.setAnnotation(ans);
+        }
         buildJavaField.setFiledType("private");
         buildJavaFields.add(buildJavaField);
         return buildJavaFields;
@@ -35,15 +42,21 @@ public class RelationBuilUtils {
     /**
      * 获取listbean字段
      * @param relationTable
+     * @param globalConfig
      * @return
      */
-    public static List<BuildJavaField> getBeanListJavaFields(RelationTable relationTable) {
+    public static List<BuildJavaField> getBeanListJavaFields(RelationTable relationTable, GlobalConfig globalConfig) {
         List<BuildJavaField> buildJavaFields=new ArrayList<>();
         BuildJavaField buildJavaField=new BuildJavaField();
         buildJavaField.setRemark(relationTable.getRemark());
         buildJavaField.setFiledName(relationTable.getBeanNameLower()+"List");
         buildJavaField.setReturnType("List<"+relationTable.getBeanName()+">");
         buildJavaField.setFiledType("private");
+        if (globalConfig.getSwagger()){
+            List<String> ans=new ArrayList<>();
+            ans.add("@ApiModelProperty(hidden = true)");
+            buildJavaField.setAnnotation(ans);
+        }
         buildJavaFields.add(buildJavaField);
         return buildJavaFields;
     }
