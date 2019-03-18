@@ -42,6 +42,9 @@ public interface BuildManyToManyController extends BuildBaseController {
         List<String> an=new ArrayList<>();
         an.add(String.format("@RequestMapping(\"%s/select%sBy%s\")",foreign.getBeanNameLower(),foreign.getBeanName(),primary.getBeanName()));
         an.add("@ResponseBody");
+        if(globalConfig.getSwagger()){
+            an.add("@ApiOperation(value=\"根据主表id查询外表所有数据(带分页)\", notes=\"根据主表id查询外表所有数据(带分页)\" ,httpMethod=\"POST\")");
+        }
         buildJavaMethod.setAnnotation(an);
         buildJavaMethod.setContent(String.format("return DataRes.success(%s%s.select%sBy%s(%s));",
                 foreign.getBeanNameLower(),globalConfig.getPackageServiceUp(),foreign.getBeanName(),primary.getBeanName(),foreign.getBeanNameLower()));
@@ -70,6 +73,9 @@ public interface BuildManyToManyController extends BuildBaseController {
         List<String> an=new ArrayList<>();
         an.add(String.format("@RequestMapping(\"%s/select%sBy%s\")",primary.getBeanNameLower(),primary.getBeanName(),foreign.getBeanName()));
         an.add("@ResponseBody");
+        if(globalConfig.getSwagger()){
+            an.add("@ApiOperation(value=\"根据外表id查询主表表所有数据(带分页)\", notes=\"根据外表id查询主表表所有数据(带分页)\" ,httpMethod=\"POST\")");
+        }
         buildJavaMethod.setAnnotation(an);
         buildJavaMethod.setContent(String.format("return DataRes.success(%s%s.select%sBy%s(%s));",
                 primary.getBeanNameLower(),globalConfig.getPackageServiceUp(),primary.getBeanName(),foreign.getBeanName(),primary.getBeanNameLower()));

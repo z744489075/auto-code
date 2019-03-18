@@ -55,6 +55,10 @@ public interface BuildController {
             imports.add("java.util.LinkedHashMap");
             imports.add("java.util.Map");
             imports.add("org.springframework.stereotype.Controller");
+            if(globalConfig.getSwagger()) {
+                imports.add("io.swagger.annotations.Api");
+                imports.add("io.swagger.annotations.ApiOperation");
+            }
             imports.add(bean.getParentPack()+"."+globalConfig.getPackageBean()+"."+bean.getTableName());
             imports.add(bean.getParentPack()+"."+globalConfig.getPackageService()+"."+bean.getTableName()+globalConfig.getPackageServiceUp());
         }
@@ -97,6 +101,9 @@ public interface BuildController {
         List<String> annotations = buildJavaConfig.getAnnotations();
         if (annotations == null) {
             annotations = new ArrayList<>();
+        }
+        if(globalConfig.getSwagger()) {
+            annotations.add("@Api(description=\""+bean.getTableRemarks()+"\")");
         }
 
         if (buildJavaConfig.getDefaultRealize()) {
@@ -154,7 +161,7 @@ public interface BuildController {
     }
 
     /**
-     * 构建删除方法
+     * 构建根据主键删除方法
      * @param autoCodeConfig
      * @param buildJavaConfig
      * @return
@@ -167,6 +174,11 @@ public interface BuildController {
         List<String> an = new ArrayList<>();
         an.add("@ResponseBody");
         an.add(String.format("@RequestMapping(\"%s/deleteByPrimaryKey\")",bean.getTableValue()));
+
+        //@ApiOperation(value="删除-测试生成代码", notes="删除-测试生成代码" ,httpMethod="POST")
+        if(globalConfig.getSwagger()){
+            an.add("@ApiOperation(value=\"根据主键删除\", notes=\"参数只用到了主键id,其他参数忽略\" ,httpMethod=\"POST\")");
+        }
         delete.setAnnotation(an);
         delete.setReturnType("DataRes");
         delete.setMethodType("public");
@@ -195,6 +207,9 @@ public interface BuildController {
         List<String> an = new ArrayList<>();
         an.add("@ResponseBody");
         an.add(String.format("@RequestMapping(\"%s/save\")",bean.getTableValue()));
+        if(globalConfig.getSwagger()){
+            an.add("@ApiOperation(value=\"保存\", notes=\"主键为空则增加否则修改\" ,httpMethod=\"POST\")");
+        }
         save.setAnnotation(an);
         save.setReturnType("DataRes");
         save.setMethodType("public");
@@ -211,7 +226,7 @@ public interface BuildController {
         MyStringUtils.append(content,"}",2);
         MyStringUtils.append(content,"return DataRes.success(%s%s.update(%s));",2,bean.getTableValue(),globalConfig.getPackageServiceUp(),bean.getTableValue());
         save.setContent(content.toString());
-        save.setRemark(" 保存 (主键为空则增加 否则 修改)-> "+buildJavaConfig.getRemark());
+        save.setRemark(" 保存 (主键为空则增加否则修改)-> "+buildJavaConfig.getRemark());
         return save;
     }
     /**
@@ -228,6 +243,9 @@ public interface BuildController {
         List<String> an = new ArrayList<>();
         an.add("@ResponseBody");
         an.add(String.format("@RequestMapping(\"%s/selectByPrimaryKey\")",bean.getTableValue()));
+        if(globalConfig.getSwagger()){
+            an.add("@ApiOperation(value=\"根据主键查询\", notes=\"参数只用到了主键.\" ,httpMethod=\"POST\")");
+        }
         selectByPrimaryKey.setAnnotation(an);
         selectByPrimaryKey.setReturnType("DataRes");
         selectByPrimaryKey.setMethodType("public");
@@ -255,6 +273,9 @@ public interface BuildController {
         List<String> an = new ArrayList<>();
         an.add("@ResponseBody");
         an.add(String.format("@RequestMapping(\"%s/selectByCondition\")",bean.getTableValue()));
+        if(globalConfig.getSwagger()){
+            an.add("@ApiOperation(value=\"根据条件查询\", notes=\"参数为空则忽略.\" ,httpMethod=\"POST\")");
+        }
         selectByCondition.setAnnotation(an);
         selectByCondition.setReturnType("DataRes");
         selectByCondition.setMethodType("public");
@@ -269,7 +290,7 @@ public interface BuildController {
         return selectByCondition;
     }
     /**
-     * 构建 根据分页查询 默认 page=1 pageSize等于10 详见 Page类(所有bean都继承改类)
+     * 构建 根据分页查询 默认 page=1 pageSize等于10 详见 Page类(所有bean都继承该类)
      * @param autoCodeConfig
      * @param buildJavaConfig
      * @return
@@ -282,6 +303,9 @@ public interface BuildController {
         List<String> an = new ArrayList<>();
         an.add("@ResponseBody");
         an.add(String.format("@RequestMapping(\"%s/selectAllByPaging\")",bean.getTableValue()));
+        if(globalConfig.getSwagger()){
+            an.add("@ApiOperation(value=\"分页查询\", notes=\"默认page=1pageSize等于10详见Page类(所有bean都继承该类).参数为空则忽略\" ,httpMethod=\"POST\")");
+        }
         selectAllByPaging.setAnnotation(an);
         selectAllByPaging.setReturnType("DataRes");
         selectAllByPaging.setMethodType("public");
@@ -308,6 +332,9 @@ public interface BuildController {
         BuildJavaMethod export = new BuildJavaMethod();
         List<String> an = new ArrayList<>();
         an.add(String.format("@RequestMapping(\"%s/export\")",bean.getTableValue()));
+        if(globalConfig.getSwagger()){
+            an.add("@ApiOperation(value=\"导出excel\", notes=\"导出全部数据.参数为空则忽略.\" ,httpMethod=\"POST\")");
+        }
         export.setAnnotation(an);
         export.setReturnType("void");
         export.setMethodType("public");

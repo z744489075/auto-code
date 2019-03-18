@@ -52,6 +52,10 @@ public interface BuildBean {
             imports.add("java.util.Date");
             imports.add("java.math.BigDecimal");
             imports.add("com.zengtengpeng.autoCode.utils.MyStringUtils");
+            if(autoCodeConfig.getGlobalConfig().getSwagger()){
+                imports.add("io.swagger.annotations.ApiModel");
+                imports.add("io.swagger.annotations.ApiModelProperty");
+            }
         }
         imports.forEach(t -> content.append("import " + t + ";\n"));
 
@@ -90,7 +94,9 @@ public interface BuildBean {
         if (annotations == null) {
             annotations = new ArrayList<>();
         }
-
+        if(autoCodeConfig.getGlobalConfig().getSwagger()){
+            annotations.add("@ApiModel(description=\""+bean.getTableRemarks()+"\")");
+        }
         if (buildJavaConfig.getDefaultRealize()) {
             extend.add("Page");
         }
@@ -131,6 +137,11 @@ public interface BuildBean {
             List<BuildJavaField> finalBuildJavaFields = buildJavaFields;
             bean.getAllColumns().forEach(t->{
                 BuildJavaField buildJavaField = new BuildJavaField();
+                List<String> an=new ArrayList<>();
+                if(autoCodeConfig.getGlobalConfig().getSwagger()){
+                    an.add("@ApiModelProperty(value = \""+t.getRemarks()+"\")");
+                }
+                buildJavaConfig.setAnnotations(an);
                 buildJavaField.setReturnType(t.getBeanType_());
                 buildJavaField.setFiledType("private");
                 buildJavaField.setFiledName(t.getBeanName());

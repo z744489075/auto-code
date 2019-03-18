@@ -30,6 +30,8 @@ public class GlobalConfig {
      */
     private Boolean cover=false;
 
+    private Boolean swagger=true;
+
 
     /**
      * java在项目中的classpath位置
@@ -61,6 +63,14 @@ public class GlobalConfig {
      * service的名称
      */
     private String packageService="service";
+
+    public Boolean getSwagger() {
+        return swagger;
+    }
+
+    public void setSwagger(Boolean swagger) {
+        this.swagger = swagger;
+    }
 
     public Boolean getCover() {
         return cover;

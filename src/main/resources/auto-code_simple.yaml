@@ -25,5 +25,7 @@ globalConfig:
     parentPack: com.zengtengpeng.test
     #是否覆盖生成文件 如果为true将会把以前的文件覆盖掉
     cover: false
+    #是否生成swagger文档 默认true
+    swagger: true
     #xml存放的文件夹默认 mybatisMapper
     xmlPath: mybatisMapper
