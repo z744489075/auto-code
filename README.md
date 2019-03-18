@@ -57,7 +57,8 @@
 
 ## <a name="2">集成教程</a>
 
-> 集成非常简单,只需要在自己的web工程或者spring-boot工程引入jar包即可. 请在pom写上
+> 集成非常简单,只需要在自己的web工程或者spring-boot工程引入jar包即可.jar包已经上传中央仓库,
+不需要自己下载源码编译. 请直接在pom.xml写上下面的引用.就能在自己的工程中生成代码了.
 ```
     <dependency>
         <groupId>com.zengtengpeng</groupId>
