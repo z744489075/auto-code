@@ -190,8 +190,9 @@ public class BuildUtils {
         FileOutputStream fileOutputStream = null;
         OutputStreamWriter outputStreamWriter=null;
         try {
+            logger.info("生成路径:{}",file.getPath());
             fileOutputStream = new FileOutputStream(file);
-            outputStreamWriter=new OutputStreamWriter(fileOutputStream);
+            outputStreamWriter=new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8);
             outputStreamWriter.write(context);
             outputStreamWriter.flush();
         } catch (Exception e) {
@@ -244,7 +245,7 @@ public class BuildUtils {
             content.insert(content.lastIndexOf("</mapper>")-1,sql);
 
             fileOutputStream=new FileOutputStream(file);
-            outputStreamWriter=new OutputStreamWriter(fileOutputStream);
+            outputStreamWriter=new OutputStreamWriter(fileOutputStream,StandardCharsets.UTF_8);
             outputStreamWriter.write(content.toString());
             outputStreamWriter.flush();
         } catch (Exception e) {
@@ -337,7 +338,7 @@ public class BuildUtils {
             BuildUtils.buildMethods(buildJavaMethod,me);
             content.insert(content.lastIndexOf("}")-1,me);
             fileOutputStream=new FileOutputStream(file);
-            outputStreamWriter=new OutputStreamWriter(fileOutputStream);
+            outputStreamWriter=new OutputStreamWriter(fileOutputStream,StandardCharsets.UTF_8);
             outputStreamWriter.write(content.toString());
             outputStreamWriter.flush();
         } catch (Exception e) {

@@ -11,11 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -120,7 +120,16 @@ public interface StartCode {
     }
 
     default Connection getConnection(AutoCodeConfig autoCodeConfig) {
-        return JDBCUtils.getConnection(autoCodeConfig.getDatasourceConfig());
+        DataSource dataSource = autoCodeConfig.getDatasourceConfig().getDataSource();
+        if(dataSource !=null){
+            try {
+                return dataSource.getConnection();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }else {
+            return JDBCUtils.getConnection(autoCodeConfig.getDatasourceConfig());
+        }
     }
 
     default Bean saxTable(AutoCodeConfig autoCodeConfig) {
@@ -129,9 +138,10 @@ public interface StartCode {
             connection = getConnection(autoCodeConfig);
 
             Bean bean = JDBCUtils.saxTable(connection, autoCodeConfig);
+            autoCodeConfig.setBean(bean);
             return bean;
         } finally {
-            if (connection != null) {
+            if (connection != null&&autoCodeConfig.getDatasourceConfig().getDataSource()==null) {
                 try {
                     connection.close();
                 } catch (Exception e) {
@@ -147,7 +157,7 @@ public interface StartCode {
      * @param autoCodeConfig
      */
     default void build(AutoCodeConfig autoCodeConfig) {
-        Bean bean = saxTable(autoCodeConfig);
+        Bean bean = autoCodeConfig.getBean();
         if (bean != null) {
             //构建xml
             GlobalConfig globalConfig = autoCodeConfig.getGlobalConfig();
@@ -222,6 +232,7 @@ public interface StartCode {
             bean.setTableName(t.getAliasName());
             bean.setDataName(t.getDataName());
             finalAutoCodeConfig.setBean(bean);
+            saxTable(finalAutoCodeConfig);
             build(finalAutoCodeConfig);
             logger.info("----------------------------------------单表生成结束{}", t.getDataName());
         });

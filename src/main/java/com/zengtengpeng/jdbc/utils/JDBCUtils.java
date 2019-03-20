@@ -36,6 +36,25 @@ public class JDBCUtils {
     }
 
     /**
+     * 获取所有的表名称
+     * @param connection
+     * @return
+     */
+    public static List<String> getTablesName(Connection connection){
+        List<String> tables = new ArrayList<>();
+        try {
+            DatabaseMetaData meta = connection.getMetaData();
+            ResultSet rs = meta.getTables(connection.getCatalog(), null, null,
+                    new String[] { "TABLE" });
+            while (rs.next()) {
+                tables.add(rs.getString(3));
+            }
+        } catch (Exception e) {
+           throw new RuntimeException(e);
+        }
+        return tables;
+    }
+    /**
      * 获取table相关数据
      * @return
      */

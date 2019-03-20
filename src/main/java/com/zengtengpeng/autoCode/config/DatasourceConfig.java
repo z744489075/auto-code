@@ -1,5 +1,7 @@
 package com.zengtengpeng.autoCode.config;
 
+import javax.sql.DataSource;
+
 /**
  * 数据库配置
  */
@@ -18,6 +20,8 @@ public class DatasourceConfig {
 
     //数据库密码
     private String password;
+
+    private DataSource dataSource;
 
     public String getDriverClassName() {
         return driverClassName;
@@ -57,5 +61,13 @@ public class DatasourceConfig {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 }

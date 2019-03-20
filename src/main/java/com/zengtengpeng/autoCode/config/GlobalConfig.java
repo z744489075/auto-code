@@ -64,6 +64,20 @@ public class GlobalConfig {
      */
     private String packageService="service";
 
+
+    /**
+     * 是否启用代码生成器
+     */
+    private Boolean autoCode=true;
+
+    public Boolean getAutoCode() {
+        return autoCode;
+    }
+
+    public void setAutoCode(Boolean autoCode) {
+        this.autoCode = autoCode;
+    }
+
     public Boolean getSwagger() {
         return swagger;
     }

@@ -17,6 +17,7 @@ public class BeanColumn {
 
     //jdbc类型
     private String jdbcType;
+    private String jdbcType_;
     //实体类型
     private String beanType;
 
@@ -58,14 +59,14 @@ public class BeanColumn {
     }
 
     public String getBeanName() {
-        if (!MyStringUtils.isEmpty(jdbcName)) {
+        if (MyStringUtils.isEmpty(beanName)&& !MyStringUtils.isEmpty(jdbcName)) {
             return MyStringUtils.upperCase_(jdbcName, false);
         }
         return beanName;
     }
 
     public String getBeanName_() {
-        if (!MyStringUtils.isEmpty(jdbcName)) {
+        if (MyStringUtils.isEmpty(beanName)&&!MyStringUtils.isEmpty(jdbcName)) {
             return MyStringUtils.upperCase_(jdbcName, true);
         }
         return beanName;
@@ -94,7 +95,7 @@ public class BeanColumn {
 
     public String getBeanType() {
 
-        if (!MyStringUtils.isEmpty(jdbcType)) {
+        if (MyStringUtils.isEmpty(beanType)&&!MyStringUtils.isEmpty(jdbcType)) {
             switch (JDBCType.valueOf(Integer.valueOf(jdbcType))) {
                 case BIT:
                     return "java.lang.Byte";
@@ -123,8 +124,6 @@ public class BeanColumn {
                 default:
                     return "java.lang.String";
             }
-
-
         }
         return beanType;
     }
