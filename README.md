@@ -1,7 +1,5 @@
 # auto-code
-欢迎使用auto-code代码自动生成引擎, 
-2.0重大升级.支持`单表`, `一对一`, `一对多` ,`多对多`代码生成  
-2.1.0 再次升级.现在生成代码不再需要书写yaml文件.直接可以通过页面生成
+欢迎使用auto-code代码自动生成引擎.2.1.0 再次升级.现在生成代码不再需要书写yaml文件.直接可以通过页面生成 `单表`, `一对一`, `一对多` ,`多对多`代码
 
 [源码地址](https://gitee.com/ztp/auto-code)
 
@@ -57,6 +55,8 @@
 ![start](http://images.zengtengpeng.com/auto-code/start.png)
 
 ## <a name="2">集成教程</a>
+
+> 非常简单.只需要短短的几部就能完成集成
 
 > 1.传统java-web集成请看这里 [项目地址](https://gitee.com/ztp/auto-code-ui)
 
