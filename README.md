@@ -59,7 +59,7 @@
 
 > 1.传统java-web集成请看这里 [项目地址](https://gitee.com/ztp/auto-code-ui)
 
-> 2.spring-boot集成请看这里 [项目地址](https://gitee.com/ztp/auto-code-spring-boot-starter)
+> 2.spring-boot集成请看这里 [项目地址](https://gitee.com/ztp/auto-code-ui-spring-boot-starter)
 
 
 ### <a name="2.1">使用教程</a>
