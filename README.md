@@ -1,6 +1,5 @@
 # auto-code
 欢迎使用auto-code代码自动生成引擎.2.1.0 再次升级.现在生成代码不再需要书写yaml文件.直接可以通过页面生成 `单表`, `一对一`, `一对多` ,`多对多`代码
-
 [源码地址](https://gitee.com/ztp/auto-code)
 
 # 目录
@@ -124,8 +123,10 @@ CREATE TABLE `test_one_to_one_class` (
 
 ```
 
->1. 打开界面.选择对应的表,一对一比单表多了一个主外表的关联关系id.
-比如上面两张表的关系就是 test_one_to_one_user.id=test_one_to_one_class.user_id,在页面吧主外键选择好就行
+>1. 打开界面.选择对应的表,一对一比单表多了一个外键id.
+比如上面两张表的关系就是通过 user_id来关联的 如下:
+
+    test_one_to_one_user.id=test_one_to_one_class.user_id
 
 ![one-to-one](http://images.zengtengpeng.com/auto-code-ui/one-to-one1.png)
 ![one-to-one](http://images.zengtengpeng.com/auto-code-ui/one-to-one2.png)
@@ -175,7 +176,7 @@ CREATE TABLE `test_many_to_many_user_role` (
 ```
 
 > 1.打开界面.选择对应的表,`多对多`比`一对一`多了一个关系描述表
-    比如上面三张张表的关系是通过 test_many_to_many_user_role来表述的 
+    比如上面三张表的关系是通过 test_many_to_many_user_role来表述的.如下:
     
     test_many_to_many_user_role.user_id=test_many_to_many_user.id and test_many_to_many_user_role.role_id=test_many_to_many_role.id
 
