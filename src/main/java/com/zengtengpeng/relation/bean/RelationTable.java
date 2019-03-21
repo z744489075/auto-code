@@ -1,6 +1,7 @@
 package com.zengtengpeng.relation.bean;
 
 import com.zengtengpeng.autoCode.utils.MyStringUtils;
+import com.zengtengpeng.jdbc.bean.Bean;
 
 /**
  * 关系描述
@@ -12,6 +13,7 @@ public class RelationTable {
      * 数据库表名称
      */
     private String dataName;
+
 
     /**
      * TestCode
@@ -26,7 +28,7 @@ public class RelationTable {
     private String remark;
 
     /**
-     * 是否需要生成
+     * 是否需要生成单表
      */
     private Boolean generate=true;
 

@@ -216,7 +216,7 @@ public interface BuildBean {
                     get1.setMethodType("public");
                     get1.setMethodName("get"+t.getBeanName_()+"_");
                     StringBuffer json=new StringBuffer();
-                    json.append("if(MyStringUtils.isEmpty(status)){\n");
+                    json.append("if(MyStringUtils.isEmpty("+t.getBeanName()+")){\n");
                     MyStringUtils.append(json," return \"\";",3);
 
                     for (Map.Entry me : map.entrySet()) {

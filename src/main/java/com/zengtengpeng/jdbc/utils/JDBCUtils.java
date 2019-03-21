@@ -34,7 +34,25 @@ public class JDBCUtils {
            throw new RuntimeException("获取jdbc连接异常",e);
         }
     }
+    /**
+     * 获取表的列
+     * @param connection
+     * @return
+     */
+    public static List<String> getTablesColumn(Connection connection,String tableName){
 
+        try {
+            DatabaseMetaData metaData = connection.getMetaData();
+            ResultSet rs = metaData.getColumns(connection.getCatalog(), "%", tableName, "%");
+            List<String> columns=new ArrayList<>();
+            while(rs.next()) {
+                columns.add(rs.getString("COLUMN_NAME"));
+            }
+            return columns;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
     /**
      * 获取所有的表名称
      * @param connection

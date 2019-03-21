@@ -229,7 +229,7 @@ public class BuildUtils {
             byte[] buff=new byte[1024];
             int len;
             while((len=fileInputStream.read(buff))!=-1){
-                content.append(new String(buff,0,len));
+                content.append(new String(buff,0,len, StandardCharsets.UTF_8));
             }
 
             //增加导入
@@ -291,7 +291,7 @@ public class BuildUtils {
             byte[] buff=new byte[1024];
             int len;
             while((len=fileInputStream.read(buff))!=-1){
-                content.append(new String(buff,0,len));
+                content.append(new String(buff,0,len, StandardCharsets.UTF_8));
             }
 
             //增加导入

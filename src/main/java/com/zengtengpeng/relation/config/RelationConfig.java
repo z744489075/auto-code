@@ -23,10 +23,6 @@ public class RelationConfig {
     private RelationTable thirdparty;
 
 
-    /**
-     * 如果检测到存在是否继续增加 true 继续增加  false不增加
-     */
-    private Boolean exist=false;
 
     public RelationTable getPrimary() {
         return primary;
@@ -52,12 +48,5 @@ public class RelationConfig {
         this.thirdparty = thirdparty;
     }
 
-    public Boolean getExist() {
-        return exist;
-    }
-
-    public void setExist(Boolean exist) {
-        this.exist = exist;
-    }
 
 }

@@ -141,7 +141,7 @@ public interface StartCode {
             autoCodeConfig.setBean(bean);
             return bean;
         } finally {
-            if (connection != null&&autoCodeConfig.getDatasourceConfig().getDataSource()==null) {
+            if (connection != null) {
                 try {
                     connection.close();
                 } catch (Exception e) {

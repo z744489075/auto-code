@@ -70,6 +70,20 @@ public class GlobalConfig {
      */
     private Boolean autoCode=true;
 
+    /**
+     * 观察者模式.只能看.不能生成代码
+     */
+    private Boolean watchMobel=false;
+
+
+    public Boolean getWatchMobel() {
+        return watchMobel;
+    }
+
+    public void setWatchMobel(Boolean watchMobel) {
+        this.watchMobel = watchMobel;
+    }
+
     public Boolean getAutoCode() {
         return autoCode;
     }

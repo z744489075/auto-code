@@ -17,7 +17,6 @@ public class BeanColumn {
 
     //jdbc类型
     private String jdbcType;
-    private String jdbcType_;
     //实体类型
     private String beanType;
 
@@ -68,6 +67,10 @@ public class BeanColumn {
     public String getBeanName_() {
         if (MyStringUtils.isEmpty(beanName)&&!MyStringUtils.isEmpty(jdbcName)) {
             return MyStringUtils.upperCase_(jdbcName, true);
+        }
+        if(!MyStringUtils.isEmpty(beanName)){
+
+            return MyStringUtils.firstUpperCase(beanName);
         }
         return beanName;
     }
