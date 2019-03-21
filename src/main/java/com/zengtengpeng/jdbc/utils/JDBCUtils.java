@@ -51,6 +51,12 @@ public class JDBCUtils {
             return columns;
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
     /**
@@ -69,6 +75,12 @@ public class JDBCUtils {
             }
         } catch (Exception e) {
            throw new RuntimeException(e);
+        }finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
         return tables;
     }
