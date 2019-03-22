@@ -16,6 +16,7 @@
         4. <a href="#2.1.4">一对多 代码生成 one-to-Many</a>
         5.  <a href="#2.1.5">多对多 代码生成 many-to-many</a>
     2.  <a href="#2.2">生成代码注意事项</a>
+3. <a href="#3">配置参数介绍</a>
 
 ## 更新日志
 
@@ -201,3 +202,38 @@ CREATE TABLE `test_many_to_many_user_role` (
     		return "";
     
     	}
+    	
+
+### <a name="3">配置参数介绍 </a>
+
+> 如果是spring boot请以auto-code.xx 开头.如:
+
+    auto-code.cover=false
+    或者
+     auto-code:
+        cover: false
+
+> 如果是java web请使用yaml格式书写 如:
+
+     globalConfig: 
+        parentPack
+        
+
+
+参数名 |  默认值 |介绍
+---|---|---
+ parentPack| 无 | 生成代码的父包 如父包是com.zengtengpeng.test  controller将在com.zengtengpeng.test.controller下 bean 将在com.zengtengpeng.test.bean下 ,service,dao同理
+ parentPath | 无 |生成代码的项目根路径
+ cover |false | 是否覆盖生成 默认不覆盖
+ swagger | true | 是否生成swagger注解 (spring boot下如果为false将无法查看swagger页面)
+ javaSource | src/main/java  | java在项目中的源路径
+ resources |src/main/resources | resource位置
+ xmlPath |mybatisMapper | mybatis xml存放的路径
+ packageBean | bean | 生成bean尾缀
+ packageDao | dao | 生成dao尾缀
+ packageController | controller | 生成controller尾缀
+ packageService | service | 生成service尾缀
+ packageBean | bean | 生成bean尾缀
+ autoCode | true | 是否启用代码生成器(生成环境建议关闭)
+ watchMobel | false | 观察者模式.只能看.不能生成代码(演示环境用的)
+    
