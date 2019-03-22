@@ -96,7 +96,7 @@ CREATE TABLE `test_simple_code` (
 ![simple](http://images.zengtengpeng.com/auto-code-ui/simple.png)
 
 生成的文件如下:
-![simple](http://images.zengtengpeng.com/auto-code/simple.png)
+![select](http://images.zengtengpeng.com/auto-code-web/simple.png)
 
 >3.生成完毕 
 #### <a name="2.1.3">一对一代码生成 one-to-one (代码采用追加的方式.无需担心代码被覆盖) </a>
