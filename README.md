@@ -1,6 +1,6 @@
 # auto-code
 欢迎使用auto-code代码自动生成引擎.2.1.0 再次升级.现在生成代码不再需要书写yaml文件.直接可以通过页面生成 `单表`, `一对一`, `一对多` ,`多对多`代码
-[源码地址](https://gitee.com/ztp/auto-code) [代码生成演示地址](http://www.zengtengpeng.com/auto-code-ui/ui/index.html) 
+[源码地址](https://gitee.com/ztp/auto-code) [代码生成演示地址](http://106.13.119.110:8010/auto-code-ui/ui/index.html) 
 
 # 目录
 1. <a href="#1">项目介绍</a>
@@ -42,7 +42,7 @@
 不生成页面.所以如果项目是采用前后台分离,不需要写页面.该项目会适合你
 
 > 2.如果还想生成页面请看该项目,这个项目基于本项目.扩展了页面生成.适合后台使用 [源码地址](https://gitee.com/ztp/auto-code-admin) 
- [演示地址](http://www.zengtengpeng.com/login/gotoLogin) 账号 `ztp`  密码 `111111`
+ [演示地址](http://106.13.119.110:8010/login/gotoLogin) 账号 `ztp`  密码 `111111`
  
 ### <a name="1.3">为何会发起该项目? </a>
 
@@ -52,7 +52,7 @@
 
 ### <a name="1.4">如果您觉得项目还行.请点赞.您的支持是我最大的动力[项目地址](https://gitee.com/ztp/auto-code)</a>
 
-![start](http://images.zengtengpeng.com/auto-code/start.png)
+![start](http://106.13.119.110/auto-code/start.png)
 
 ## <a name="2">集成教程</a>
 
@@ -71,7 +71,7 @@
 >2.成功后访问 http://localhost:8070/auto-code-ui/ui/index.html
 
 界面如下: 
-![global](http://images.zengtengpeng.com/auto-code-ui/global.png)
+![global](http://106.13.119.110/auto-code-ui/global.png)
 
 #### <a name="2.1.2">单表生成</a>
 
@@ -93,10 +93,10 @@ CREATE TABLE `test_simple_code` (
 
 >2. 界面选择单表生成.选择对应的表,点击`生成预览`. 最后点击`确认生成`. 完毕.
 
-![simple](http://images.zengtengpeng.com/auto-code-ui/simple.png)
+![simple](http://106.13.119.110/auto-code-ui/simple.png)
 
 生成的文件如下:
-![select](http://images.zengtengpeng.com/auto-code-web/simple.png)
+![select](http://106.13.119.110/auto-code-web/simple.png)
 
 >3.生成完毕 
 #### <a name="2.1.3">一对一代码生成 one-to-one (代码采用追加的方式.无需担心代码被覆盖) </a>
@@ -132,8 +132,8 @@ CREATE TABLE `test_one_to_one_class` (
 
     test_one_to_one_user.id=test_one_to_one_class.user_id
 
-![one-to-one](http://images.zengtengpeng.com/auto-code-ui/one-to-one1.png)
-![one-to-one](http://images.zengtengpeng.com/auto-code-ui/one-to-one2.png)
+![one-to-one](http://106.13.119.110/auto-code-ui/one-to-one1.png)
+![one-to-one](http://106.13.119.110/auto-code-ui/one-to-one2.png)
 
 #### <a name="2.1.4">一对多 代码生成 one-to-Many (代码采用追加的方式.无需担心代码被覆盖)</a>
 
@@ -184,9 +184,9 @@ CREATE TABLE `test_many_to_many_user_role` (
     
     test_many_to_many_user_role.user_id=test_many_to_many_user.id and test_many_to_many_user_role.role_id=test_many_to_many_role.id
 
-![many-to-many](http://images.zengtengpeng.com/auto-code-ui/many-to-many1.png)
-![many-to-many](http://images.zengtengpeng.com/auto-code-ui/many-to-many2.png)
-![many-to-many](http://images.zengtengpeng.com/auto-code-ui/many-to-many3.png)
+![many-to-many](http://106.13.119.110/auto-code-ui/many-to-many1.png)
+![many-to-many](http://106.13.119.110/auto-code-ui/many-to-many2.png)
+![many-to-many](http://106.13.119.110/auto-code-ui/many-to-many3.png)
 
 
 ### <a name="2.2">生成代码注意事项 </a>
