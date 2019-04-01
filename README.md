@@ -2,7 +2,6 @@
 欢迎使用auto-code代码自动生成引擎.2.1.0 再次升级.现在生成代码不再需要书写yaml文件.直接可以通过页面生成 `单表`, `一对一`, `一对多` ,`多对多`代码
 [源码地址](https://gitee.com/ztp/auto-code) [代码生成演示地址](http://106.13.119.110:8010/auto-code-ui/ui/index.html) 
 
-#### 先来支持下 [996.icu](https://github.com/996icu/996.ICU/blob/master/zh_CN.md)
 
 # 目录
 1. <a href="#1">项目介绍</a>
