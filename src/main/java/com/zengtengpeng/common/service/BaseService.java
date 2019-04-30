@@ -61,6 +61,20 @@ public interface BaseService<T extends Page,D extends BaseDao<T>> {
 	}
 
 	/**
+	 * 按照条件查询,只取第一条记录
+	 * @param t
+	 * @return
+	 */
+	default T selectByConditionByFirst(T t){
+		D baseDao = initDao();
+		List<T> ts = baseDao.selectByCondition(t);
+		if(ts!=null && ts.size()>0){
+			return ts.get(0);
+		}
+		return null;
+	}
+
+	/**
 	 * 分页查询
 	 * @param t
 	 * @return
