@@ -240,6 +240,3 @@ CREATE TABLE `test_many_to_many_user_role` (
  packageBean | bean | 生成bean尾缀
  autoCode | true | 是否启用代码生成器(生成环境建议关闭)
  watchMobel | false | 观察者模式.只能看.不能生成代码(演示环境用的)
-
-
-[![996.icu](https://img.shields.io/badge/link-996.icu-red.svg)](https://996.icu)
