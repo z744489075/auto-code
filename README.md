@@ -24,6 +24,7 @@
 > 2019-05-08: 版本 2.1.1
 
 1.生成的bean不再忽略转译之前的get方法了
+
 2.`BaseDao`,`BaseService` 增加 `selectByConditionFirst`方法.返回第一条记录
 
 > 2019-03-21: 版本:2.1.0 生成代码增加可视化视图,不再需要写yaml文件配置了
