@@ -36,6 +36,19 @@ public interface BaseDao<T> {
     List<T> selectByCondition(T t);
 
     /**
+     * 按照条件查询(调用selectByCondition),只取第一条记录
+     * @param t
+     * @return
+     */
+    default T selectByConditionFirst(T t){
+        List<T> ts = selectByCondition(t);
+        if(ts!=null && ts.size()>0){
+            return ts.get(0);
+        }
+        return null;
+    }
+
+    /**
      * 查询所有
      * @return
      */

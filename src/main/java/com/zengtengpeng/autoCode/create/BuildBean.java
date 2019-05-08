@@ -181,9 +181,9 @@ public interface BuildBean {
 
                 //如果是date则坐下处理
                 if("Date".equals(t.getBeanType_())){
-                    List<String> an=new ArrayList<>();
+                    /*List<String> an=new ArrayList<>();
                     an.add("@JsonIgnore");
-                    get.setAnnotation(an);
+                    get.setAnnotation(an);*/
 
                     BuildJavaMethod get1 = new BuildJavaMethod();
                     get1.setReturnType("String");
@@ -207,9 +207,9 @@ public interface BuildBean {
 
                     logger.info("字段成功转成json->"+t.getBeanName()+"注释->"+t.getRemarks()+"");
                     t.setJson(true);
-                    List<String> an=new ArrayList<>();
+                    /*List<String> an=new ArrayList<>();
                     an.add("@JsonIgnore");
-                    get.setAnnotation(an);
+                    get.setAnnotation(an);*/
 
                     BuildJavaMethod get1 = new BuildJavaMethod();
                     get1.setReturnType("String");
