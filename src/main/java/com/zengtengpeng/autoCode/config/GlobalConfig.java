@@ -30,7 +30,7 @@ public class GlobalConfig {
      */
     private Boolean cover=false;
 
-    private Boolean swagger=true;
+    private Boolean swagger=false;
 
 
     /**

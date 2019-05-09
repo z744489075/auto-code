@@ -28,4 +28,4 @@ globalConfig:
     #xml存放的文件夹默认 mybatisMapper
     xmlPath: mybatisMapper
     #是否生成swagger文档 默认true
-    swagger: true
+    swagger: false

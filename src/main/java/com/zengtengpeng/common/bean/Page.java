@@ -1,8 +1,6 @@
 package com.zengtengpeng.common.bean;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiParam;
 
 import java.io.Serializable;
 import java.util.List;
@@ -15,33 +13,20 @@ import java.util.List;
  */
 public class Page implements Serializable {
 
-	@ApiModelProperty(hidden = true)
 	private Integer total;// 总条数
 
-	@ApiModelProperty(hidden = true)
 	private List rows; // 返回页面的数据
 
-
-	@ApiModelProperty(value = "页码,默认1")
 	private Integer page = 1;
 
-
-	@ApiModelProperty(value = "页大小,默认10")
 	private Integer pageSize = 10;
 
-
-
-	@ApiModelProperty(hidden = true)
 	@JsonIgnore
 	private String startDate;//开始时间
 
-
-	@ApiModelProperty(hidden = true)
 	@JsonIgnore
 	private String endDate;//结束时间
 
-
-	@ApiModelProperty(hidden = true)
 	@JsonIgnore
 	private String orderByString;//排序
 
