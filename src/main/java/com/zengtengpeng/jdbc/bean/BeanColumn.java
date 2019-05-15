@@ -69,7 +69,6 @@ public class BeanColumn {
             return MyStringUtils.upperCase_(jdbcName, true);
         }
         if(!MyStringUtils.isEmpty(beanName)){
-
             return MyStringUtils.firstUpperCase(beanName);
         }
         return beanName;

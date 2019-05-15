@@ -24,7 +24,7 @@ public class Demo1simple {
 //        };
         AutoCodeConfig autoCodeConfig = StartCode.saxYaml("auto-code_simple.yaml");
         Connection connection = startCode.getConnection(autoCodeConfig);
-        List<String> tablesName = JDBCUtils.getTablesName(connection);
+        List<String> tablesName = JDBCUtils.getTablesName(connection,null);
         System.out.println(tablesName);
 //        startCode.start(autoCodeConfig);
     }
