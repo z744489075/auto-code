@@ -294,7 +294,7 @@ public class JDBCUtils {
                     if(!MyStringUtils.isEmpty(rs.getString("IS_NULLABLE")) && rs.getString("IS_NULLABLE").equalsIgnoreCase("yes")){
                         beanColumn.setNullable(true);
                     }
-                    beanColumn.setLength(rs.getString("COLUMN_SIZE"));
+                    beanColumn.setLength(rs.getString("COLUMN_SIZE")==null?"1":rs.getString("COLUMN_SIZE"));
                     if(!MyStringUtils.isEmpty(rs.getString("IS_AUTOINCREMENT")) && rs.getString("IS_AUTOINCREMENT").equalsIgnoreCase("yes")){
                         beanColumn.setIdentity(true);
                     }
