@@ -206,7 +206,7 @@ public class JDBCUtils {
                     }else {
                         beanColumn.setRemarks(remark);
                     }
-                    beanColumn.setDefaultValue(rs.getString("COLUMN_DEF"));
+                    beanColumn.setDefaultValue("");
 
                     if(pk.get(beanColumn.getJdbcName())!=null){
                         beanColumn.setKey(true);

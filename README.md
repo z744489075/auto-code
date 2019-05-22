@@ -21,6 +21,11 @@
 
 ## 更新日志
 
+>2019-05-22:版本2.1.4
+
+1.修复 https://gitee.com/ztp/auto-code/issues/IWSBT oracle 默认值问题
+2.修复 https://gitee.com/ztp/auto-code/issues/IWPNM mysql bit获取不了长度问题 
+
 > 2019-05-15:版本2.1.3
 
 1.兼容oracle
