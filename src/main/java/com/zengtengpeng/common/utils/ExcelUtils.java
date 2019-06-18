@@ -185,13 +185,7 @@ public class ExcelUtils {
     public static void exportExcel(String title, Map<String, String> header, List list, HttpServletResponse response, HttpServletRequest request)  {
         try {
             String fileName = title + DateUtils.formatDateByPattern(new Date(),"yyyyMMddHHmmss") + ".xls";
-            String agent = (String) request.getHeader("USER-AGENT");
-            if (agent != null && agent.toLowerCase().indexOf("firefox") > 0) {
-                //org.apache.commons.codec.binary.
-                fileName = "=?UTF-8?B?" + (new String(Base64.encodeBase64(fileName.getBytes("UTF-8")))) + "?=";
-            } else {
-                fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
-            }
+            fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
             response.setHeader("content-disposition", "attachment;filename=" + fileName);
 
             exportExcel(title,header,list,response.getOutputStream());
