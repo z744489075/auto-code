@@ -88,10 +88,10 @@ CREATE TABLE `test_simple_code` (
 
 >2. 界面选择单表生成.选择对应的表,点击`生成预览`. 最后点击`确认生成`. 完毕.
 
-![simple](http://106.13.119.110/auto-code-ui/simple.png)
+![simple](http://106.13.101.206/auto-code-ui/simple.png)
 
 生成的文件如下:
-![select](http://106.13.119.110/auto-code-web/simple.png)
+![select](http://106.13.101.206/auto-code-ui/simple-1.png)
 
 >3.生成完毕 
 #### <a name="2.1.3">一对一代码生成 one-to-one (代码采用追加的方式.无需担心代码被覆盖) </a>
@@ -127,8 +127,8 @@ CREATE TABLE `test_one_to_one_class` (
 
     test_one_to_one_user.id=test_one_to_one_class.user_id
 
-![one-to-one](http://106.13.119.110/auto-code-ui/one-to-one1.png)
-![one-to-one](http://106.13.119.110/auto-code-ui/one-to-one2.png)
+![one-to-one](http://106.13.101.206/auto-code-ui/one-to-one.png)
+![one-to-one](http://106.13.101.206/auto-code-ui/one-to-one-1.png)
 
 #### <a name="2.1.4">一对多 代码生成 one-to-Many (代码采用追加的方式.无需担心代码被覆盖)</a>
 
@@ -179,9 +179,9 @@ CREATE TABLE `test_many_to_many_user_role` (
     
     test_many_to_many_user_role.user_id=test_many_to_many_user.id and test_many_to_many_user_role.role_id=test_many_to_many_role.id
 
-![many-to-many](http://106.13.119.110/auto-code-ui/many-to-many1.png)
-![many-to-many](http://106.13.119.110/auto-code-ui/many-to-many2.png)
-![many-to-many](http://106.13.119.110/auto-code-ui/many-to-many3.png)
+![many-to-many](http://106.13.101.206/auto-code-ui/many-to-many1.png)
+![many-to-many](http://106.13.101.206/auto-code-ui/many-to-many2.png)
+![many-to-many](http://106.13.101.206/auto-code-ui/many-to-many3.png)
 
 
 ### <a name="2.2">生成代码注意事项 </a>
