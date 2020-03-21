@@ -37,7 +37,7 @@
 不生成页面.所以如果项目是采用前后台分离,不需要写页面.该项目会适合你
 
 > 2.如果还想生成页面请看该项目,这个项目基于本项目.扩展了页面生成.适合后台使用 [源码地址](https://gitee.com/ztp/auto-code-admin) 
- [演示地址](http://106.13.119.110:8010/login/gotoLogin) 账号 `ztp`  密码 `111111`
+ [演示地址](http://106.13.101.206:8010/login/gotoLogin) 账号 `ztp`  密码 `111111`
  
 ### <a name="1.3">为何会发起该项目? </a>
 
@@ -47,7 +47,7 @@
 
 ### <a name="1.4">如果您觉得项目还行.请点赞.您的支持是我最大的动力[项目地址](https://gitee.com/ztp/auto-code)</a>
 
-![start](http://106.13.119.110/auto-code/start.png)
+![start](http://106.13.101.206/auto-code/start.png)
 
 ## <a name="2">集成教程</a>
 
@@ -66,7 +66,7 @@
 >2.成功后访问 http://localhost:8070/auto-code-ui/ui/index.html
 
 界面如下: 
-![global](http://106.13.119.110/auto-code-ui/global.png)
+![global](http://106.13.101.206/auto-code-ui/global.png)
 
 #### <a name="2.1.2">单表生成</a>
 
